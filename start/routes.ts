@@ -23,3 +23,16 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
+
+/************************ Auth Controller ************************/
+Route.group(() => {
+  Route.post('check_account', 'AuthController.checkAccount');
+
+  Route.post('resend_otp', 'AuthController.reSendOtp');
+
+  Route.post('verify_otp', 'AuthController.verifyOtp');
+
+  Route.post('register', 'AuthController.register');
+
+  Route.post('login', 'AuthController.login');
+}).prefix("auth").middleware('locale');
