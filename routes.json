@@ -1,0 +1,69 @@
+{
+  "root": [
+    {
+      "methods": [
+        "HEAD",
+        "GET"
+      ],
+      "name": "",
+      "pattern": "/",
+      "handler": "Closure",
+      "middleware": []
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "name": "",
+      "pattern": "/auth/check_account",
+      "handler": "AuthController.checkAccount",
+      "middleware": [
+        "locale"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "name": "",
+      "pattern": "/auth/resend_otp",
+      "handler": "AuthController.reSendOtp",
+      "middleware": [
+        "locale"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "name": "",
+      "pattern": "/auth/verify_otp",
+      "handler": "AuthController.verifyOtp",
+      "middleware": [
+        "locale"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "name": "",
+      "pattern": "/auth/register",
+      "handler": "AuthController.register",
+      "middleware": [
+        "locale"
+      ]
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "name": "",
+      "pattern": "/auth/login",
+      "handler": "AuthController.login",
+      "middleware": [
+        "locale"
+      ]
+    }
+  ]
+}

@@ -10,6 +10,59 @@ const t = i18n.__;
 
 export default class AuthController {
 
+  /**
+  * @api {post} /auth/check_account Check Account
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiVersion 1.0.0
+  * @apiName CheckAccount
+  * @apiGroup Auth
+  *
+  * @apiParam {String} [email] Email Id.
+  * @apiParam {String} [phone_number] Phone number with `country_code`.
+  * @apiParam {String} [country_code] Country code with `phone_number`.
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     [When account is NOT exists with phone number, An OTP will be sent]
+  *     HTTP/1.1 200 OK 
+  *     {
+  *         "otpSid": "VE44b2561601a6e9014bc7bd7b097eb5dd",
+  *         "message": "Otp sent on your phone number"
+  *     }
+  *     
+  *     [When account is exists with Email, go to Login password screen]
+  *     HTTP/1.1 200 OK 
+  *     {
+  *       "message": "Welcome back, Amit",
+  *       "data": {
+  *          "email": "kaushikabhi999@gmail.com",
+  *          "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
+  *          "first_name": "Amit",
+  *          "last_name": "Kaushik",
+  *          "dob": "12-21-1993",
+  *          "country_code": "+91",
+  *          "phone_number": "9034138099",
+  *          "username": "919034138099",
+  *          "created_at": "2021-05-15T10:50:08.257+00:00",
+  *          "updated_at": "2021-05-15T10:50:08.289+00:00",
+  *          "id": 1
+  *       }
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 404 Bad Request
+  *     {
+  *       "message": "User not found"
+  *     }
+  * 
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Email or Phone number required"
+  *     }
+  *
+  */
   async checkAccount({ request, response }: HttpContextContract) {
 
     const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
@@ -80,6 +133,37 @@ export default class AuthController {
     }
   }
 
+  /**
+  * @api {post} /auth/resend_otp Resend OTP
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiVersion 1.0.0
+  * @apiName ResendOtp
+  * @apiGroup Auth
+  *
+  * @apiParam {String} phone_number Phone number.
+  * @apiParam {String} country_code Country code with `phone_number`.
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     HTTP/1.1 200 OK
+  *     {
+  *         "otpSid": "VE44b2561601a6e9014bc7bd7b097eb5dd",
+  *         "message": "Otp sent on your phone number"
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Otp not sent"
+  *     }
+  * 
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Invalid phone number or counrty code"
+  *     }
+  *
+  */
   async reSendOtp({ request, response }: HttpContextContract) {
 
     const validatoionSchema = schema.create({
@@ -98,6 +182,43 @@ export default class AuthController {
     return await this.sendOtp(request, response);
   }
 
+  /**
+  * @api {post} /auth/verify_otp Verify OTP
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiVersion 1.0.0
+  * @apiName VerifyOtp
+  * @apiGroup Auth
+  *
+  * @apiParam {Number} phone_number Phone number.
+  * @apiParam {String} country_code Country code with `phone_number`.
+  * @apiParam {Number} otp One Time Password.
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     HTTP/1.1 200 OK
+  *     {
+  *        "status": "approved",
+  *        "message": "Phone number verified"
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Incorrect OTP"
+  *     }
+  * 
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "OTP expired"
+  *     }
+  * 
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Invalid phone number or counrty code"
+  *     }
+  *
+  */
   async verifyOtp({ request, response }: HttpContextContract) {
 
     const validatoionSchema = schema.create({
@@ -140,13 +261,71 @@ export default class AuthController {
     }
   }
 
+  /**
+  * @api {post} /auth/register Register
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiVersion 1.0.0
+  * @apiName Register
+  * @apiGroup Auth
+  *
+  * @apiParam {Number} [phone_number] Phone number.
+  * @apiParam {String} [country_code] Country code with `phone_number`.
+  * @apiParam {String} first_name First name.
+  * @apiParam {String} last_name Last name.
+  * @apiParam {String} email Email address.
+  * @apiParam {String} password Password.
+  * @apiParam {String} dob Date of birth in DD-MM-YYYY format.
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     HTTP/1.1 200 OK
+  *     {
+  *       "message": "Registerted successfully",
+  *       "data": {
+  *           "user": {
+  *               "email": "kaushikabhi999@gmail.com",
+  *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
+  *               "first_name": "Amit",
+  *               "last_name": "Kaushik",
+  *               "dob": "12-21-1993",
+  *               "country_code": "+91",
+  *               "phone_number": "9034138099",
+  *               "username": "919034138099",
+  *               "created_at": "2021-05-15T10:50:08.257+00:00",
+  *               "updated_at": "2021-05-15T10:50:08.289+00:00",
+  *               "id": 1
+  *           },
+  *           "accessToken": {
+  *               "type": "bearer",
+  *               "token": "MQ.zSbTFVKw2PI1C14nj-dqR3i1_2z52k1ONKrXYWvoOkdE9WxTol4M-SEVmYwq"
+  *           }
+  *       }
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Email already exists"
+  *     }
+  * 
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Phone number already exists"
+  *     }
+  * 
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Bad Request"
+  *     }
+  *
+  */
   async register({ request, auth, response }: HttpContextContract) {
 
     const validatoionSchema = schema.create({
       email: schema.string({}, [
         rules.email(),
         rules.maxLength(255),
-        rules.unique({ table: 'users', column: 'email' })
       ]),
       first_name: schema.string({ trim: true }),
       last_name: schema.string({ trim: true }),
@@ -182,7 +361,7 @@ export default class AuthController {
         .first()
       if (user) {
         return response.status(Response.HTTP_BAD_REQUEST).json({
-          message: t('Phone already exists')
+          message: t('Phone number already exists')
         });
       }
     }
@@ -209,6 +388,52 @@ export default class AuthController {
     });
   }
 
+  /**
+  * @api {post} /auth/login Login
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiVersion 1.0.0
+  * @apiName Login
+  * @apiGroup Auth
+  *
+  * @apiParam {Number} [phone_number] Phone number.
+  * @apiParam {String} [country_code] Country code with `phone_number`.
+  * @apiParam {String} [email] Email address.
+  * @apiParam {String} password Password.
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     HTTP/1.1 200 OK
+  *     {
+  *       "message": "Login successfully",
+  *       "data": {
+  *           "user": {
+  *               "email": "kaushikabhi999@gmail.com",
+  *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
+  *               "first_name": "Amit",
+  *               "last_name": "Kaushik",
+  *               "dob": "12-21-1993",
+  *               "country_code": "+91",
+  *               "phone_number": "9034138099",
+  *               "username": "919034138099",
+  *               "created_at": "2021-05-15T10:50:08.257+00:00",
+  *               "updated_at": "2021-05-15T10:50:08.289+00:00",
+  *               "id": 1
+  *           },
+  *           "accessToken": {
+  *               "type": "bearer",
+  *               "token": "MQ.zSbTFVKw2PI1C14nj-dqR3i1_2z52k1ONKrXYWvoOkdE9WxTol4M-SEVmYwq"
+  *           }
+  *       }
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Invalid credentials"
+  *     }
+  *
+  */
   async login({ request, auth, response }: HttpContextContract) {
 
     const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
