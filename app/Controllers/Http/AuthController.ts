@@ -30,32 +30,21 @@ export default class AuthController {
   *         "otpSid": "VE44b2561601a6e9014bc7bd7b097eb5dd",
   *         "message": "Otp sent on your phone number"
   *     }
+  * 
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 201 Created
+  *     {
+  *       "message": "Create Account"
+  *     }
   *     
   *     [When account is exists with Email, go to Login password screen]
-  *     HTTP/1.1 200 OK 
+  *     HTTP/1.1 202 ACCEPTED 
   *     {
   *       "message": "Welcome back, Amit",
-  *       "data": {
-  *          "email": "kaushikabhi999@gmail.com",
-  *          "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
-  *          "first_name": "Amit",
-  *          "last_name": "Kaushik",
-  *          "dob": "12-21-1993",
-  *          "country_code": "+91",
-  *          "phone_number": "9034138099",
-  *          "username": "919034138099",
-  *          "created_at": "2021-05-15T10:50:08.257+00:00",
-  *          "updated_at": "2021-05-15T10:50:08.289+00:00",
-  *          "id": 1
-  *       }
+  *       "email": "kaushikabhi999@gmail.com",
   *     }
   * 
   * @apiErrorExample {json} Error-Response:
-  *     [When account is NOT exists with Email, go to Sign up screen]
-  *     HTTP/1.1 404 Bad Request
-  *     {
-  *       "message": "User not found"
-  *     }
   * 
   *     HTTP/1.1 400 Bad Request
   *     {
@@ -71,13 +60,13 @@ export default class AuthController {
     if (email) {
       const user = await User.findBy('email', email.trim());
       if (user) {
-        return response.status(Response.HTTP_FOUND).json({
-          data: user,
+        return response.status(Response.HTTP_ACCEPTED).json({
+          email: user.email,
           message: t("Welcome back, %s", user.first_name)
         });
       } else {
-        return response.status(Response.HTTP_NOT_FOUND).json({
-          message: t("User not found")
+        return response.status(Response.HTTP_CREATED).json({
+          message: t("Create Account")
         });
       }
     } else if (phone_number && country_code) {
@@ -87,8 +76,8 @@ export default class AuthController {
         .where('phone_number', phone_number)
         .first()
       if (user) {
-        return response.status(Response.HTTP_FOUND).json({
-          data: user,
+        return response.status(Response.HTTP_ACCEPTED).json({
+          email: user.email,
           message: t("Welcome back, %s", user.first_name)
         });
       } else {
@@ -453,7 +442,7 @@ export default class AuthController {
       } catch (e) {
         console.log(e)
         return response.status(Response.HTTP_BAD_REQUEST).json({
-          message: e.messages(),
+          message: t('Invalid parameters'),
         });
       }
       try {
@@ -464,7 +453,7 @@ export default class AuthController {
           accessToken: accessToken
         };
         return response.status(Response.HTTP_OK).json({
-          message: 'messages.login_success',
+          message: t('Login successfully'),
           data: data
         });
       } catch (e) {
