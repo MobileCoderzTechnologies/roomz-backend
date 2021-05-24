@@ -36,3 +36,13 @@ Route.group(() => {
 
   Route.post('login', 'AuthController.login');
 }).prefix("auth").middleware('locale');
+
+
+/************************ Admin Controller ************************/
+Route.group(() => {
+  Route.post('login', 'AdminController.login');
+}).prefix("admin").middleware('locale');
+
+Route.group(() => {
+  Route.post('change_password', 'AdminController.changePassword');
+}).prefix("admin").middleware(['locale', 'auth']);

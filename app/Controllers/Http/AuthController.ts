@@ -477,8 +477,8 @@ export default class AuthController {
       }
       try {
         const username = country_code.replace('+', '') + phone_number;
+        const accessToken = await auth.use('api').attempt(username, password)
         const user: any = await User.findBy('username', username);
-        const accessToken = await auth.use('api').attempt(user.email, password)
         const data = {
           user: user,
           accessToken: accessToken

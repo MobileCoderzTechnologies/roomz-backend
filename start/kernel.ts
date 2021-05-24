@@ -39,5 +39,6 @@ Server.middleware.register([() => import('@ioc:Adonis/Core/BodyParser')])
 |
 */
 Server.middleware.registerNamed({
-  locale: () => import('App/Middleware/Locale')
+  locale: () => import('App/Middleware/Locale'),
+  auth: () => import('App/Middleware/Auth')
 })
