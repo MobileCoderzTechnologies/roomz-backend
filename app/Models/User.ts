@@ -23,13 +23,28 @@ export default class User extends BaseModel {
   public dob: Date
 
   @column()
-  public country_code: string
+  public avatar: string | null
 
   @column()
-  public phone_number: string
+  public country_code: string | null
+
+  @column()
+  public phone_number: string | null
 
   @column()
   public username: string | null
+
+  @column()
+  public google_id: string | null
+
+  @column()
+  public facebook_id: string | null
+
+  @column()
+  public apple_id: string | null
+
+  @column()
+  public login_type: 'FACEBOOK' | 'GOOGLE' | 'APPLE' | 'EMAIL' | 'PHONE'
 
   @column({ serializeAs: null })
   public password: string

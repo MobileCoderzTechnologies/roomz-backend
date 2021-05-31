@@ -26,15 +26,17 @@ Route.get('/', async ({ view }) => {
 
 /************************ Auth Controller ************************/
 Route.group(() => {
-  Route.post('check_account', 'AuthController.checkAccount');
+  Route.post('check-account', 'AuthController.checkAccount');
 
-  Route.post('resend_otp', 'AuthController.reSendOtp');
+  Route.post('resend-otp', 'AuthController.reSendOtp');
 
-  Route.post('verify_otp', 'AuthController.verifyOtp');
+  Route.post('verify-otp', 'AuthController.verifyOtp');
 
   Route.post('register', 'AuthController.register');
 
   Route.post('login', 'AuthController.login');
+
+  Route.post('social-login', 'AuthController.socialLogin');
 }).prefix("auth").middleware('locale');
 
 
@@ -43,6 +45,7 @@ Route.group(() => {
   Route.post('login', 'AdminController.login');
 }).prefix("admin").middleware('locale');
 
+/******************* Admin Controller Authorized ******************/
 Route.group(() => {
-  Route.post('change_password', 'AdminController.changePassword');
+  Route.post('change-password', 'AdminController.changePassword');
 }).prefix("admin").middleware(['locale', 'auth']);

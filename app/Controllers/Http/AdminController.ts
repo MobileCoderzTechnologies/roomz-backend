@@ -92,7 +92,7 @@ export default class AdminController {
   }
 
   /**
-  * @api {post} /admin/change_password Change Password
+  * @api {post} /admin/change-password Change Password
   * @apiHeader {String} Accept-Language Language Code en OR ar.
   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............lREODosHjzx95uM-jA.
   * @apiVersion 1.0.0

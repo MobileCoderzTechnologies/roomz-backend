@@ -11,7 +11,7 @@ const t = i18n.__;
 export default class AuthController {
 
   /**
-  * @api {post} /auth/check_account Check Account
+  * @api {post} /auth/check-account Check Account
   * @apiHeader {String} Device-Type Device Type ios/android.
   * @apiHeader {String} App-Version Version Code 1.0.0.
   * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -30,12 +30,6 @@ export default class AuthController {
   *         "otpSid": "VE44b2561601a6e9014bc7bd7b097eb5dd",
   *         "message": "Otp sent on your phone number"
   *     }
-  * 
-  *     [When account is NOT exists with Email, go to Sign up screen]
-  *     HTTP/1.1 201 Created
-  *     {
-  *       "message": "Create Account"
-  *     }
   *     
   *     [When account is exists with Email, go to Login password screen]
   *     HTTP/1.1 202 ACCEPTED 
@@ -49,6 +43,12 @@ export default class AuthController {
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Email or Phone number required"
+  *     }
+  * 
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 404 Created
+  *     {
+  *       "message": "Create Account"
   *     }
   *
   */
@@ -65,7 +65,7 @@ export default class AuthController {
           message: t("Welcome back, %s", user.first_name)
         });
       } else {
-        return response.status(Response.HTTP_CREATED).json({
+        return response.status(Response.HTTP_NOT_FOUND).json({
           message: t("Create Account")
         });
       }
@@ -123,7 +123,7 @@ export default class AuthController {
   }
 
   /**
-  * @api {post} /auth/resend_otp Resend OTP
+  * @api {post} /auth/resend-otp Resend OTP
   * @apiHeader {String} Device-Type Device Type ios/android.
   * @apiHeader {String} App-Version Version Code 1.0.0.
   * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -172,7 +172,7 @@ export default class AuthController {
   }
 
   /**
-  * @api {post} /auth/verify_otp Verify OTP
+  * @api {post} /auth/verify-otp Verify OTP
   * @apiHeader {String} Device-Type Device Type ios/android.
   * @apiHeader {String} App-Version Version Code 1.0.0.
   * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -266,6 +266,10 @@ export default class AuthController {
   * @apiParam {String} email Email address.
   * @apiParam {String} password Password.
   * @apiParam {String} dob Date of birth in DD-MM-YYYY format.
+  * @apiParam {String} [avatar] Avatar from Social Platform.
+  * @apiParam {String} [social_id] Social Unique Id.
+  * @apiParam {String} [social_token] Social Platform Token.
+  * @apiParam {String} login_type Login type can be only `FACEBOOK` | `GOOGLE` | `APPLE` | `PHONE` | `EMAIL`
   *
   * @apiSuccessExample {json} Success-Response:
   *     HTTP/1.1 200 OK
@@ -336,6 +340,12 @@ export default class AuthController {
     const email = request.input('email');
     const password = request.input('password');
     const dob = request.input('dob');
+    const avatar = request.input('avatar');
+    const login_type = request.input('login_type');
+    const social_id = request.input('social_id');
+    const social_token = request.input('social_token');
+    const social_platform_id = login_type.toLowerCase() + '_id';
+    const social_platform_token = login_type.toLowerCase() + '_token';
     const alreadyExists = await User.findBy('email', email.trim());
     if (alreadyExists) {
       return response.status(Response.HTTP_BAD_REQUEST).json({
@@ -361,10 +371,14 @@ export default class AuthController {
     user.first_name = first_name;
     user.last_name = last_name;
     user.dob = dob;
-    user.password = password;
+    user.avatar = avatar;
+    user.password = password ?? '1Zillion!';
     user.country_code = country_code;
     user.phone_number = phone_number;
     user.username = country_code ? country_code.replace('+', '') + phone_number : null;
+    user[social_platform_id] = social_id;
+    user[social_platform_token] = social_token;
+    user.login_type = login_type;
     await user.save()
     const accessToken = await auth.use('api').generate(user)
     const data = {
@@ -494,5 +508,108 @@ export default class AuthController {
         });
       }
     }
+  }
+
+  /**
+  * @api {post} /auth/social-login Social Login
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiVersion 1.0.0
+  * @apiName SocialLogin
+  * @apiGroup Auth
+  *
+  * @apiParam {String} social_id Social Unique Id.
+  * @apiParam {String} social_token Social Platform Token.
+  * @apiParam {String} email Email address.
+  * @apiParam {String} login_type Login type can be only `FACEBOOK` | `GOOGLE` | `APPLE`
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     HTTP/1.1 200 OK
+  *     {
+  *       "message": "Login successfully",
+  *       "data": {
+  *           "user": {
+  *               "email": "kaushikabhi999@gmail.com",
+  *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
+  *               "first_name": "Amit",
+  *               "last_name": "Kaushik",
+  *               "dob": "12-21-1993",
+  *               "country_code": "+91",
+  *               "phone_number": "9034138099",
+  *               "username": "919034138099",
+  *               "created_at": "2021-05-15T10:50:08.257+00:00",
+  *               "updated_at": "2021-05-15T10:50:08.289+00:00",
+  *               "id": 1
+  *           },
+  *           "accessToken": {
+  *               "type": "bearer",
+  *               "token": "MQ.zSbTFVKw2PI1C14nj-dqR3i1_2z52k1ONKrXYWvoOkdE9WxTol4M-SEVmYwq"
+  *           }
+  *       }
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Invalid credentials"
+  *     }
+  * 
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 404 Created
+  *     {
+  *       "message": "Create Account"
+  *     }
+  *
+  */
+
+  async socialLogin({ request, auth, response }: HttpContextContract) {
+    try {
+      const social_id = request.input('social_id');
+      const social_token = request.input('social_token');
+      const email = request.input('email');
+      const login_type = request.input('login_type');
+      const social_platform_id = login_type.toLowerCase() + '_id';
+      const social_platform_token = login_type.toLowerCase() + '_token';
+      const socialUser = await User.findBy(social_platform_id, social_id);
+      if (socialUser) {
+        const accessToken = await auth.use('api').generate(socialUser)
+        const data = {
+          user: socialUser,
+          accessToken: accessToken
+        };
+        return response.status(Response.HTTP_OK).json({
+          message: t('Login successfully'),
+          data: data
+        });
+      } else {
+        const socialUser = await User.findBy('email', email);
+        if (socialUser) {
+          if (!socialUser[social_platform_token] && social_token) {
+            socialUser[social_platform_token] = social_token;
+            await socialUser.save()
+          }
+          const accessToken = await auth.use('api').generate(socialUser);
+          const data = {
+            user: socialUser,
+            accessToken: accessToken
+          }
+          return response.status(Response.HTTP_OK).json({
+            message: t('Login successfully'),
+            data: data
+          });
+        } else {
+          return response.status(Response.HTTP_NOT_FOUND).json({
+            message: t("Create Account")
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e)
+      return response.status(Response.HTTP_FORBIDDEN).json({
+        message: t('Invalid credentials'),
+      });
+    }
+
   }
 }
