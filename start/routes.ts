@@ -48,4 +48,6 @@ Route.group(() => {
 /******************* Admin Controller Authorized ******************/
 Route.group(() => {
   Route.post('change-password', 'AdminController.changePassword');
+
+  Route.get('users-list', 'AdminController.getUsersList');
 }).prefix("admin").middleware(['locale', 'auth']);

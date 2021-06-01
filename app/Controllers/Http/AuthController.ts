@@ -323,6 +323,7 @@ export default class AuthController {
       first_name: schema.string({ trim: true }),
       last_name: schema.string({ trim: true }),
       password: schema.string({ trim: true }),
+      login_type: schema.string({ trim: true })
     })
 
     try {

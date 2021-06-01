@@ -5,6 +5,7 @@ import Admin from "App/Models/Admin";
 import User from "App/Models/User";
 // Transaltion
 import i18n from 'App/Helpers/i18n';
+import Database from '@ioc:Adonis/Lucid/Database';
 const t = i18n.__;
 
 export default class AdminController {
@@ -192,6 +193,90 @@ export default class AdminController {
         message: t('Incorrect current password'),
       });
     }
+  }
 
+  /**
+  * @api {get} /admin/users-list?page=1&search=xyz Users List
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............lREODosHjzx95uM-jA.
+  * @apiVersion 1.0.0
+  * @apiName UsersList
+  * @apiGroup Admin
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *     HTTP/1.1 200 OK
+  *     {
+  *       "users":[
+  *         {
+  *           "id":1,
+  *           "uid":"94440eb7-05e4-47b2-b8df-f6a605995b7b",
+  *           "first_name":"Amit",
+  *           "last_name":"kaushik",
+  *           "dob":"12-21-1993",
+  *           "avatar":null,
+  *           "email":"kaushikabhi999@gmail.com",
+  *           "country_code":"+91",
+  *           "phone_number":"9034138099",
+  *           "username":"919034138099",
+  *           "login_type":"EMAIL"
+  *           "device_type":null,
+  *           "created_at":"2021-05-14T11:31:35.000Z",
+  *           "updated_at":"2021-05-14T11:31:35.000Z",
+  *         }
+  *       ],
+  *       "totalNumber":2,
+  *       "perPage":10,
+  *       "currentPage":1,
+  *       "firstPage":1,
+  *       "isEmpty":false,
+  *       "totalPages":1,
+  *       "lastPage":1,
+  *       "hasMorePages":false,
+  *       "hasPages":false
+  *     }
+  * 
+  * @apiErrorExample {json} Error-Response:
+  *     HTTP/1.1 400 Bad Request
+  *     {
+  *       "message": "Something went wrong",
+  *     }
+  *
+  */
+  async getUsersList({ request, response }: HttpContextContract) {
+    try {
+      const params = request.qs();
+      const page = Number.isInteger(Number(params.page)) ? Number(params.page) : 1;
+      const limit = 10;
+      const offset = limit * (page - 1);
+      const search = params.search;
+      const allUsers = await User.all();
+      const totalNumber = allUsers.length;
+      const totalPages = Math.ceil(totalNumber / 10);
+
+      let query = 'select * from users';
+      if (search) {
+        query += ' first_name like "%' + search + '%" OR last_name like "%' + search + '%" OR email like "%' + search + '%"';
+      }
+      query += ' limit ' + limit + ' offset ' + offset;
+      const users = await Database.rawQuery(query);
+
+      return response.status(Response.HTTP_OK).json({
+        users: users[0],
+        totalNumber: totalNumber,
+        perPage: limit,
+        currentPage: page,
+        firstPage: 1,
+        isEmpty: totalNumber === 0,
+        totalPages: totalPages,
+        lastPage: totalPages,
+        hasMorePages: totalPages !== 1 && totalPages !== page,
+        hasPages: totalPages !== 1
+      });
+    } catch (e) {
+      console.log(e)
+      return response.status(Response.HTTP_BAD_REQUEST).json({
+        message: t('Something went wrong')
+      });
+    }
   }
 }
