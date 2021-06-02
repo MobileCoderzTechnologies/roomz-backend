@@ -19,6 +19,7 @@ export default class AuthController {
   * @apiName CheckAccount
   * @apiGroup Auth
   *
+  * @apiParam {String} login_type Login type can be only `PHONE` | `EMAIL`
   * @apiParam {String} [email] Email Id.
   * @apiParam {String} [phone_number] Phone number with `country_code`.
   * @apiParam {String} [country_code] Country code with `phone_number`.
@@ -38,26 +39,51 @@ export default class AuthController {
   *       "email": "kaushikabhi999@gmail.com",
   *     }
   * 
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 209 Created
+  *     {
+  *       "message": "Create Account"
+  *     }
+  * 
   * @apiErrorExample {json} Error-Response:
   * 
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Email or Phone number required"
   *     }
-  * 
-  *     [When account is NOT exists with Email, go to Sign up screen]
-  *     HTTP/1.1 404 Created
-  *     {
-  *       "message": "Create Account"
-  *     }
   *
   */
   async checkAccount({ request, response }: HttpContextContract) {
 
-    const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
-    const country_code = request.input('country_code');
-    const email = request.input('email');
-    if (email) {
+    const validatoionSchema = schema.create({
+      login_type: schema.string({ trim: true }),
+    })
+
+    try {
+      await request.validate({ schema: validatoionSchema })
+    } catch (e) {
+      console.log(e)
+      return response.status(Response.HTTP_BAD_REQUEST).json({
+        message: t('login_type required'),
+      });
+    }
+    const login_type = request.input('login_type');
+    if (login_type === 'EMAIL') {
+      const validatoionSchema = schema.create({
+        email: schema.string({}, [
+          rules.email(),
+          rules.maxLength(255),
+        ])
+      })
+      try {
+        await request.validate({ schema: validatoionSchema })
+      } catch (e) {
+        console.log(e)
+        return response.status(Response.HTTP_BAD_REQUEST).json({
+          message: t('Invalid Email Address'),
+        });
+      }
+      const email = request.input('email');
       const user = await User.findBy('email', email.trim());
       if (user) {
         return response.status(Response.HTTP_ACCEPTED).json({
@@ -65,11 +91,26 @@ export default class AuthController {
           message: t("Welcome back, %s", user.first_name)
         });
       } else {
-        return response.status(Response.HTTP_NOT_FOUND).json({
+        return response.status(Response.HTTP_USER_NOT_FOUND).json({
           message: t("Create Account")
         });
       }
-    } else if (phone_number && country_code) {
+    }
+    if (login_type === 'PHONE') {
+      const validatoionSchema = schema.create({
+        phone_number: schema.number(),
+        country_code: schema.string({ trim: true }),
+      })
+      try {
+        await request.validate({ schema: validatoionSchema })
+      } catch (e) {
+        console.log(e)
+        return response.status(Response.HTTP_BAD_REQUEST).json({
+          message: t('Invalid phone number or counrty code'),
+        });
+      }
+      const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
+      const country_code = request.input('country_code');
       const user = await User
         .query()
         .where('country_code', country_code)
@@ -550,16 +591,16 @@ export default class AuthController {
   *       }
   *     }
   * 
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 209 Created
+  *     {
+  *       "message": "Create Account"
+  *     }
+  * 
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Invalid credentials"
-  *     }
-  * 
-  *     [When account is NOT exists with Email, go to Sign up screen]
-  *     HTTP/1.1 404 Created
-  *     {
-  *       "message": "Create Account"
   *     }
   *
   */
@@ -600,7 +641,7 @@ export default class AuthController {
             data: data
           });
         } else {
-          return response.status(Response.HTTP_NOT_FOUND).json({
+          return response.status(Response.HTTP_USER_NOT_FOUND).json({
             message: t("Create Account")
           });
         }
