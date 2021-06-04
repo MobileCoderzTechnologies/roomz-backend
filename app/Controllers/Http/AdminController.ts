@@ -214,7 +214,7 @@ export default class AdminController {
   *           "last_name":"kaushik",
   *           "dob":"12-21-1993",
   *           "avatar":null,
-  *           "email":"kaushikabhi999@gmail.com",
+  *           "email":"john.doe@gmail.com",
   *           "country_code":"+91",
   *           "phone_number":"9034138099",
   *           "username":"919034138099",

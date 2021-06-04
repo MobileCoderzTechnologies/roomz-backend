@@ -32,11 +32,12 @@ export default class AuthController {
   *         "message": "Otp sent on your phone number"
   *     }
   *     
-  *     [When account is exists with Email, go to Login password screen]
+  *     [When account is exists, go to Login password screen with login_type]
   *     HTTP/1.1 202 ACCEPTED 
   *     {
-  *       "message": "Welcome back, Amit",
-  *       "email": "kaushikabhi999@gmail.com",
+  *       "message": "Welcome back, John",
+  *       "email": "john.doe@gmail.com",
+  *       "login_type": "GOOGLE",
   *     }
   * 
   *     [When account is NOT exists with Email, go to Sign up screen]
@@ -87,6 +88,7 @@ export default class AuthController {
       const user = await User.findBy('email', email.trim());
       if (user) {
         return response.status(Response.HTTP_ACCEPTED).json({
+          login_type: user.login_type,
           email: user.email,
           message: t("Welcome back, %s", user.first_name)
         });
@@ -118,6 +120,7 @@ export default class AuthController {
         .first()
       if (user) {
         return response.status(Response.HTTP_ACCEPTED).json({
+          login_type: user.login_type,
           email: user.email,
           message: t("Welcome back, %s", user.first_name)
         });
@@ -318,7 +321,7 @@ export default class AuthController {
   *       "message": "Registerted successfully",
   *       "data": {
   *           "user": {
-  *               "email": "kaushikabhi999@gmail.com",
+  *               "email": "john.doe@gmail.com",
   *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
   *               "first_name": "Amit",
   *               "last_name": "Kaushik",
@@ -453,7 +456,7 @@ export default class AuthController {
   *       "message": "Login successfully",
   *       "data": {
   *           "user": {
-  *               "email": "kaushikabhi999@gmail.com",
+  *               "email": "john.doe@gmail.com",
   *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
   *               "first_name": "Amit",
   *               "last_name": "Kaushik",
@@ -572,7 +575,7 @@ export default class AuthController {
   *       "message": "Login successfully",
   *       "data": {
   *           "user": {
-  *               "email": "kaushikabhi999@gmail.com",
+  *               "email": "john.doe@gmail.com",
   *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
   *               "first_name": "Amit",
   *               "last_name": "Kaushik",
@@ -589,6 +592,14 @@ export default class AuthController {
   *               "token": "MQ.zSbTFVKw2PI1C14nj-dqR3i1_2z52k1ONKrXYWvoOkdE9WxTol4M-SEVmYwq"
   *           }
   *       }
+  *     }
+  *     
+  *     [When account is exists, go to Login password screen with login_type]
+  *     HTTP/1.1 202 ACCEPTED 
+  *     {
+  *       "message": "Welcome back, John",
+  *       "email": "john.doe@gmail.com",
+  *       "login_type": "APPLE",
   *     }
   * 
   *     [When account is NOT exists with Email, go to Sign up screen]
@@ -615,6 +626,13 @@ export default class AuthController {
       const social_platform_token = login_type.toLowerCase() + '_token';
       const socialUser = await User.findBy(social_platform_id, social_id);
       if (socialUser) {
+        if (socialUser.login_type !== login_type) {
+          return response.status(Response.HTTP_ACCEPTED).json({
+            login_type: socialUser.login_type,
+            email: socialUser.email,
+            message: t("Welcome back, %s", socialUser.first_name)
+          });
+        }
         const accessToken = await auth.use('api').generate(socialUser)
         const data = {
           user: socialUser,
@@ -629,6 +647,7 @@ export default class AuthController {
         if (socialUser) {
           if (!socialUser[social_platform_token] && social_token) {
             socialUser[social_platform_token] = social_token;
+            socialUser.login_type = login_type;
             await socialUser.save()
           }
           const accessToken = await auth.use('api').generate(socialUser);
