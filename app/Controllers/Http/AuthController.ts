@@ -111,22 +111,7 @@ export default class AuthController {
           message: t('Invalid phone number or counrty code'),
         });
       }
-      const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
-      const country_code = request.input('country_code');
-      const user = await User
-        .query()
-        .where('country_code', country_code)
-        .where('phone_number', phone_number)
-        .first()
-      if (user) {
-        return response.status(Response.HTTP_ACCEPTED).json({
-          login_type: user.login_type,
-          email: user.email,
-          message: t("Welcome back, %s", user.first_name)
-        });
-      } else {
-        return await this.sendOtp(request, response);
-      }
+      return await this.sendOtp(request, response);
     } else {
       return response.status(Response.HTTP_BAD_REQUEST).json({
         message: t("Email or Phone number required")
@@ -231,6 +216,31 @@ export default class AuthController {
   * @apiSuccessExample {json} Success-Response:
   *     HTTP/1.1 200 OK
   *     {
+  *       "message": "Registerted successfully",
+  *       "data": {
+  *           "user": {
+  *               "email": "john.doe@gmail.com",
+  *               "uid": "d47f292c-7b63-47bc-8485-3aef1b454551",
+  *               "first_name": "Amit",
+  *               "last_name": "Kaushik",
+  *               "dob": "12-21-1993",
+  *               "country_code": "+91",
+  *               "phone_number": "9034138099",
+  *               "username": "919034138099",
+  *               "created_at": "2021-05-15T10:50:08.257+00:00",
+  *               "updated_at": "2021-05-15T10:50:08.289+00:00",
+  *               "id": 1
+  *           },
+  *           "accessToken": {
+  *               "type": "bearer",
+  *               "token": "MQ.zSbTFVKw2PI1C14nj-dqR3i1_2z52k1ONKrXYWvoOkdE9WxTol4M-SEVmYwq"
+  *           }
+  *       }
+  *     }
+  * 
+  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     HTTP/1.1 209 Created
+  *     {
   *        "status": "approved",
   *        "message": "Phone number verified"
   *     }
@@ -252,7 +262,7 @@ export default class AuthController {
   *     }
   *
   */
-  async verifyOtp({ request, response }: HttpContextContract) {
+  async verifyOtp({ request, auth, response }: HttpContextContract) {
 
     const validatoionSchema = schema.create({
       phone_number: schema.number(),
@@ -275,10 +285,24 @@ export default class AuthController {
     const classCtrl = new SendOtp();
     const otpRes = await classCtrl.verifyOtp(country_code + phone_number, otp);
     if (otpRes && typeof otpRes.status === 'string' && otpRes.valid) {
-      return response.status(Response.HTTP_OK).json({
-        status: otpRes.status,
-        message: t('Phone number verified')
-      });
+      const username = country_code.replace('+', '') + phone_number;
+      const phoneUser = await User.findBy('username', username);
+      if (phoneUser) {
+        const accessToken = await auth.use('api').generate(phoneUser)
+        const data = {
+          user: phoneUser,
+          accessToken: accessToken
+        };
+        return response.status(Response.HTTP_OK).json({
+          message: t('Login successfully'),
+          data: data
+        });
+      } else {
+        return response.status(Response.HTTP_USER_NOT_FOUND).json({
+          status: otpRes.status,
+          message: t('Phone number verified')
+        });
+      }
     } else if (otpRes && typeof otpRes.status === 'string' && otpRes.valid === false) {
       return response.status(Response.HTTP_BAD_REQUEST).json({
         message: t('Incorrect OTP')
@@ -339,17 +363,16 @@ export default class AuthController {
   *           }
   *       }
   *     }
+  *     
+  *     [When account is exists, go to Login password screen with login_type]
+  *     HTTP/1.1 202 ACCEPTED 
+  *     {
+  *       "message": "Welcome back, John",
+  *       "email": "john.doe@gmail.com",
+  *       "login_type": "GOOGLE",
+  *     }
   * 
   * @apiErrorExample {json} Error-Response:
-  *     HTTP/1.1 400 Bad Request
-  *     {
-  *       "message": "Email already exists"
-  *     }
-  * 
-  *     HTTP/1.1 400 Bad Request
-  *     {
-  *       "message": "Phone number already exists"
-  *     }
   * 
   *     HTTP/1.1 400 Bad Request
   *     {
@@ -360,12 +383,16 @@ export default class AuthController {
   async register({ request, auth, response }: HttpContextContract) {
 
     const validatoionSchema = schema.create({
-      email: schema.string({}, [
+      email: schema.string({ trim: true }, [
         rules.email(),
         rules.maxLength(255),
       ]),
-      first_name: schema.string({ trim: true }),
-      last_name: schema.string({ trim: true }),
+      first_name: schema.string({ trim: true }, [
+        rules.maxLength(15),
+      ]),
+      last_name: schema.string({ trim: true }, [
+        rules.maxLength(15),
+      ]),
       password: schema.string({ trim: true }),
       login_type: schema.string({ trim: true })
     })
@@ -393,8 +420,10 @@ export default class AuthController {
     const social_platform_token = login_type.toLowerCase() + '_token';
     const alreadyExists = await User.findBy('email', email.trim());
     if (alreadyExists) {
-      return response.status(Response.HTTP_BAD_REQUEST).json({
-        message: t('Email already exists')
+      return response.status(Response.HTTP_ACCEPTED).json({
+        login_type: alreadyExists.login_type,
+        email: alreadyExists.email,
+        message: t("Welcome back, %s", alreadyExists.first_name)
       });
     }
     if (phone_number && country_code) {
