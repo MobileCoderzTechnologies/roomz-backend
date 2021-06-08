@@ -146,7 +146,7 @@ export default class AuthController {
       });
     } else {
       return response.status(Response.HTTP_BAD_REQUEST).json({
-        message: t('Otp not sent')
+        message: t('Sorry, we cannot send the verification code to this number')
       });
     }
   }
@@ -216,7 +216,7 @@ export default class AuthController {
   * @apiSuccessExample {json} Success-Response:
   *     HTTP/1.1 200 OK
   *     {
-  *       "message": "Registerted successfully",
+  *       "message": "Login successfully",
   *       "data": {
   *           "user": {
   *               "email": "john.doe@gmail.com",
@@ -238,7 +238,7 @@ export default class AuthController {
   *       }
   *     }
   * 
-  *     [When account is NOT exists with Email, go to Sign up screen]
+  *     [When account is NOT exists with Phone number, go to Add Info screen]
   *     HTTP/1.1 209 Created
   *     {
   *        "status": "approved",
@@ -393,7 +393,6 @@ export default class AuthController {
       last_name: schema.string({ trim: true }, [
         rules.maxLength(15),
       ]),
-      password: schema.string({ trim: true }),
       login_type: schema.string({ trim: true })
     })
 
