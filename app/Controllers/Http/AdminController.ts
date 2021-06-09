@@ -249,7 +249,7 @@ export default class AdminController {
       const limit = 10;
       const offset = limit * (page - 1);
       const search = params.search;
-      console.log(search);
+      // console.log(search);
       const allUsers = await User.query()
         .where('is_deleted', false)
         .exec();
@@ -258,7 +258,7 @@ export default class AdminController {
 
       let query = 'select * from users where is_deleted=0';
       if (search) {
-        query += 'first_name like "%' + search + '%" OR last_name like "%' + search + '%" OR email like "%' + search + '%"';
+        query = 'select * from users where is_deleted=0 AND (first_name like "%' + search + '%" OR last_name like "%' + search + '%" OR email like "%' + search + '%")';
       }
       query += ' limit ' + limit + ' offset ' + offset;
       const users = await Database.rawQuery(query);
