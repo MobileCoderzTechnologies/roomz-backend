@@ -89,14 +89,12 @@ export default class AuthController {
       if (user) {
         if (user.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            status: Response.HTTP_FORBIDDEN,
-            message: t('Account deleted by admin')
+            message: t('Invalid Credentials')
           });
         }
         if (!user.is_active) {
-          return response.status(Response.HTTP_BAD_REQUEST).json({
-            status: Response.HTTP_BAD_REQUEST,
-            message: t('You Inactive by admin')
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            message: t('Your account is inactive, please contact Admin')
           });
         }
         return response.status(Response.HTTP_ACCEPTED).json({
@@ -302,8 +300,7 @@ export default class AuthController {
       if (phoneUser) {
         if (phoneUser.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            status: Response.HTTP_FORBIDDEN,
-            message: t('Account deleted by admin')
+            message: t('Invalid Credentials')
           });
         }
         if (!phoneUser.is_active) {
@@ -445,13 +442,11 @@ export default class AuthController {
     if (alreadyExists) {
       if (alreadyExists.is_deleted) {
         return response.status(Response.HTTP_FORBIDDEN).json({
-          status: Response.HTTP_BAD_GATEWAY,
-          message: t('Account deleted by admin')
+          message: t('Invalid Credentials')
         });
       }
       if (!alreadyExists.is_active) {
         return response.status(Response.HTTP_BAD_REQUEST).json({
-          status: Response.HTTP_BAD_REQUEST,
           message: t('You Inactive by admin')
         });
       }
@@ -470,8 +465,7 @@ export default class AuthController {
       if (user) {
         if (user.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            status: Response.HTTP_FORBIDDEN,
-            message: t('Account deleted by admin')
+            message: t('Invalid Credentials')
           });
         }
         if (!user.is_active) {
@@ -585,13 +579,11 @@ export default class AuthController {
         const user = await User.findBy('email', email);
         if (user?.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            status: Response.HTTP_FORBIDDEN,
-            message: t('Account deleted by admin')
+            message: t('Invalid Credentials')
           });
         }
         if (!user?.is_active) {
           return response.status(Response.HTTP_BAD_REQUEST).json({
-            status: Response.HTTP_BAD_REQUEST,
             message: t('You Inactive by admin')
           });
         }
@@ -606,7 +598,7 @@ export default class AuthController {
       } catch (e) {
         console.log(e)
         return response.status(Response.HTTP_FORBIDDEN).json({
-          message: t('Invalid credentials'),
+          message: t('Invalid Credentials')
         });
       }
     } else {
@@ -628,8 +620,7 @@ export default class AuthController {
         const user: any = await User.findBy('username', username);
         if (user?.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            status: Response.HTTP_FORBIDDEN,
-            message: t('Account deleted by admin')
+            message: t('Invalid Credentials')
           });
         }
         if (!user?.is_active) {
@@ -649,7 +640,7 @@ export default class AuthController {
       } catch (e) {
         console.log(e)
         return response.status(Response.HTTP_FORBIDDEN).json({
-          message: t('Invalid credentials'),
+          message: t('Invalid Credentials')
         });
       }
     }

@@ -21,14 +21,12 @@ export default class UsersController {
         await user.save();
       } else {
         return response.status(Response.HTTP_BAD_REQUEST).json({
-          status: Response.HTTP_BAD_REQUEST,
           message: t('Invalid user Id')
         });
       }
 
       return response.status(Response.HTTP_OK).json({
-        status: Response.HTTP_OK,
-        message: t('user deleted successfully'),
+        message: t('User deleted successfully'),
       });
 
     } catch (error) {
@@ -48,13 +46,12 @@ export default class UsersController {
       if (user) {
         user.is_active = !user.is_active;
         user.save();
-      }
 
-      return response.status(Response.HTTP_OK).json({
-        status: Response.HTTP_OK,
-        message: t('User status changed'),
-        user
-      });
+        return response.status(Response.HTTP_OK).json({
+          message: t('User status updated'),
+          user
+        });
+      }
 
     } catch (error) {
       console.log(error)
