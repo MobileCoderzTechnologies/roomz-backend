@@ -121,6 +121,22 @@ export default class AuthController {
           message: t('Invalid phone number or counrty code'),
         });
       }
+      const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
+      const country_code = request.input("country_code");
+      const username = country_code.replace('+', '') + phone_number;
+      const phoneUser = await User.findBy('username', username);
+      if (phoneUser) {
+        if (phoneUser.is_deleted) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            message: t('Invalid Credentials')
+          });
+        }
+        if (!phoneUser.is_active) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            message: t('Your account is inactive, please contact Admin')
+          });
+        }
+      }
       return await this.sendOtp(request, response);
     } else {
       return response.status(Response.HTTP_BAD_REQUEST).json({
@@ -298,17 +314,6 @@ export default class AuthController {
       const username = country_code.replace('+', '') + phone_number;
       const phoneUser = await User.findBy('username', username);
       if (phoneUser) {
-        if (phoneUser.is_deleted) {
-          return response.status(Response.HTTP_FORBIDDEN).json({
-            message: t('Invalid Credentials')
-          });
-        }
-        if (!phoneUser.is_active) {
-          return response.status(Response.HTTP_BAD_REQUEST).json({
-            status: Response.HTTP_BAD_REQUEST,
-            message: t('You Inactive by admin')
-          });
-        }
         const accessToken = await auth.use('api').generate(phoneUser)
         const data = {
           user: phoneUser,
@@ -446,8 +451,8 @@ export default class AuthController {
         });
       }
       if (!alreadyExists.is_active) {
-        return response.status(Response.HTTP_BAD_REQUEST).json({
-          message: t('You Inactive by admin')
+        return response.status(Response.HTTP_FORBIDDEN).json({
+          message: t('Your account is inactive, please contact Admin')
         });
       }
       return response.status(Response.HTTP_ACCEPTED).json({
@@ -469,9 +474,8 @@ export default class AuthController {
           });
         }
         if (!user.is_active) {
-          return response.status(Response.HTTP_BAD_REQUEST).json({
-            status: Response.HTTP_BAD_REQUEST,
-            message: t('You Inactive by admin')
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            message: t('Your account is inactive, please contact Admin')
           });
         }
         return response.status(Response.HTTP_BAD_REQUEST).json({
@@ -583,8 +587,8 @@ export default class AuthController {
           });
         }
         if (!user?.is_active) {
-          return response.status(Response.HTTP_BAD_REQUEST).json({
-            message: t('You Inactive by admin')
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            message: t('Your account is inactive, please contact Admin')
           });
         }
         const data = {
@@ -624,9 +628,8 @@ export default class AuthController {
           });
         }
         if (!user?.is_active) {
-          return response.status(Response.HTTP_BAD_REQUEST).json({
-            status: Response.HTTP_BAD_REQUEST,
-            message: t('You Inactive by admin')
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            message: t('Your account is inactive, please contact Admin')
           });
         }
         const data = {
