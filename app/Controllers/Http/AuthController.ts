@@ -26,28 +26,28 @@ export default class AuthController {
   *
   * @apiSuccessExample {json} Success-Response:
   *     [When account is NOT exists with phone number, An OTP will be sent]
-  *     HTTP/1.1 200 OK 
+  *     HTTP/1.1 200 OK
   *     {
   *         "otpSid": "VE44b2561601a6e9014bc7bd7b097eb5dd",
   *         "message": "Otp sent on your phone number"
   *     }
-  *     
+  *
   *     [When account is exists, go to Login password screen with login_type]
-  *     HTTP/1.1 202 ACCEPTED 
+  *     HTTP/1.1 202 ACCEPTED
   *     {
   *       "message": "Welcome back, John",
   *       "email": "john.doe@gmail.com",
   *       "login_type": "GOOGLE",
   *     }
-  * 
+  *
   *     [When account is NOT exists with Email, go to Sign up screen]
   *     HTTP/1.1 209 Created
   *     {
   *       "message": "Create Account"
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
-  * 
+  *
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Email or Phone number required"
@@ -87,6 +87,18 @@ export default class AuthController {
       const email = request.input('email');
       const user = await User.findBy('email', email.trim());
       if (user) {
+        if (user.is_deleted) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            status: Response.HTTP_FORBIDDEN,
+            message: t('Account deleted by admin')
+          });
+        }
+        if (!user.is_active) {
+          return response.status(Response.HTTP_BAD_REQUEST).json({
+            status: Response.HTTP_BAD_REQUEST,
+            message: t('You Inactive by admin')
+          });
+        }
         return response.status(Response.HTTP_ACCEPTED).json({
           login_type: user.login_type,
           email: user.email,
@@ -169,13 +181,13 @@ export default class AuthController {
   *         "otpSid": "VE44b2561601a6e9014bc7bd7b097eb5dd",
   *         "message": "Otp sent on your phone number"
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Otp not sent"
   *     }
-  * 
+  *
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Invalid phone number or counrty code"
@@ -237,25 +249,25 @@ export default class AuthController {
   *           }
   *       }
   *     }
-  * 
+  *
   *     [When account is NOT exists with Phone number, go to Add Info screen]
   *     HTTP/1.1 209 Created
   *     {
   *        "status": "approved",
   *        "message": "Phone number verified"
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Incorrect OTP"
   *     }
-  * 
+  *
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "OTP expired"
   *     }
-  * 
+  *
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Invalid phone number or counrty code"
@@ -288,6 +300,18 @@ export default class AuthController {
       const username = country_code.replace('+', '') + phone_number;
       const phoneUser = await User.findBy('username', username);
       if (phoneUser) {
+        if (phoneUser.is_deleted) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            status: Response.HTTP_FORBIDDEN,
+            message: t('Account deleted by admin')
+          });
+        }
+        if (!phoneUser.is_active) {
+          return response.status(Response.HTTP_BAD_REQUEST).json({
+            status: Response.HTTP_BAD_REQUEST,
+            message: t('You Inactive by admin')
+          });
+        }
         const accessToken = await auth.use('api').generate(phoneUser)
         const data = {
           user: phoneUser,
@@ -363,17 +387,17 @@ export default class AuthController {
   *           }
   *       }
   *     }
-  *     
+  *
   *     [When account is exists, go to Login password screen with login_type]
-  *     HTTP/1.1 202 ACCEPTED 
+  *     HTTP/1.1 202 ACCEPTED
   *     {
   *       "message": "Welcome back, John",
   *       "email": "john.doe@gmail.com",
   *       "login_type": "GOOGLE",
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
-  * 
+  *
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Bad Request"
@@ -419,6 +443,18 @@ export default class AuthController {
     const social_platform_token = login_type.toLowerCase() + '_token';
     const alreadyExists = await User.findBy('email', email.trim());
     if (alreadyExists) {
+      if (alreadyExists.is_deleted) {
+        return response.status(Response.HTTP_FORBIDDEN).json({
+          status: Response.HTTP_BAD_GATEWAY,
+          message: t('Account deleted by admin')
+        });
+      }
+      if (!alreadyExists.is_active) {
+        return response.status(Response.HTTP_BAD_REQUEST).json({
+          status: Response.HTTP_BAD_REQUEST,
+          message: t('You Inactive by admin')
+        });
+      }
       return response.status(Response.HTTP_ACCEPTED).json({
         login_type: alreadyExists.login_type,
         email: alreadyExists.email,
@@ -432,6 +468,18 @@ export default class AuthController {
         .where('phone_number', phone_number)
         .first()
       if (user) {
+        if (user.is_deleted) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            status: Response.HTTP_FORBIDDEN,
+            message: t('Account deleted by admin')
+          });
+        }
+        if (!user.is_active) {
+          return response.status(Response.HTTP_BAD_REQUEST).json({
+            status: Response.HTTP_BAD_REQUEST,
+            message: t('You Inactive by admin')
+          });
+        }
         return response.status(Response.HTTP_BAD_REQUEST).json({
           message: t('Phone number already exists')
         });
@@ -502,7 +550,7 @@ export default class AuthController {
   *           }
   *       }
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
@@ -535,6 +583,18 @@ export default class AuthController {
       try {
         const accessToken = await auth.use('api').attempt(email, password)
         const user = await User.findBy('email', email);
+        if (user?.is_deleted) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            status: Response.HTTP_FORBIDDEN,
+            message: t('Account deleted by admin')
+          });
+        }
+        if (!user?.is_active) {
+          return response.status(Response.HTTP_BAD_REQUEST).json({
+            status: Response.HTTP_BAD_REQUEST,
+            message: t('You Inactive by admin')
+          });
+        }
         const data = {
           user: user,
           accessToken: accessToken
@@ -566,6 +626,18 @@ export default class AuthController {
         const username = country_code.replace('+', '') + phone_number;
         const accessToken = await auth.use('api').attempt(username, password)
         const user: any = await User.findBy('username', username);
+        if (user?.is_deleted) {
+          return response.status(Response.HTTP_FORBIDDEN).json({
+            status: Response.HTTP_FORBIDDEN,
+            message: t('Account deleted by admin')
+          });
+        }
+        if (!user?.is_active) {
+          return response.status(Response.HTTP_BAD_REQUEST).json({
+            status: Response.HTTP_BAD_REQUEST,
+            message: t('You Inactive by admin')
+          });
+        }
         const data = {
           user: user,
           accessToken: accessToken
@@ -621,21 +693,21 @@ export default class AuthController {
   *           }
   *       }
   *     }
-  *     
+  *
   *     [When account is exists, go to Login password screen with login_type]
-  *     HTTP/1.1 202 ACCEPTED 
+  *     HTTP/1.1 202 ACCEPTED
   *     {
   *       "message": "Welcome back, John",
   *       "email": "john.doe@gmail.com",
   *       "login_type": "APPLE",
   *     }
-  * 
+  *
   *     [When account is NOT exists with Email, go to Sign up screen]
   *     HTTP/1.1 209 Created
   *     {
   *       "message": "Create Account"
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {

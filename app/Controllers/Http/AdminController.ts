@@ -40,7 +40,7 @@ export default class AdminController {
   *             }
   *         }
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 401 Unauthorized
   *     {
@@ -99,7 +99,7 @@ export default class AdminController {
   * @apiVersion 1.0.0
   * @apiName ChangePassword
   * @apiGroup Admin
-  * 
+  *
   * @apiParam {String} old_password Old Password.
   * @apiParam {String} new_password New Password.
   * @apiParam {String} confirm_password Confirm Password.
@@ -109,25 +109,25 @@ export default class AdminController {
   *     {
   *       "message": "Password changed successfully",
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Incorrect current password",
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Passwords not matched",
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
   *       "message": "Password must have 7-15 characters",
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
@@ -234,7 +234,7 @@ export default class AdminController {
   *       "hasMorePages":false,
   *       "hasPages":false
   *     }
-  * 
+  *
   * @apiErrorExample {json} Error-Response:
   *     HTTP/1.1 400 Bad Request
   *     {
@@ -249,13 +249,16 @@ export default class AdminController {
       const limit = 10;
       const offset = limit * (page - 1);
       const search = params.search;
-      const allUsers = await User.all();
+      console.log(search);
+      const allUsers = await User.query()
+        .where('is_deleted', false)
+        .exec();
       const totalNumber = allUsers.length;
       const totalPages = Math.ceil(totalNumber / 10);
 
-      let query = 'select * from users';
+      let query = 'select * from users where is_deleted=0';
       if (search) {
-        query += ' first_name like "%' + search + '%" OR last_name like "%' + search + '%" OR email like "%' + search + '%"';
+        query += 'first_name like "%' + search + '%" OR last_name like "%' + search + '%" OR email like "%' + search + '%"';
       }
       query += ' limit ' + limit + ' offset ' + offset;
       const users = await Database.rawQuery(query);

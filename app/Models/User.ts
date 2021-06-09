@@ -50,7 +50,15 @@ export default class User extends BaseModel {
   public password: string
 
   @column()
-  public device_type: string
+  public device_type: string;
+  @column()
+  public is_active: boolean;
+  @column()
+  public is_deleted: boolean;
+  @column()
+  public is_verified: boolean;
+  @column()
+  public is_id_verified: boolean;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
