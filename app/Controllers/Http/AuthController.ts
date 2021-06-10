@@ -89,7 +89,7 @@ export default class AuthController {
       if (user) {
         if (user.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            message: t('Invalid Credentials')
+            message: t('Your account is inactive, please contact Admin')
           });
         }
         if (!user.is_active) {
@@ -122,6 +122,11 @@ export default class AuthController {
         });
       }
       const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
+      if (!(/^\d+$/.test(phone_number))) {
+        return response.status(Response.HTTP_BAD_REQUEST).json({
+          message: t('Invalid phone number'),
+        });
+      }
       const country_code = request.input("country_code");
       const username = country_code.replace('+', '') + phone_number;
       const phoneUser = await User.findBy('username', username);
