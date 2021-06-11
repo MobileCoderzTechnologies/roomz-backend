@@ -15,50 +15,18 @@ export default class UsersController {
 
       const queryString = request.qs();
       const usersQuery = User.query().where('is_deleted', 0);
-
       const apiFeatures = new ApiFeatures(usersQuery, queryString)
-        .searching(['first_name','last_name'])
+        .filtering()
+        .searching(['first_name', 'last_name', 'email'])
         .sorting('created_at')
         .pagination();
 
       const users = await apiFeatures.query;
 
-      // console.log(users);
-
       return response.status(Response.HTTP_OK).json({
         users
       })
-      // const params = request.qs();
-      // const page = Number.isInteger(Number(params.page)) ? Number(params.page) : 1;
-      // const limit = 10;
-      // const offset = limit * (page - 1);
-      // const search = params.search;
-      // // console.log(search);
-      // const allUsers = await User.query()
-      //   .where('is_deleted', false)
-      //   .exec();
-      // const totalNumber = allUsers.length;
-      // const totalPages = Math.ceil(totalNumber / 10);
 
-      // let query = 'select * from users where is_deleted=0';
-      // if (search) {
-      //   query = 'select * from users where is_deleted=0 AND (first_name like "%' + search + '%" OR last_name like "%' + search + '%" OR email like "%' + search + '%")';
-      // }
-      // query += ' limit ' + limit + ' offset ' + offset;
-      // const users = await Database.rawQuery(query);
-
-      // return response.status(Response.HTTP_OK).json({
-      //   users: users[0],
-      //   totalNumber: totalNumber,
-      //   perPage: limit,
-      //   currentPage: page,
-      //   firstPage: 1,
-      //   isEmpty: totalNumber === 0,
-      //   totalPages: totalPages,
-      //   lastPage: totalPages,
-      //   hasMorePages: totalPages !== 1 && totalPages !== page,
-      //   hasPages: totalPages !== 1
-      // });
     } catch (e) {
       console.log(e)
       return response.status(Response.HTTP_BAD_REQUEST).json({

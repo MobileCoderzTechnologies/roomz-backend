@@ -7,7 +7,23 @@ export class ApiFeatures {
   }
 
   filtering() {
+    const queryObj = { ...this.queryString };
+    const deletedFields = ['sort', 'page', 'pageSize', 'search'];
 
+    deletedFields.forEach(item => delete queryObj[item]);
+
+    for (const key in queryObj) {
+      if (typeof queryObj[key] === 'string') {
+        this.query = this.query.where(key, queryObj[key]);
+      }
+
+      if (typeof queryObj[key] === 'object') {
+        const logical = Object.keys(queryObj[key])[0];
+        const logicalValue = Object.values(queryObj[key])[0];
+        this.query = this.query.where(key, logical, logicalValue);
+      }
+    }
+    return this;
   }
 
   pagination() {
@@ -33,17 +49,21 @@ export class ApiFeatures {
 
   }
 
-  count() {
-    this.query = this.query.getCount();
-    return this;
-  }
 
   searching(fields: String[]) {
+    console.log('search')
     if (this.queryString.search) {
       const search = this.queryString.search;
-      // fields.forEach(filed => {
-        this.query = this.query.where(fields[1], 'LIKE', '%', +search + '%');
-      // });
+      let searchQuery = `${fields[0]} LIKE '%${search}%'`;
+      if (fields.length > 1) {
+        for (let i = 1; i < fields.length; i++) {
+          searchQuery += ` OR ${fields[i]} LIKE '%${search}%'`;
+        }
+        console.log(searchQuery);
+      }
+      this.query = this.query.whereRaw(searchQuery);
+
+
     }
     return this;
   }
