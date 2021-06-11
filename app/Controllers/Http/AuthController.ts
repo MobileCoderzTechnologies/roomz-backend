@@ -97,11 +97,22 @@ export default class AuthController {
             message: t('Your account is inactive, please contact Admin')
           });
         }
-        return response.status(Response.HTTP_ACCEPTED).json({
-          login_type: user.login_type,
-          email: user.email,
-          message: t("Welcome back, %s", user.first_name)
-        });
+        if (user.login_type === 'PHONE') {
+          return response.status(Response.HTTP_ACCEPTED).json({
+            phone_number: user.phone_number,
+            country_code: user.country_code,
+            login_type: user.login_type,
+            email: user.email,
+            message: t("Welcome back, %s", user.first_name)
+          });
+        } else {
+          return response.status(Response.HTTP_ACCEPTED).json({
+            login_type: user.login_type,
+            email: user.email,
+            message: t("Welcome back, %s", user.first_name)
+          });
+
+        }
       } else {
         return response.status(Response.HTTP_USER_NOT_FOUND).json({
           message: t("Create Account")
@@ -419,10 +430,10 @@ export default class AuthController {
         rules.maxLength(255),
       ]),
       first_name: schema.string({ trim: true }, [
-        rules.maxLength(15),
+        rules.maxLength(50),
       ]),
       last_name: schema.string({ trim: true }, [
-        rules.maxLength(15),
+        rules.maxLength(50),
       ]),
       login_type: schema.string({ trim: true })
     })
