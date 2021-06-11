@@ -84,7 +84,7 @@ export default class AuthController {
           message: t('Invalid Email Address'),
         });
       }
-      const email = request.input('email');
+      const email = request.input('email').toLowerCase();
       const user = await User.findBy('email', email.trim());
       if (user) {
         if (user.is_deleted) {
@@ -450,7 +450,7 @@ export default class AuthController {
     const country_code = request.input("country_code");
     const first_name = request.input('first_name');
     const last_name = request.input('last_name');
-    const email = request.input('email');
+    const email = request.input('email').toLowerCase();
     const password = request.input('password');
     const dob = request.input('dob');
     const avatar = request.input('avatar');
@@ -576,7 +576,7 @@ export default class AuthController {
 
     const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
     const country_code = request.input("country_code");
-    const email = request.input('email');
+    const email = request.input('email').toLowerCase();
     const password = request.input('password');
     if (email) {
       const validatoionSchema = schema.create({
@@ -730,7 +730,7 @@ export default class AuthController {
     try {
       const social_id = request.input('social_id');
       const social_token = request.input('social_token');
-      const email = request.input('email');
+      const email = request.input('email').toLowerCase();
       const login_type = request.input('login_type');
       const social_platform_id = login_type.toLowerCase() + '_id';
       const social_platform_token = login_type.toLowerCase() + '_token';
