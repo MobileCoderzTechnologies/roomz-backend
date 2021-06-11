@@ -48,6 +48,7 @@ Route.group(() => {
 /******************* Admin Controller Authorized ******************/
 Route.group(() => {
   Route.post('change-password', 'AdminController.changePassword');
+  Route.get('users', 'admin/UserController.getUsersList');
   Route.delete('delete-user/:userId', 'admin/UserController.deleteUser');
   Route.put('toggle-status/:userId', 'admin/UserController.toggleStatus');
 
