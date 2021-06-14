@@ -5,10 +5,35 @@ import Response from "App/Helpers/Response";
 import User from "App/Models/User";
 // Transaltion
 import i18n from 'App/Helpers/i18n';
+import { ApiFeatures } from 'App/utils/apiFeatures';
 // import Database from '@ioc:Adonis/Lucid/Database';
 const t = i18n.__;
 export default class UsersController {
 
+  async getUsersList({ request, response }: HttpContextContract) {
+    try {
+
+      const queryString = request.qs();
+      const usersQuery = User.query().where('is_deleted', 0);
+      const apiFeatures = new ApiFeatures(usersQuery, queryString)
+        .filtering()
+        .searching(['first_name', 'last_name', 'email'])
+        .sorting('created_at')
+        .pagination();
+
+      const users = await apiFeatures.query;
+
+      return response.status(Response.HTTP_OK).json({
+        users
+      })
+
+    } catch (e) {
+      console.log(e)
+      return response.status(Response.HTTP_BAD_REQUEST).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
   async deleteUser({ response, params }: HttpContextContract) {
     try {
       const userId = params.userId;
