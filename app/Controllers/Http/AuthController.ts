@@ -89,7 +89,7 @@ export default class AuthController {
       if (user) {
         if (user.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
-            message: t('Your account is inactive, please contact Admin')
+            message: t('Invalid credentials')
           });
         }
         if (!user.is_active) {
@@ -347,7 +347,7 @@ export default class AuthController {
       }
     } else if (otpRes && typeof otpRes.status === 'string' && otpRes.valid === false) {
       return response.status(Response.HTTP_BAD_REQUEST).json({
-        message: t('Incorrect OTP')
+        message: t('Invalid verification code')
       });
     } else if (otpRes && otpRes.status === 404) {
       return response.status(Response.HTTP_OTP_EXPIRED).json({
@@ -460,6 +460,18 @@ export default class AuthController {
     const social_platform_id = login_type.toLowerCase() + '_id';
     const social_platform_token = login_type.toLowerCase() + '_token';
     const alreadyExists = await User.findBy('email', email.trim());
+
+    const [dd, mm, yyyy] = dob.split('-');
+    const birthday = new Date(`${mm} ${dd} ${yyyy}`);
+    const birthdayTime = birthday.getTime();
+    const minRequiredAgeTime = (13 * 365 * 24 * 60 * 60 * 1000) + (3 * 24 * 60 * 60 * 1000);
+    const currentTime = new Date().getTime();
+    const timeDiff = currentTime - birthdayTime;
+    if (timeDiff < minRequiredAgeTime) {
+      return response.status(Response.HTTP_BAD_REQUEST).json({
+        message: t('Age should be greater then 13 years')
+      });
+    }
     if (alreadyExists) {
       if (alreadyExists.is_deleted) {
         return response.status(Response.HTTP_FORBIDDEN).json({
