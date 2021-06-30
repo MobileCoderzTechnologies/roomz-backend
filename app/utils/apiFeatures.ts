@@ -1,3 +1,4 @@
+
 export class ApiFeatures {
   query: any;
   queryString: any;
@@ -33,7 +34,7 @@ export class ApiFeatures {
     return this;
   }
 
-  sorting(defaultSort: string) {
+  sorting(defaultSort: string, sortOrder: 'desc' | 'asc' = 'desc') {
     if (this.queryString.sort) {
       let sort = this.queryString.sort;
       if (sort.startsWith('-')) {
@@ -43,7 +44,7 @@ export class ApiFeatures {
         this.query = this.query.orderBy(sort, 'asc');
       }
     } else {
-      this.query = this.query.orderBy(defaultSort, 'desc');
+      this.query = this.query.orderBy(defaultSort, sortOrder);
     }
     return this;
 
@@ -59,11 +60,8 @@ export class ApiFeatures {
         for (let i = 1; i < fields.length; i++) {
           searchQuery += ` OR ${fields[i]} LIKE '%${search}%'`;
         }
-        console.log(searchQuery);
       }
       this.query = this.query.whereRaw(searchQuery);
-
-
     }
     return this;
   }

@@ -24,5 +24,6 @@
 	"OTP expired": "OTP expired",
 	"Your account is inactive, please contact Admin": "Your account is inactive, please contact Admin",
 	"Invalid Credentials": "Invalid Credentials",
-	"Create Account": "Create Account"
+	"Create Account": "Create Account",
+	"User status updated": "User status updated"
 }
