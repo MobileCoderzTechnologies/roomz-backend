@@ -41,8 +41,8 @@ Route.group(() => {
 
 
 Route.group(() => {
-  Route.get('bed-types', 'user/HostingController.getBedTypes');
-  Route.get('property-types', 'user/HostingController.getPropertyTypes');
+  Route.get('bed-types', 'User/HostingController.getBedTypes');
+  Route.get('property-types', 'User/HostingController.getPropertyTypes');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 
@@ -54,9 +54,9 @@ Route.group(() => {
 /******************* Admin Controller Authorized ******************/
 Route.group(() => {
   Route.post('change-password', 'AdminController.changePassword');
-  Route.get('users', 'admin/UserController.getUsersList');
-  Route.delete('delete-user/:userId', 'admin/UserController.deleteUser');
-  Route.put('toggle-status/:userId', 'admin/UserController.toggleStatus');
+  Route.get('users', 'Admin/UserController.getUsersList');
+  Route.delete('delete-user/:userId', 'Admin/UserController.deleteUser');
+  Route.put('toggle-status/:userId', 'Admin/UserController.toggleStatus');
 
   Route.get('users-list', 'AdminController.getUsersList');
 }).prefix("admin").middleware(['locale', 'auth']);
