@@ -12,10 +12,17 @@ export default class UserActive {
       .where({ uid: userId })
       .first();
 
-    if(user && !user.is_active){
+    if (user && user.is_deleted) {
+      return response.status(Response.HTTP_UNAUTHORIZED).json({
+        status: Response.HTTP_UNAUTHORIZED,
+        message: t('Please login again')
+      })
+    }
+
+    if (user && !user.is_active) {
       return response.status(Response.HTTP_BAD_REQUEST).json({
         status: Response.HTTP_BAD_REQUEST,
-        message: t('You Inactive by admin')
+        message: t('Your account is inactive, please contact Admin')
       });
     }
     await next()

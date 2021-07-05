@@ -40,6 +40,12 @@ Route.group(() => {
 }).prefix("auth").middleware('locale');
 
 
+Route.group(() => {
+  Route.get('bed-types', 'user/HostingController.getBedTypes');
+  Route.get('property-types', 'user/HostingController.getPropertyTypes');
+}).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
+
+
 /************************ Admin Controller ************************/
 Route.group(() => {
   Route.post('login', 'AdminController.login');

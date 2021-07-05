@@ -25,7 +25,7 @@ export default class UsersController {
 
       return response.status(Response.HTTP_OK).json({
         users
-      })
+      });
 
     } catch (e) {
       console.log(e)

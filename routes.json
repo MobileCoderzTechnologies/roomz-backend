@@ -64,6 +64,30 @@
       "middleware": [
         "locale"
       ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "name": "",
+      "pattern": "/user/hosting/bed-types",
+      "handler": "user/HostingController.getBedTypes",
+      "middleware": [
+        "locale",
+        "auth"
+      ]
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "name": "",
+      "pattern": "/user/hosting/property-types",
+      "handler": "user/HostingController.getPropertyTypes",
+      "middleware": [
+        "locale",
+        "auth"
+      ]
     }
   ]
 }
