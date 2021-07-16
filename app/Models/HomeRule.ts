@@ -1,24 +1,21 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-export default class Amenity extends BaseModel {
+export default class HomeRule extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
-
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  public id: number;
 
   @column()
   public uid: string;
 
   @column()
-  public type: 'space'|'safety'|'normal';
-
-  @column()
-  public name: string;
+  public rule: string;
 
   @column()
   public description: string;
+
+  @column.dateTime({ autoCreate: true })
+  public createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
