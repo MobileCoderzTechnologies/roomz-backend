@@ -2,6 +2,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Response from "App/Helpers/Response";
 import BedType from "App/Models/BedType";
 import PropertyType from "App/Models/PropertyType";
+import Amenity from "App/Models/Amenity";
 // Transaltion
 import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
@@ -126,11 +127,11 @@ export default class HostingController {
     */
   async getPropertyTypes({ response }: HttpContextContract) {
     try {
-      const propertyList = await PropertyType.query()
-        .select('id', 'uid', 'property_type')
+      const amenityList = await Amenity.query()
+        .select('id', 'uid', 'name', 'description', 'type')
         .finally();
       return response.status(Response.HTTP_OK).json({
-        data: propertyList
+        data: amenityList
       })
     } catch (error) {
       console.log(error)
@@ -139,6 +140,87 @@ export default class HostingController {
       });
     }
   }
+
+  /**
+    * @api {get} /user/hosting/amenities Amenity List
+    * @apiHeader {String} Device-Type Device Type ios/android.
+    * @apiHeader {String} App-Version Version Code 1.0.0.
+    * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+    * @apiVersion 1.0.0
+    * @apiName Amenities
+    * @apiGroup Hosting
+    *
+    * @apiSuccessExample {json} Success-Response:
+    *     HTTP/1.1 200 OK
+    *     {
+    *    "data": [
+    *     {
+    *       "id": 1,
+    *        "uid": "f18580fe-28b0-4954-8d07-7d2f0c40d57f",
+    *        "name": "Wifi",
+    *        "type": "normal",
+    *        "description": null
+    *    },
+    *    {
+    *        "id": 17,
+    *        "uid": "696032f1-b749-4629-a8fe-cde62bde6b4f",
+    *        "name": "Smoke Alarm",
+    *        "type": "safety",
+    *        "description": "Check your local lows which may require a working smoke *detector in every room"
+    *    },
+    *    {
+    *        "id": 18,
+    *        "uid": "8582c261-a945-444e-bf35-38877ec72d11",
+    *        "name": "Carbon monoxide Alarm",
+    *        "type": "safety",
+    *        "description": "Check your local lows which may require a working carbon *monoxide detector in every room"
+    *   },
+    *    {
+    *        "id": 19,
+    *        "uid": "af617c01-8a12-48f5-8e86-1038a630f58a",
+    *        "name": "Lock on Bedroom door",
+    *        "type": "safety",
+    *        "description": "Private room can be locked for safety and privacy"
+    *    },
+    *    {
+    *        "id": 20,
+    *        "uid": "20963d0b-8701-44bf-98c5-349544a76034",
+    *        "name": "Kitchen",
+    *        "type": "space",
+    *         "description": "Space where guests can cook their own meal"
+    *    },
+    * ...
+    * ...
+    * ...
+    *   ]
+    *  }
+    * @apiErrorExample {json} Error-Response:
+    *
+    *     HTTP/1.1 500 Internal Serve Error
+    *     {
+    *        "message": "Something went wrong"
+    *      }
+    *
+    */
+  async getAmenities({ response }: HttpContextContract) {
+    try {
+      const aminityList = await Amenity.query()
+        .select('id', 'uid', 'name', 'type', 'description')
+        .finally();
+      return response.status(Response.HTTP_OK).json({
+        data: aminityList
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
+
+
+
 
 
 }

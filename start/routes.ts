@@ -43,6 +43,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get('bed-types', 'User/HostingController.getBedTypes');
   Route.get('property-types', 'User/HostingController.getPropertyTypes');
+  Route.get('amenities', 'User/HostingController.getAmenities');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 
