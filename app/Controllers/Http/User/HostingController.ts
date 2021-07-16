@@ -127,11 +127,11 @@ export default class HostingController {
     */
   async getPropertyTypes({ response }: HttpContextContract) {
     try {
-      const amenityList = await Amenity.query()
-        .select('id', 'uid', 'name', 'description', 'type')
+      const propertyList = await PropertyType.query()
+        .select('id', 'uid', 'property_type')
         .finally();
       return response.status(Response.HTTP_OK).json({
-        data: amenityList
+        data: propertyList
       })
     } catch (error) {
       console.log(error)
