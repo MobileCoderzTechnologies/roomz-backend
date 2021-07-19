@@ -21,6 +21,26 @@ export default class BedTypeSeeder extends BaseSeeder {
         'bed_type': 'sofa bed',
         'uid': uuid()
       },
+      {
+        'bed_type': 'king',
+        'uid': uuid()
+      },
+      {
+        'bed_type': 'small double',
+        'uid': uuid()
+      },
+      {
+        'bed_type': 'couch',
+        'uid': uuid()
+      },
+      {
+        'bed_type': 'bunk bed',
+        'uid': uuid()
+      },
+      {
+        'bed_type': 'floor matters',
+        'uid': uuid()
+      },
     ])
   }
 }
