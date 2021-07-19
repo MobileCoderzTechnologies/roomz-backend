@@ -3,7 +3,7 @@ import Response from "App/Helpers/Response";
 import BedType from "App/Models/BedType";
 import PropertyType from "App/Models/PropertyType";
 import Amenity from "App/Models/Amenity";
-import HomeRule from "App/Models/HomeRule";
+import HomeDetail from "App/Models/HomeDetail";
 // Transaltion
 import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
@@ -222,13 +222,13 @@ export default class HostingController {
 
 
   /**
-    * @api {get} /user/hosting/home-rules Home Rule
+    * @api {get} /user/hosting/home-details Home Details
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
     * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
     * @apiVersion 1.0.0
-    * @apiName home-rule
+    * @apiName home-details
     * @apiGroup Hosting
     *
     * @apiSuccessExample {json} Success-Response:
@@ -238,25 +238,25 @@ export default class HostingController {
     *   {
     *        "id": 1,
     *        "uid": "954e2ffe-ab0a-4b19-bc87-99eb058228a8",
-    *        "rule": "Must Climb Stairs",
+    *        "name": "Must Climb Stairs",
     *        "description": "Describe the stairs(for example, how many flights)"
     *    },
     *    {
     *        "id": 2,
     *        "uid": "019af93c-e1d6-420d-9c4d-b4246ee4b7ff",
-    *        "rule": "Potential for noise",
+    *        "name": "Potential for noise",
     *        "description": null
     *    },
     *    {
     *        "id": 3,
     *        "uid": "37e68fe7-3fc7-472c-99c9-5428f66159d5",
-    *        "rule": "Pet(s) live on property",
+    *        "name": "Pet(s) live on property",
     *        "description": null
     *    },
     *    {
     *        "id": 4,
     *        "uid": "bcbaf4ce-6839-4b66-b44b-d35293106e8f",
-    *        "rule": "No parking on property",
+    *        "name": "No parking on property",
     *        "description": null
     *    },
     * .
@@ -277,11 +277,11 @@ export default class HostingController {
     */
   async getHomeRule({ response }: HttpContextContract) {
     try {
-      const ruleList = await HomeRule.query()
-        .select('id', 'uid', 'rule', 'description')
+      const homeDetailsList = await HomeDetail.query()
+        .select('id', 'uid', 'name', 'description')
         .finally();
       return response.status(Response.HTTP_OK).json({
-        data: ruleList
+        data: homeDetailsList
       })
     } catch (error) {
       console.log(error)
