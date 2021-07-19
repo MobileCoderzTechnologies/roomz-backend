@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-export default class HomeRule extends BaseModel {
+export default class HomeDetail extends BaseModel {
   @column({ isPrimary: true })
   public id: number;
 
@@ -9,13 +9,13 @@ export default class HomeRule extends BaseModel {
   public uid: string;
 
   @column()
-  public rule: string;
+  public name: string;
 
   @column()
   public description: string;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
