@@ -8,11 +8,11 @@ export default class PropertyBeds extends BaseSchema {
       table.increments('id');
       table.uuid('uid');
       table.integer('bed_id').unsigned().nullable();
-      table.uuid('property_id').unsigned().nullable();
+      table.integer('property_id').unsigned().nullable();
       table.string('bedroom_name', 255).nullable();
-      table.boolean('is_common_space').notNullable();
+      table.boolean('is_common_space').nullable().defaultTo(false);
       table.integer('count').notNullable().defaultTo(1);
-      table.timestamps(true)
+      table.timestamps(true);
     })
   }
 
