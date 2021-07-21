@@ -9,7 +9,7 @@ export default class PropertyHouseRule extends BaseModel {
   public uid: string;
 
   @column()
-  public home_rule_uid: string;
+  public home_rule_id: number;
 
   @column()
   public property_uid: string;

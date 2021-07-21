@@ -9,7 +9,7 @@ export default class PropertyListing extends BaseModel {
   public uid: string;
 
   @column()
-  public property_type: string;
+  public property_type: number;
 
   @column()
   public is_beach_house: boolean;

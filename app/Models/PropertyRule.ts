@@ -12,7 +12,7 @@ export default class PropertyRule extends BaseModel {
   public property_uid: string;
 
   @column()
-  public rule_uid: string;
+  public rule_id: number;
 
   @column()
   public is_cancelled: boolean;

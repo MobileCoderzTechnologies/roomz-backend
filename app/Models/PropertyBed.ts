@@ -9,7 +9,7 @@ export default class PropertyBed extends BaseModel {
   public uid: string;
 
   @column()
-  public bed_uid: string;
+  public bed_id: number;
 
   @column()
   public property_uid: string;
