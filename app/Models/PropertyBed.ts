@@ -12,7 +12,7 @@ export default class PropertyBed extends BaseModel {
   public bed_id: number;
 
   @column()
-  public property_uid: string;
+  public property_id: number;
 
   @column()
   public is_common_space: boolean;

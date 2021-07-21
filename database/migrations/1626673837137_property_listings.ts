@@ -7,10 +7,15 @@ export default class PropertyListings extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.uuid('uid');
-      table.integer('property_type').notNullable();
+      table.integer('property_type').unsigned().nullable();
       table.boolean('is_beach_house').nullable();
-      table.boolean('is_dedicated_guest_space').notNullable();
-      table.boolean('is_host_describes').notNullable();
+      table.boolean('is_dedicated_guest_space').notNullable().defaultTo(false);
+      table.boolean('is_business_hosting').notNullable().defaultTo(false);
+
+      table.integer('no_of_guests').notNullable().defaultTo(0);
+      table.integer('no_of_bedrooms').notNullable().defaultTo(0);
+      table.integer('no_of_bathrooms').notNullable().defaultTo(0);
+
       // address 
       table.string('country',255).nullable();
       table.string('address_optional', 255).nullable();
@@ -71,6 +76,7 @@ export default class PropertyListings extends BaseSchema {
 
       table.boolean('is_draft').defaultTo(true);
       table.boolean('is_completed').defaultTo(false);
+      table.boolean('is_deleted').defaultTo(false);
 
       table.timestamps(true)
     })

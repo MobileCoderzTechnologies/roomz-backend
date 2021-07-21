@@ -7,8 +7,8 @@ export default class PropertyRules extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.uuid('uid');
-      table.uuid('property_uid').notNullable();
-      table.integer('rule_id').nullable();
+      table.integer('property_id').unsigned().nullable();
+      table.integer('rule_id').unsigned().nullable();
       table.boolean('is_cancelled').nullable();
       table.string('cancel_reason').nullable();
       table.boolean('is_additional').nullable();

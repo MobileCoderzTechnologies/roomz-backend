@@ -12,7 +12,7 @@ export default class PropertyHouseRule extends BaseModel {
   public home_rule_id: number;
 
   @column()
-  public property_uid: string;
+  public property_id: number;
 
 
   @column.dateTime({ autoCreate: true })

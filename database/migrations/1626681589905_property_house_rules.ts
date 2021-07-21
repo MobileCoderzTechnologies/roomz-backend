@@ -7,8 +7,8 @@ export default class PropertyHouseRules extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.uuid('uid');
-      table.integer('home_rule_id').notNullable();
-      table.string('property_uid', 255).notNullable();
+      table.integer('home_rule_id').unsigned().nullable();
+      table.integer('property_id').unsigned().nullable();
       table.timestamps(true)
     })
   }

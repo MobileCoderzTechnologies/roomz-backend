@@ -9,7 +9,7 @@ export default class PropertyDetail extends BaseModel {
   public uid: string;
 
   @column()
-  public property_uid: string;
+  public property_id: number;
 
   @column()
   public detail_id: number;

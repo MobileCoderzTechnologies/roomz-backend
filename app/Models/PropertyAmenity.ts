@@ -9,10 +9,10 @@ export default class PropertyAmenity extends BaseModel {
   public uid: string;
 
   @column()
-  public property_uid: string;
+  public property_id: number;
 
   @column()
-  public amenity_uid: string;
+  public amenity_id: number;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

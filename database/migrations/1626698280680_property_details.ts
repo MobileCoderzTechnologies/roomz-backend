@@ -7,8 +7,8 @@ export default class PropertyDetails extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.uuid('uid');
-      table.uuid('property_uid').notNullable();
-      table.integer('detail_id').notNullable();
+      table.integer('property_id').unsigned().nullable();
+      table.integer('detail_id').unsigned().nullable();
       table.string('explanation', 255).nullable();
       table.timestamps(true)
     })

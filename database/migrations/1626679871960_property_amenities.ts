@@ -6,9 +6,8 @@ export default class PropertyAmenities extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
-      table.uuid('uid');
-      table.uuid('property_uid').notNullable();
-      table.uuid('amenity_uid').notNullable();
+      table.integer('property_id').unsigned().nullable();
+      table.integer('amenity_id').unsigned().nullable();
       table.timestamps(true)
     })
   }

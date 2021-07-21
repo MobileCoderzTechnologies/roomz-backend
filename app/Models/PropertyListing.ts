@@ -18,7 +18,7 @@ export default class PropertyListing extends BaseModel {
   public is_dedicated_guest_space: boolean;
 
   @column()
-  public is_host_describes: boolean;
+  public is_business_hosting: boolean;
 
   @column()
   public no_of_guests: number;
@@ -165,6 +165,9 @@ export default class PropertyListing extends BaseModel {
 
   @column()
   public is_completed: boolean;
+
+  @column()
+  public is_deleted: boolean;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
