@@ -37,6 +37,8 @@ Route.group(() => {
   Route.post('login', 'AuthController.login');
 
   Route.post('social-login', 'AuthController.socialLogin');
+
+
 }).prefix("auth").middleware('locale');
 
 
@@ -45,6 +47,8 @@ Route.group(() => {
   Route.get('property-types', 'User/HostingController.getPropertyTypes');
   Route.get('amenities', 'User/HostingController.getAmenities');
   Route.get('home-details', 'User/HostingController.getHomeRule');
+
+  Route.post('add-property/type','User/PropertyController.addPropertyType');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 
