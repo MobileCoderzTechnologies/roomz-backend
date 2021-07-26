@@ -1,7 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Response from "App/Helpers/Response";
 import PropertyListing from 'App/Models/PropertyListing';
-import { schema, rules } from '@ioc:Adonis/Core/Validator';
+import { schema} from '@ioc:Adonis/Core/Validator';
 // Transaltion
 import i18n from 'App/Helpers/i18n';
 import { v4 as uuid } from "uuid";

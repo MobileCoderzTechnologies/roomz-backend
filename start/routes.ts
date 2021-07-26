@@ -46,7 +46,8 @@ Route.group(() => {
   Route.get('bed-types', 'User/HostingController.getBedTypes');
   Route.get('property-types', 'User/HostingController.getPropertyTypes');
   Route.get('amenities', 'User/HostingController.getAmenities');
-  Route.get('home-details', 'User/HostingController.getHomeRule');
+  Route.get('home-details', 'User/HostingController.getHomeDetails');
+  Route.get('home-rules', 'User/HostingController.getHomeRule');
 
   Route.post('add-property/type','User/PropertyController.addPropertyType');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);

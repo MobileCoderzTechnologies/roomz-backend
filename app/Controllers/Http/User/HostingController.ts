@@ -4,6 +4,7 @@ import BedType from "App/Models/BedType";
 import PropertyType from "App/Models/PropertyType";
 import Amenity from "App/Models/Amenity";
 import HomeDetail from "App/Models/HomeDetail";
+import HomeRule from "App/Models/HomeRule";
 // Transaltion
 import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
@@ -275,7 +276,7 @@ export default class HostingController {
     *      }
     *
     */
-  async getHomeRule({ response }: HttpContextContract) {
+  async getHomeDetails({ response }: HttpContextContract) {
     try {
       const homeDetailsList = await HomeDetail.query()
         .select('id', 'uid', 'name', 'description')
@@ -290,6 +291,78 @@ export default class HostingController {
       });
     }
   }
+
+
+  /**
+    * @api {get} /user/hosting/home-rules Home Rules
+    * @apiHeader {String} Device-Type Device Type ios/android.
+    * @apiHeader {String} App-Version Version Code 1.0.0.
+    * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+    * @apiVersion 1.0.0
+    * @apiName home-rules
+    * @apiGroup Hosting
+    *
+    * @apiSuccessExample {json} Success-Response:
+    *   HTTP/1.1 200 OK
+    *   {
+    *     "data": [
+    *   {
+    *        "id": 1,
+    *        "uid": "b2607d2a-2b10-4504-8872-f9b0ab1a986e",
+    *        "rule": "Suitable for children (2-12)"
+    *    },
+    *    {
+    *        "id": 2,
+    *        "uid": "f7e7a7c0-dac8-4c18-a908-e0677d1d8756",
+    *        "rule": "Suitable for infants (under 2)"
+    *    },
+    *    {
+    *        "id": 3,
+    *        "uid": "52e7952a-afea-4789-924b-43c883016dff",
+    *        "rule": "Suitable for pets"
+    *    },
+    *    {
+    *        "id": 4,
+    *        "uid": "26e24756-e13d-47eb-a6bb-f6f0470c428d",
+    *        "rule": "Smoking allowed"
+    *    },
+    *    {
+    *        "id": 5,
+    *        "uid": "a14a9afc-140b-4ea0-971f-5dc8d3fd54db",
+    *        "rule": "Events allowed"
+    *    }
+    *     ]
+    *   }
+    *     
+    *    
+    *  }
+    * @apiErrorExample {json} Error-Response:
+    *
+    *     HTTP/1.1 500 Internal Serve Error
+    *     {
+    *        "message": "Something went wrong"
+    *      }
+    *
+    */
+  async getHomeRule({ response }: HttpContextContract) {
+    try {
+      const homeRuleList = await HomeRule.query()
+        .select('id', 'uid', 'rule')
+        .finally();
+      return response.status(Response.HTTP_OK).json({
+        data: homeRuleList
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
+
+
+
 
 
 
