@@ -6,7 +6,7 @@
     "build": "node ace build --production",
     "start": "node server.js",
     "dev": "node ace serve --watch",
-    "debug": "ndb ace serve --watch",
+    "debug": "ndb ace serve",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write ."
   },
