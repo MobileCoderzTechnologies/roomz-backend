@@ -51,6 +51,8 @@ Route.group(() => {
 
   Route.post('list-property/type','User/PropertyController.addPropertyType');
   Route.put('list-property/beds/:id', 'User/PropertyController.addBeds');
+  Route.put('list-property/address/:id', 'User/PropertyController.addPropertyAddress');
+  Route.put('list-property/location/:id', 'User/PropertyController.addPropertyLocation');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 

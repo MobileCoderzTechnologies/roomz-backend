@@ -301,8 +301,341 @@ export default class PropertyController {
                 message: t('Something went wrong')
             });
         }
-
-
-
     }
+
+/**
+* @api {put} /user/hosting/list-property/address/:id Add Address
+* @apiHeader {String} Device-Type Device Type ios/android.
+* @apiHeader {String} App-Version Version Code 1.0.0.
+* @apiHeader {String} Accept-Language Language Code en OR ar.
+* @apiVersion 1.0.0
+* @apiName address
+* @apiGroup List Property
+*
+* @apiParam {Number} id Property unique ID
+* 
+* @apiParam {String} country property located in country
+* @apiParam {String} street  house name/number street/road
+* @apiParam {String} [address_optional] Flat, Suite etc.  
+* @apiParam {String} city Name of City.
+* @apiParam {String} state 
+* @apiParam {String} zip_code 
+* 
+* @apiParamExample {json} Request-Example:
+* {
+*    "country": "India",
+*    "city": "Noida",
+*    "street": "Noida Sector 63",
+*    "state": "UP",
+*    "zip_code": "300221",
+*    "address_optional": "H Block"
+* }
+*
+* @apiSuccessExample {json} Success-Response:
+*     HTTP/1.1 201 Created
+*     
+* {
+*    "message": "Property address updated",
+*    "data": [
+*        {
+*            "id": 2,
+*            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+*            "property_type": 1,
+*            "is_beach_house": 0,
+*            "is_dedicated_guest_space": 1,
+*            "is_business_hosting": 1,
+*            "no_of_guests": 2,
+*            "no_of_bedrooms": 1,
+*            "no_of_bathrooms": 2,
+*            "country": "India",
+*            "street": "Noida Sector 63",
+*            "address_optional": "H Block",
+*            "state": "UP",
+*            "city": "Noida",
+*            "zip_code": "300221",
+*            "type": {
+*                "id": 1,
+*                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
+*                "property_type": "Villa",
+*            },
+*            "beds": [
+*                {
+*                    "bed_id": 1,
+*                    "property_id": 2,
+*                    "bedroom_name": "Common Space",
+*                    "is_common_space": 1,
+*                    "count": 2,
+*                },
+*                {
+*                    "bed_id": 2,
+*                    "property_id": 2,
+*                    "bedroom_name": "BedRoom 1",
+*                    "is_common_space": 0,
+*                    "count": 2,
+*                },
+*                {
+*                    "bed_id": 2,
+*                    "property_id": 2,
+*                    "bedroom_name": "BedRoom 1",
+*                    "is_common_space": 0,
+*                    "count": 2
+*                }
+*            ]
+*        }
+*    ]
+* }
+*
+* @apiErrorExample {json} Error-Response:
+*
+*     HTTP/1.1 400 Bad Request
+*     {
+*    "message": "validation Failed",
+*    "error": {
+*        "state": [
+*            "minLength validation failed"
+*        ]
+*    }
+*   }
+*
+*/
+
+
+    async addPropertyAddress({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                country: schema.string({ trim: true }, [
+                    rules.minLength(2),
+                ]),
+                street: schema.string({ trim: true }, [
+                    rules.minLength(2),
+                ]),
+                city: schema.string({ trim: true }, [
+                    rules.minLength(2),
+                ]),
+                state: schema.string({ trim: true }, [
+                    rules.minLength(2),
+                ]),
+                zip_code: schema.string({ trim: true }, [
+                    rules.minLength(3),
+                ])
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const address = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(address);
+
+            const property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code'
+                )
+                .preload('type', builder => builder.select('id', 'uid', 'property_type'))
+                .preload('beds', builder => builder.select('bed_id', 'property_id', 'bedroom_name', 'is_common_space', 'count'))
+                .finally();
+
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property address added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+    /**
+* @api {put} /user/hosting/list-property/location/:id Add Location
+* @apiHeader {String} Device-Type Device Type ios/android.
+* @apiHeader {String} App-Version Version Code 1.0.0.
+* @apiHeader {String} Accept-Language Language Code en OR ar.
+* @apiVersion 1.0.0
+* @apiName location
+* @apiGroup List Property
+*
+* @apiParam {Number} id Property unique ID
+* 
+* @apiParam {Number} longitude Ex 10.24
+* @apiParam {Number} latitude  Ex 20.135
+* @apiParam {String} location A-121, Sec-63 Noida, Utter Pradesh 201301.  
+* 
+* 
+* @apiParamExample {json} Request-Example:
+* {
+*    "longitude": 10.24,
+*    "latitude": 20.134,
+*    "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+* }
+*
+* @apiSuccessExample {json} Success-Response:
+*     HTTP/1.1 201 Created
+*     
+* {
+*    "message": "Property address updated",
+*    "data": [
+*        {
+*            "id": 2,
+*            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+*            "property_type": 1,
+*            "is_beach_house": 0,
+*            "is_dedicated_guest_space": 1,
+*            "is_business_hosting": 1,
+*            "no_of_guests": 2,
+*            "no_of_bedrooms": 1,
+*            "no_of_bathrooms": 2,
+*            "country": "India",
+*            "street": "Noida Sector 63",
+*            "address_optional": "H Block",
+*            "state": "UP",
+*            "city": "Noida",
+*            "zip_code": "300221",
+*            "longitude": 10.24,
+*            "latitude": 20.134,
+*            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+*            "type": {
+*                "id": 1,
+*                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
+*                "property_type": "Villa",
+*            },
+*            "beds": [
+*                {
+*                    "bed_id": 1,
+*                    "property_id": 2,
+*                    "bedroom_name": "Common Space",
+*                    "is_common_space": 1,
+*                    "count": 2,
+*                },
+*                {
+*                    "bed_id": 2,
+*                    "property_id": 2,
+*                    "bedroom_name": "BedRoom 1",
+*                    "is_common_space": 0,
+*                    "count": 2,
+*                },
+*                {
+*                    "bed_id": 2,
+*                    "property_id": 2,
+*                    "bedroom_name": "BedRoom 1",
+*                    "is_common_space": 0,
+*                    "count": 2
+*                }
+*            ]
+*        }
+*    ]
+* }
+*
+* @apiErrorExample {json} Error-Response:
+*
+*     HTTP/1.1 400 Bad Request
+*     {
+*    "message": "validation Failed",
+*    "error": {
+*        "location": [
+*            "minLength validation failed"
+*        ]
+*    }
+*   }
+*
+*/
+
+
+async addPropertyLocation({ request, response, params }: HttpContextContract) {
+    const property_id = params.id;
+    try {
+        let validateSchema = schema.create({
+            latitude: schema.number(),
+            longitude: schema.number(),
+            location: schema.string({ trim: true }, [
+                rules.minLength(2),
+            ]),
+        });
+        await request.validate({ schema: validateSchema });
+    } catch (error) {
+        console.log(error)
+        return response.status(Response.HTTP_BAD_REQUEST).json({
+            message: t('validation Failed'),
+            error: error.messages
+        });
+    }
+
+    const body = request.body();
+    const location = { ...body };
+
+    try {
+        await PropertyListing.query()
+            .where('id', property_id)
+            .update(location);
+
+        const property = await PropertyListing.query()
+            .where('id', property_id)
+            .select(
+                'id',
+                'uid',
+                'property_type',
+                'is_beach_house',
+                'is_dedicated_guest_space',
+                'is_business_hosting',
+                'no_of_guests',
+                'no_of_bedrooms',
+                'no_of_bathrooms',
+                'country',
+                'street',
+                'address_optional',
+                'state',
+                'city',
+                'zip_code',
+                'longitude',
+                'latitude',
+                'location'
+            )
+            .preload('type', builder => builder.select('id', 'uid', 'property_type'))
+            .preload('beds', builder => builder.select('bed_id', 'property_id', 'bedroom_name', 'is_common_space', 'count'))
+            .finally();
+
+        return response.status(Response.HTTP_CREATED).json({
+            message: t('Property address added'),
+            data: property
+        });
+
+    } catch (error) {
+        console.log(error)
+        return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+            message: t('Something went wrong')
+        });
+    }
+}
+
+
+
+
 }
