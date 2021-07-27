@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import PropertyBed from './PropertyBed';
 import PropertyType from './PropertyType';
+import PropertyAmenity from './PropertyAmenity';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -183,6 +184,12 @@ export default class PropertyListing extends BaseModel {
     foreignKey: 'property_id'
   })
   public beds: HasMany<typeof PropertyBed>;
+
+  @hasMany(() => PropertyAmenity, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public amenities: HasMany<typeof PropertyAmenity>;
 
   @hasOne(() => PropertyType, {
     localKey: 'property_type',

@@ -31,5 +31,6 @@
 	"validation Failed": "validation Failed",
 	"Property beds added": "Property beds added",
 	"Property address updated": "Property address updated",
-	"Property address added": "Property address added"
+	"Property location added": "Property location added",
+	"Property amenities added": "Property amenities added"
 }
