@@ -9,9 +9,9 @@ export default class PropertyRules extends BaseSchema {
       table.uuid('uid');
       table.integer('property_id').unsigned().nullable();
       table.integer('rule_id').unsigned().nullable();
-      table.boolean('is_cancelled').nullable();
+      table.boolean('is_cancelled').notNullable().defaultTo(false);
       table.string('cancel_reason').nullable();
-      table.boolean('is_additional').nullable();
+      table.boolean('is_additional').notNullable().defaultTo(false);
       table.string('description').nullable();
       table.timestamps(true)
     })

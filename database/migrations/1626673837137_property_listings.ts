@@ -29,13 +29,13 @@ export default class PropertyListings extends BaseSchema {
       
       // Review Roomz's guest requirements 
 
-      table.boolean('is_email_confirmed').notNullable().defaultTo(true);
-      table.boolean('is_phone_confirmed').notNullable().defaultTo(true);
-      table.boolean('is_payment_information').notNullable().defaultTo(true);
-      table.boolean('is_agree_hr').notNullable().defaultTo(true);
-      table.boolean('is_trip_purpose').notNullable().defaultTo(true);
-      table.boolean('is_id_submitted').notNullable().defaultTo(false);
-      table.boolean('is_no_negative_reviews').notNullable().defaultTo(false);
+      table.boolean('is_email_confirmed').nullable();
+      table.boolean('is_phone_confirmed').nullable();
+      table.boolean('is_payment_information').nullable();
+      table.boolean('is_agree_hr').nullable();
+      table.boolean('is_trip_purpose').nullable();
+      table.boolean('is_id_submitted').nullable();
+      table.boolean('is_no_negative_reviews').nullable();
 
       //description
       table.text('description').nullable();

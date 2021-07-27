@@ -49,11 +49,13 @@ Route.group(() => {
   Route.get('home-details', 'User/HostingController.getHomeDetails');
   Route.get('home-rules', 'User/HostingController.getHomeRule');
 
-  Route.post('list-property/type','User/PropertyController.addPropertyType');
+  Route.post('list-property/type', 'User/PropertyController.addPropertyType');
   Route.put('list-property/beds/:id', 'User/PropertyController.addBeds');
   Route.put('list-property/address/:id', 'User/PropertyController.addPropertyAddress');
   Route.put('list-property/location/:id', 'User/PropertyController.addPropertyLocation');
   Route.put('list-property/amenities/:id', 'User/PropertyController.addPropertyAmenities');
+  Route.put('list-property/guest-requirements/:id', 'User/PropertyController.addPropertyGuestRequirements');
+  Route.put('list-property/house-rules/:id', 'User/PropertyController.setPropertyHomeRules');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 

@@ -3,6 +3,7 @@ import Response from "App/Helpers/Response";
 import PropertyListing from 'App/Models/PropertyListing';
 import PropertyBed from 'App/Models/PropertyBed';
 import PropertyAmenity from 'App/Models/PropertyAmenity';
+import PropertyRule from 'App/Models/PropertyRule';
 import { schema, rules } from '@ioc:Adonis/Core/Validator';
 // Transaltion
 import i18n from 'App/Helpers/i18n';
@@ -274,7 +275,7 @@ export default class PropertyController {
 
             await PropertyBed.createMany(bed_data);
 
-            const property = await PropertyListing.query()
+            let property = await PropertyListing.query()
                 .where('id', property_id)
                 .select(
                     'id',
@@ -301,6 +302,7 @@ export default class PropertyController {
                 ))
                 .finally();
 
+            if (!property) property = [];
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property beds added'),
                 data: property
@@ -364,34 +366,6 @@ export default class PropertyController {
     *            "state": "UP",
     *            "city": "Noida",
     *            "zip_code": "300221",
-    *            "type": {
-    *                "id": 1,
-    *                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
-    *                "property_type": "Villa",
-    *            },
-    *            "beds": [
-    *                {
-    *                    "bed_id": 1,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "Common Space",
-    *                    "is_common_space": 1,
-    *                    "count": 2,
-    *                },
-    *                {
-    *                    "bed_id": 2,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "BedRoom 1",
-    *                    "is_common_space": 0,
-    *                    "count": 2,
-    *                },
-    *                {
-    *                    "bed_id": 2,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "BedRoom 1",
-    *                    "is_common_space": 0,
-    *                    "count": 2
-    *                }
-    *            ]
     *        }
     *    ]
     * }
@@ -448,7 +422,7 @@ export default class PropertyController {
                 .where('id', property_id)
                 .update(address);
 
-            const property = await PropertyListing.query()
+            let property = await PropertyListing.query()
                 .where('id', property_id)
                 .select(
                     'id',
@@ -467,20 +441,9 @@ export default class PropertyController {
                     'city',
                     'zip_code'
                 )
-                .preload('type', builder => builder.select(
-                    'id',
-                    'uid',
-                    'property_type'
-                ))
-                .preload('beds', builder => builder.select(
-                    'bed_id',
-                    'property_id',
-                    'bedroom_name',
-                    'is_common_space',
-                    'count'
-                ))
                 .finally();
 
+            if (!property) property = [];
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property address added'),
                 data: property
@@ -496,7 +459,7 @@ export default class PropertyController {
 
 
     /**
-    * @api {put} /user/hosting/list-property/amenities/:id Add Location
+    * @api {put} /user/hosting/list-property/location/:id Add Location
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -544,34 +507,6 @@ export default class PropertyController {
     *            "longitude": 10.24,
     *            "latitude": 20.134,
     *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
-    *            "type": {
-    *                "id": 1,
-    *                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
-    *                "property_type": "Villa",
-    *            },
-    *            "beds": [
-    *                {
-    *                    "bed_id": 1,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "Common Space",
-    *                    "is_common_space": 1,
-    *                    "count": 2,
-    *                },
-    *                {
-    *                    "bed_id": 2,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "BedRoom 1",
-    *                    "is_common_space": 0,
-    *                    "count": 2,
-    *                },
-    *                {
-    *                    "bed_id": 2,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "BedRoom 1",
-    *                    "is_common_space": 0,
-    *                    "count": 2
-    *                }
-    *            ]
     *        }
     *    ]
     * }
@@ -618,7 +553,7 @@ export default class PropertyController {
                 .where('id', property_id)
                 .update(location);
 
-            const property = await PropertyListing.query()
+            let property = await PropertyListing.query()
                 .where('id', property_id)
                 .select(
                     'id',
@@ -640,20 +575,9 @@ export default class PropertyController {
                     'latitude',
                     'location'
                 )
-                .preload('type', builder => builder.select(
-                    'id',
-                    'uid',
-                    'property_type'
-                ))
-                .preload('beds', builder => builder.select(
-                    'bed_id',
-                    'property_id',
-                    'bedroom_name',
-                    'is_common_space',
-                    'count'
-                ))
                 .finally();
 
+            if (!property) property = [];
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property location added'),
                 data: property
@@ -668,7 +592,7 @@ export default class PropertyController {
     }
 
     /**
-    * @api {put} /user/hosting/list-property/location/:id Add Amenities
+    * @api {put} /user/hosting/list-property/amenities/:id Add Amenities
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -693,41 +617,6 @@ export default class PropertyController {
     *    "message": "Property amenities added",
     *    "data": [
     *        {
-    *            "id": 2,
-    *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
-    *            "property_type": 1,
-    *            "is_beach_house": 0,
-    *            "is_dedicated_guest_space": 1,
-    *            "is_business_hosting": 1,
-    *            "no_of_guests": 2,
-    *            "no_of_bedrooms": 1,
-    *            "no_of_bathrooms": 2,
-    *            "country": "India",
-    *            "street": "Noida Sector 63",
-    *            "address_optional": "H Block",
-    *            "state": "UP",
-    *            "city": "Noida",
-    *            "zip_code": "300221",
-    *            "longitude": 10.24,
-    *            "latitude": 20.134,
-    *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
-    *            "type": {
-    *                "id": 1,
-    *                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
-    *                "property_type": "Villa",
-    *            },
-    *            "beds": [
-    *                {
-    *                    "bed_id": 1,
-    *                    "property_id": 2,
-    *                    "bedroom_name": "Common Space",
-    *                    "is_common_space": 1,
-    *                    "count": 2,
-    *                },
-    *                .
-    *                .
-    *                .
-    *            ],
     *          "amenities": [
     *            {
     *                "property_id": 2,
@@ -808,7 +697,139 @@ export default class PropertyController {
 
             await PropertyAmenity.createMany(amenity_data);
 
-            const property = await PropertyListing.query()
+            let data = await PropertyAmenity.query()
+                .where({ property_id })
+                .select('property_id', 'amenity_id')
+                .finally();
+
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property amenities added'),
+                data
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+    /**
+   * @api {put} /user/hosting/list-property/guest-requirements/:id Guest Requirements
+   * @apiHeader {String} Device-Type Device Type ios/android.
+   * @apiHeader {String} App-Version Version Code 1.0.0.
+   * @apiHeader {String} Accept-Language Language Code en OR ar.
+   * @apiVersion 1.0.0
+   * @apiName guest-requirements
+   * @apiGroup List Property
+   *
+   * @apiParam {Number} id Property unique ID (pass as params)
+   * 
+   * @apiParam {Boolean} is_email_confirmed 
+   * @apiParam {Boolean} is_phone_confirmed 
+   * @apiParam {Boolean} is_payment_information 
+   * @apiParam {Boolean} is_trip_purpose 
+   * @apiParam {Boolean} is_no_negative_reviews 
+   * @apiParam {Boolean} is_id_submitted  guest submitted their id
+   * @apiParam {Boolean} is_agree_hr guests agree for home rules (hr) 
+   * 
+   * 
+   * 
+   * 
+   * @apiParamExample {json} Request-Example:
+   * {
+   *   "is_email_confirmed": true,
+   *   "is_phone_confirmed": true,
+   *   "is_payment_information": true,
+   *   "is_agree_hr": true,
+   *   "is_trip_purpose": true,
+   *   "is_id_submitted": true,
+   *   "is_no_negative_reviews": true
+   *   }
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 201 Created
+   *     
+   * {
+   *    "message": "Property address updated",
+   *    "data": [
+   *        {
+   *            "id": 2,
+   *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+   *            "property_type": 1,
+   *            "is_beach_house": 0,
+   *            "is_dedicated_guest_space": 1,
+   *            "is_business_hosting": 1,
+   *            "no_of_guests": 2,
+   *            "no_of_bedrooms": 1,
+   *            "no_of_bathrooms": 2,
+   *            "country": "India",
+   *            "street": "Noida Sector 63",
+   *            "address_optional": "H Block",
+   *            "state": "UP",
+   *            "city": "Noida",
+   *            "zip_code": "300221",
+   *            "longitude": 10.24,
+   *            "latitude": 20.134,
+   *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+   *            "is_email_confirmed": 1,
+   *            "is_phone_confirmed": 1,
+   *            "is_agree_hr": 1,
+   *            "is_payment_information": 1,
+   *            "is_trip_purpose": 1,
+   *            "is_id_submitted": 1,
+   *            "is_no_negative_reviews": 1,
+   *        }
+   *    ]
+   * }
+   *
+   * @apiErrorExample {json} Error-Response:
+   *
+   *     HTTP/1.1 400 Bad Request
+   *     {
+   *    "message": "validation Failed",
+   *    "error": {
+   *        "location": [
+   *            "minLength validation failed"
+   *        ]
+   *    }
+   *   }
+   *
+   */
+
+
+    async addPropertyGuestRequirements({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                is_email_confirmed: schema.boolean.optional(),
+                is_phone_confirmed: schema.boolean.optional(),
+                is_payment_information: schema.boolean.optional(),
+                is_agree_hr: schema.boolean.optional(),
+                is_trip_purpose: schema.boolean.optional(),
+                is_id_submitted: schema.boolean.optional(),
+                is_no_negative_reviews: schema.boolean.optional(),
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const requirements = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(requirements);
+
+            let property = await PropertyListing.query()
                 .where('id', property_id)
                 .select(
                     'id',
@@ -828,29 +849,20 @@ export default class PropertyController {
                     'zip_code',
                     'longitude',
                     'latitude',
-                    'location'
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews'
                 )
-                .preload('type', builder => builder.select(
-                    'id',
-                    'uid',
-                    'property_type'
-                ))
-                .preload('beds', builder => builder.select(
-                    'bed_id',
-                    'property_id',
-                    'bedroom_name',
-                    'is_common_space',
-                    'count'
-                ))
-                .preload('amenities', builder => builder.select(
-                    'property_id',
-                    'amenity_id',
-                    'id'
-                ))
                 .finally();
 
+            if (!property) property = [];
             return response.status(Response.HTTP_CREATED).json({
-                message: t('Property amenities added'),
+                message: t('Property guest requirements added'),
                 data: property
             });
 
@@ -861,6 +873,182 @@ export default class PropertyController {
             });
         }
     }
+
+
+    /**
+    * @api {put} /user/hosting/list-property/amenities/:id Set House Rule
+    * @apiHeader {String} Device-Type Device Type ios/android.
+    * @apiHeader {String} App-Version Version Code 1.0.0.
+    * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiVersion 1.0.0
+    * @apiName house-rules
+    * @apiGroup List Property
+    *
+    * @apiParam {Number} id Property unique ID (pass as params)
+    * 
+    * @apiParam {object[]} amenities Array of house rules
+    * 
+    * 
+    * @apiParamExample {json} Request-Example:
+    *   {
+    *      "property_rules": [
+    *        {
+    *            "rule_id": 1,
+    *            "is_cancelled": true,
+    *            "cancel_reason": "test"
+    *        },
+    *        {
+    *            "rule_id": 2
+    *        },
+    *        {
+    *            "rule_id": 3
+    *        },
+    *        {
+    *            "rule_id": 4
+    *        },
+    *        {
+    *            "rule_id": 5
+    *        },
+    *        {
+    *            "is_additional": true,
+    *            "description": "test"
+    *        }
+    *    ]
+    *  }
+    *
+    * @apiSuccessExample {json} Success-Response:
+    *     HTTP/1.1 201 Created
+    *     {
+    *  "message": "Property rules added",
+    *  "data": [
+    *    {
+    *        "rule_id": 1,
+    *        "property_id": 2,
+    *        "is_cancelled": 1,
+    *        "cancel_reason": "test",
+    *        "is_additional": 0,
+    *        "description": null
+    *    },
+    *    {
+    *        "rule_id": 2,
+    *        "property_id": 2,
+    *        "is_cancelled": 0,
+    *        "cancel_reason": null,
+    *        "is_additional": 0,
+    *        "description": null
+    *    },
+    *    {
+    *        "rule_id": 3,
+    *        "property_id": 2,
+    *        "is_cancelled": 0,
+    *        "cancel_reason": null,
+    *        "is_additional": 0,
+    *        "description": null
+    *    },
+    *    {
+    *        "rule_id": 4,
+    *        "property_id": 2,
+    *        "is_cancelled": 0,
+    *        "cancel_reason": null,
+    *        "is_additional": 0,
+    *        "description": null
+    *    },
+    *    {
+    *        "rule_id": 5,
+    *        "property_id": 2,
+    *        "is_cancelled": 0,
+    *        "cancel_reason": null,
+    *        "is_additional": 0,
+    *        "description": null
+    *    },
+    *    {
+    *        "rule_id": null,
+    *        "property_id": 2,
+    *        "is_cancelled": 0,
+    *        "cancel_reason": null,
+    *        "is_additional": 1,
+    *        "description": "test"
+    *    }
+    *   ]
+    * }
+    
+    */
+
+
+    async setPropertyHomeRules({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            const validateSchema = schema.create({
+                property_rules: schema.array(
+                    [rules.minLength(5)]
+                ).members(
+                    schema.object().members({
+                        rule_id: schema.number.optional(),
+                        is_cancelled: schema.boolean.optional(),
+                        cancel_reason: schema.string.optional({ trim: true }, [
+                            rules.requiredWhen('is_cancelled', '=', true)
+                        ]),
+                        is_additional: schema.boolean.optional([
+                            rules.requiredIfNotExists('rule_id')
+                        ]),
+                        description: schema.string.optional({ trim: true }, [
+                            rules.requiredWhen('is_additional', '=', true)
+                        ])
+                    })
+                )
+            })
+
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const property_rules = body.property_rules;
+        const rule_data = property_rules.map(e => {
+            e.property_id = property_id;
+            e.uid = uuid();
+            return e;
+        });
+
+        try {
+            await PropertyRule.query()
+                .where({ property_id })
+                .delete();
+
+            await PropertyRule.createMany(rule_data);
+
+            const data = await PropertyRule.query()
+                .where({ property_id })
+                .select(
+                    'rule_id',
+                    'property_id',
+                    'is_cancelled',
+                    'cancel_reason',
+                    'is_additional',
+                    'description'
+                )
+                .finally();
+
+
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property rules added'),
+                data
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
 
 
 
