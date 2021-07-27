@@ -4,6 +4,7 @@ import PropertyListing from 'App/Models/PropertyListing';
 import PropertyBed from 'App/Models/PropertyBed';
 import PropertyAmenity from 'App/Models/PropertyAmenity';
 import PropertyRule from 'App/Models/PropertyRule';
+import PropertyDetail from 'App/Models/PropertyDetail';
 import { schema, rules } from '@ioc:Adonis/Core/Validator';
 // Transaltion
 import i18n from 'App/Helpers/i18n';
@@ -17,6 +18,7 @@ export default class PropertyController {
   * @apiHeader {String} Device-Type Device Type ios/android.
   * @apiHeader {String} App-Version Version Code 1.0.0.
   * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
   * @apiVersion 1.0.0
   * @apiName property-type
   * @apiGroup List Property
@@ -108,120 +110,120 @@ export default class PropertyController {
         }
     }
 
-
     /**
-* @api {put} /user/hosting/list-property/beds/:id Add Beds
-* @apiHeader {String} Device-Type Device Type ios/android.
-* @apiHeader {String} App-Version Version Code 1.0.0.
-* @apiHeader {String} Accept-Language Language Code en OR ar.
-* @apiVersion 1.0.0
-* @apiName beds
-* @apiGroup List Property
-*
-* @apiParam {Number} id Property unique ID (pass as params)
-* 
-* @apiParam {Number} no_of_guests
-* @apiParam {Number} no_of_bathrooms
-* @apiParam {Number} no_of_bedrooms
-* @apiParam {Object[]} beds `Array of Beds`.
-* 
-* @apiParamExample {json} Request-Example:
-*{
-* "no_of_guests": 2,
-*  "no_of_bedrooms": 1,
-*  "no_of_bathrooms": 2,
-*  "beds": [
-*      {
-*          "bed_id": 1,
-*          "bedroom_name": "Common Space",
-*          "count": 2,
-*          "is_common_space": true
-*      },
-*       {
-*          "bed_id": 2,
-*          "bedroom_name": "BedRoom 1",
-*          "count": 2,
-*          "is_common_space": false
-*      },
-*      {
-*          "bed_id": 2,
-*          "bedroom_name": "BedRoom 1",
-*          "count": 3,
-*          "is_common_space": false
-*      }
-*      .
-*      .
-*      .
-*  ]
-*  }
-*
-* @apiSuccessExample {json} Success-Response:
-*     HTTP/1.1 201 Created
-*     
-* {
-*    "message": "Property type added",
-*    "data": [
-*        {
-*            "id": 2,
-*            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
-*            "property_type": 1,
-*            "is_beach_house": 0,
-*            "is_dedicated_guest_space": 1,
-*            "is_business_hosting": 1,
-*            "no_of_guests": 2,
-*            "no_of_bedrooms": 1,
-*            "no_of_bathrooms": 2,
-*            "type": {
-*                "id": 1,
-*                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
-*                "property_type": "Villa",
-*            },
-*            "beds": [
-*                {
-*                    "bed_id": 1,
-*                    "property_id": 2,
-*                    "bedroom_name": "Common Space",
-*                    "is_common_space": 1,
-*                    "count": 2,
-*                },
-*                {
-*                    "bed_id": 2,
-*                    "property_id": 2,
-*                    "bedroom_name": "BedRoom 1",
-*                    "is_common_space": 0,
-*                    "count": 2,
-*                },
-*                {
-*                    "bed_id": 2,
-*                    "property_id": 2,
-*                    "bedroom_name": "BedRoom 1",
-*                    "is_common_space": 0,
-*                    "count": 2
-*                }
-*            ]
-*        }
-*    ]
-* }
-*
-* @apiErrorExample {json} Error-Response:
-*
-*     HTTP/1.1 400 Bad Request
-*     {
-*    "message": "validation Failed",
-*    "error": {
-*        "no_of_bedrooms": [
-*            "number validation failed"
-*        ],
-*        "beds.0.bedroom_name": [
-*            "required validation failed"
-*        ],
-*        "beds.2.is_common_space": [
-*            "boolean validation failed"
-*        ]
-*    }
-*  }
-*
-*/
+    * @api {put} /user/hosting/list-property/beds/:id Add Beds
+    * @apiHeader {String} Device-Type Device Type ios/android.
+    * @apiHeader {String} App-Version Version Code 1.0.0.
+    * @apiHeader {String} Accept-Language Language Code en OR ar.
+    *@apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+    * @apiVersion 1.0.0
+    * @apiName beds
+    * @apiGroup List Property
+    *
+    * @apiParam {Number} id Property unique ID (pass as params)
+    * 
+    * @apiParam {Number} no_of_guests
+    * @apiParam {Number} no_of_bathrooms
+    * @apiParam {Number} no_of_bedrooms
+    * @apiParam {Object[]} beds `Array of Beds`.
+    * 
+    * @apiParamExample {json} Request-Example:
+    *{
+    * "no_of_guests": 2,
+    *  "no_of_bedrooms": 1,
+    *  "no_of_bathrooms": 2,
+    *  "beds": [
+    *      {
+    *          "bed_id": 1,
+    *          "bedroom_name": "Common Space",
+    *          "count": 2,
+    *          "is_common_space": true
+    *      },
+    *       {
+    *          "bed_id": 2,
+    *          "bedroom_name": "BedRoom 1",
+    *          "count": 2,
+    *          "is_common_space": false
+    *      },
+    *      {
+    *          "bed_id": 2,
+    *          "bedroom_name": "BedRoom 1",
+    *          "count": 3,
+    *          "is_common_space": false
+    *      }
+    *      .
+    *      .
+    *      .
+    *  ]
+    *  }
+    *
+    * @apiSuccessExample {json} Success-Response:
+    *     HTTP/1.1 201 Created
+    *     
+    * {
+    *    "message": "Property type added",
+    *    "data": [
+    *        {
+    *            "id": 2,
+    *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+    *            "property_type": 1,
+    *            "is_beach_house": 0,
+    *            "is_dedicated_guest_space": 1,
+    *            "is_business_hosting": 1,
+    *            "no_of_guests": 2,
+    *            "no_of_bedrooms": 1,
+    *            "no_of_bathrooms": 2,
+    *            "type": {
+    *                "id": 1,
+    *                "uid": "27ce8bdf-1b6c-495b-aca0-a057c0848580",
+    *                "property_type": "Villa",
+    *            },
+    *            "beds": [
+    *                {
+    *                    "bed_id": 1,
+    *                    "property_id": 2,
+    *                    "bedroom_name": "Common Space",
+    *                    "is_common_space": 1,
+    *                    "count": 2,
+    *                },
+    *                {
+    *                    "bed_id": 2,
+    *                    "property_id": 2,
+    *                    "bedroom_name": "BedRoom 1",
+    *                    "is_common_space": 0,
+    *                    "count": 2,
+    *                },
+    *                {
+    *                    "bed_id": 2,
+    *                    "property_id": 2,
+    *                    "bedroom_name": "BedRoom 1",
+    *                    "is_common_space": 0,
+    *                    "count": 2
+    *                }
+    *            ]
+    *        }
+    *    ]
+    * }
+    *
+    * @apiErrorExample {json} Error-Response:
+    *
+    *     HTTP/1.1 400 Bad Request
+    *     {
+    *    "message": "validation Failed",
+    *    "error": {
+    *        "no_of_bedrooms": [
+    *            "number validation failed"
+    *        ],
+    *        "beds.0.bedroom_name": [
+    *            "required validation failed"
+    *        ],
+    *        "beds.2.is_common_space": [
+    *            "boolean validation failed"
+    *        ]
+    *    }
+    *  }
+    *
+    */
 
 
     async addBeds({ request, response, params }: HttpContextContract) {
@@ -321,6 +323,7 @@ export default class PropertyController {
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
     * @apiVersion 1.0.0
     * @apiName address
     * @apiGroup List Property
@@ -463,6 +466,7 @@ export default class PropertyController {
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
     * @apiVersion 1.0.0
     * @apiName location
     * @apiGroup List Property
@@ -596,6 +600,7 @@ export default class PropertyController {
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
     * @apiVersion 1.0.0
     * @apiName amenities
     * @apiGroup List Property
@@ -613,35 +618,28 @@ export default class PropertyController {
     * @apiSuccessExample {json} Success-Response:
     *     HTTP/1.1 201 Created
     *     
-    * {
+    *{
     *    "message": "Property amenities added",
     *    "data": [
     *        {
-    *          "amenities": [
-    *            {
-    *                "property_id": 2,
-    *                "amenity_id": 1,
-    *                "id": 9
-    *            },
-    *            {
-    *                "property_id": 2,
-    *                "amenity_id": 2,
-    *                "id": 10
-    *            },
-    *            {
-    *                "property_id": 2,
-    *                "amenity_id": 3,
-    *                "id": 11
-    *            },
-    *            {
-    *                "property_id": 2,
-    *                "amenity_id": 5,
-    *                "id": 12
-    *            }
-    *           .
-    *           .
-    *           .
-    *        ]
+    *            "property_id": 1,
+    *            "amenity_id": 2
+    *        },
+    *        {
+    *            "property_id": 1,
+    *            "amenity_id": 3
+    *        },
+    *        {
+    *            "property_id": 1,
+    *            "amenity_id": 5
+    *        },
+    *        {
+    *            "property_id": 1,
+    *            "amenity_id": 6
+    *        },
+    *        {
+    *            "property_id": 1,
+    *            "amenity_id": 9
     *        }
     *    ]
     * }
@@ -721,6 +719,7 @@ export default class PropertyController {
    * @apiHeader {String} Device-Type Device Type ios/android.
    * @apiHeader {String} App-Version Version Code 1.0.0.
    * @apiHeader {String} Accept-Language Language Code en OR ar.
+   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
    * @apiVersion 1.0.0
    * @apiName guest-requirements
    * @apiGroup List Property
@@ -876,17 +875,18 @@ export default class PropertyController {
 
 
     /**
-    * @api {put} /user/hosting/list-property/amenities/:id Set House Rule
+    * @api {put} /user/hosting/list-property/house-rules/:id Set House Rule
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
     * @apiVersion 1.0.0
     * @apiName house-rules
     * @apiGroup List Property
     *
     * @apiParam {Number} id Property unique ID (pass as params)
     * 
-    * @apiParam {object[]} amenities Array of house rules
+    * @apiParam {object[]} property_rules Array of house rules
     * 
     * 
     * @apiParamExample {json} Request-Example:
@@ -989,7 +989,7 @@ export default class PropertyController {
                             rules.requiredWhen('is_cancelled', '=', true)
                         ]),
                         is_additional: schema.boolean.optional([
-                            rules.requiredIfNotExists('rule_id')
+                            rules.requiredIfNotExists('rule_id'),
                         ]),
                         description: schema.string.optional({ trim: true }, [
                             rules.requiredWhen('is_additional', '=', true)
@@ -1009,7 +1009,7 @@ export default class PropertyController {
 
         const body = request.body();
         const property_rules = body.property_rules;
-        const rule_data = property_rules.map(e => {
+        const rule_data = property_rules.filter(e => e.is_additional !== false).map(e => {
             e.property_id = property_id;
             e.uid = uuid();
             return e;
@@ -1047,6 +1047,443 @@ export default class PropertyController {
             });
         }
     }
+
+    // property details 
+
+    /**
+    * @api {put} /user/hosting/list-property/property-details/:id Property Details
+    * @apiHeader {String} Device-Type Device Type ios/android.
+    * @apiHeader {String} App-Version Version Code 1.0.0.
+    * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+    * @apiVersion 1.0.0
+    * @apiName property-details
+    * @apiGroup List Property
+    *
+    * @apiParam {Number} id Property unique ID (pass as params)
+    * 
+    * @apiParam {object[]} property_details Array of details
+    * 
+    * 
+    * @apiParamExample {json} Request-Example:
+    *   {
+    *    "property_details": [
+    *            {
+    *                "detail_id": 1,
+    *                "explanation": "tell something"
+    *            },
+    *            {
+    *                "detail_id": 2
+    *            },
+    *            {
+    *                "detail_id": 3
+    *            }
+    *        ]
+    *    }
+    *
+    * @apiSuccessExample {json} Success-Response:
+    *     HTTP/1.1 201 Created
+    *     {
+    *       "message": "Property details added",
+    *       "data": [
+    *           {
+    *               "detail_id": 1,
+    *               "property_id": 1,
+    *               "explanation": "tell something"
+    *           },
+    *           {
+    *               "detail_id": 2,
+    *               "property_id": 1,
+    *               "explanation": null
+    *           },
+    *           {
+    *               "detail_id": 3,
+    *               "property_id": 1,
+    *               "explanation": null
+    *           }
+    *       ]
+    *     }
+    *
+    */
+
+
+    async addPropertyDetails({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            const validateSchema = schema.create({
+                property_details: schema.array([
+                    rules.minLength(2)
+                ]).members(
+                    schema.object().members({
+                        detail_id: schema.number(),
+                        explanation: schema.string.optional({ trim: true }, [
+                            rules.minLength(5)
+                        ])
+                    })
+                )
+            })
+
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const property_details = body.property_details;
+        const rule_data = property_details.map(e => {
+            e.property_id = property_id;
+            e.uid = uuid();
+            return e;
+        });
+
+        try {
+            await PropertyDetail.query()
+                .where({ property_id })
+                .delete();
+
+            await PropertyDetail.createMany(rule_data);
+
+            const data = await PropertyDetail.query()
+                .where({ property_id })
+                .select(
+                    'detail_id',
+                    'property_id',
+                    'explanation',
+                )
+                .finally();
+
+
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property details added'),
+                data
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+    /**
+      * @api {put} /user/hosting/list-property/description/:id Property Description
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName description
+      * @apiGroup List Property
+      *
+      * @apiParam {Number} id Property unique ID (pass as params)
+      * 
+      * @apiParam {string} description Describe your place to guests 
+      * @apiParam {String} [desc_your_space] about your spaces 
+      * @apiParam {String} [desc_interaction_guests] Share how available you during a guest stay 
+      * @apiParam {String} [desc_neighbourhood]  Share what makes your neighbourhood special
+      * @apiParam {String} [desc_getting_around] Add info about getting around your city
+      * 
+      * 
+      * 
+      * 
+      * @apiParamExample {json} Request-Example:
+      *  {
+      *     "description": "This house is newly constructed and loaded with all facilites.",
+      *     "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft."
+      *   }
+      *
+      * @apiSuccessExample {json} Success-Response:
+      *     HTTP/1.1 201 Created
+      *     
+      * {
+      *    "message": "Property description added",
+      *    "data": [
+      *        {
+      *            "id": 2,
+      *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+      *            "property_type": 1,
+      *            "is_beach_house": 0,
+      *            "is_dedicated_guest_space": 1,
+      *            "is_business_hosting": 1,
+      *            "no_of_guests": 2,
+      *            "no_of_bedrooms": 1,
+      *            "no_of_bathrooms": 2,
+      *            "country": "India",
+      *            "street": "Noida Sector 63",
+      *            "address_optional": "H Block",
+      *            "state": "UP",
+      *            "city": "Noida",
+      *            "zip_code": "300221",
+      *            "longitude": 10.24,
+      *            "latitude": 20.134,
+      *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+      *            "is_email_confirmed": 1,
+      *            "is_phone_confirmed": 1,
+      *            "is_agree_hr": 1,
+      *            "is_payment_information": 1,
+      *            "is_trip_purpose": 1,
+      *            "is_id_submitted": 1,
+      *            "is_no_negative_reviews": 1,
+      *            "description": "This house is newly constructed and loaded with all facilites.",
+      *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+      *            "desc_interaction_guests": null,
+      *            "desc_neighbourhood": null,
+      *            "desc_getting_around": null 
+      *        }
+      *    ]
+      * }
+      *
+      *
+      */
+
+
+    async addPropertyDescription({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                description: schema.string({ trim: true }, [
+                    rules.minLength(20),
+                    rules.maxLength(500),
+                ]),
+                desc_your_space: schema.string.optional({ trim: true }, [
+                    rules.minLength(20),
+                    rules.maxLength(500)
+                ]),
+                desc_interaction_guests: schema.string.optional({ trim: true }, [
+                    rules.minLength(20),
+                    rules.maxLength(500)
+                ]),
+                desc_neighbourhood: schema.string.optional({ trim: true }, [
+                    rules.minLength(20),
+                    rules.maxLength(500)
+                ]),
+                desc_getting_around: schema.string.optional({ trim: true }, [
+                    rules.minLength(20),
+                    rules.maxLength(500)
+                ]),
+
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const property_description = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(property_description);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property description added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+
+    /**
+      * @api {put} /user/hosting/list-property/name/:id Name of Listing
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName name
+      * @apiGroup List Property
+      *
+      * @apiParam {Number} id Property unique ID (pass as params)
+      * 
+      * @apiParam {string} name Name of Listing 
+      * 
+      * 
+      * @apiParamExample {json} Request-Example:
+      *  {
+      *     "name": "Smart House 3 Star"
+      *   }
+      *
+      * @apiSuccessExample {json} Success-Response:
+      *     HTTP/1.1 201 Created
+      *     
+      * {
+      *    "message": "Property name added",
+      *    "data": [
+      *        {
+      *            "id": 2,
+      *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+      *            "property_type": 1,
+      *            "is_beach_house": 0,
+      *            "is_dedicated_guest_space": 1,
+      *            "is_business_hosting": 1,
+      *            "no_of_guests": 2,
+      *            "no_of_bedrooms": 1,
+      *            "no_of_bathrooms": 2,
+      *            "country": "India",
+      *            "street": "Noida Sector 63",
+      *            "address_optional": "H Block",
+      *            "state": "UP",
+      *            "city": "Noida",
+      *            "zip_code": "300221",
+      *            "longitude": 10.24,
+      *            "latitude": 20.134,
+      *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+      *            "is_email_confirmed": 1,
+      *            "is_phone_confirmed": 1,
+      *            "is_agree_hr": 1,
+      *            "is_payment_information": 1,
+      *            "is_trip_purpose": 1,
+      *            "is_id_submitted": 1,
+      *            "is_no_negative_reviews": 1,
+      *            "description": "This house is newly constructed and loaded with all facilites.",
+      *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+      *            "desc_interaction_guests": null,
+      *            "desc_neighbourhood": null,
+      *            "desc_getting_around": null,
+      *            "name": "Smart House 3 Star" 
+      *        }
+      *    ]
+      * }
+      *
+      *
+      */
+
+
+    async addPropertyName({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                name: schema.string({ trim: true }, [
+                    rules.minLength(5),
+                    rules.maxLength(50),
+                ]),
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const name = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(name);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property name added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
 
 
 
