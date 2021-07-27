@@ -49,7 +49,8 @@ Route.group(() => {
   Route.get('home-details', 'User/HostingController.getHomeDetails');
   Route.get('home-rules', 'User/HostingController.getHomeRule');
 
-  Route.post('add-property/type','User/PropertyController.addPropertyType');
+  Route.post('list-property/type','User/PropertyController.addPropertyType');
+  Route.put('list-property/beds/:id', 'User/PropertyController.addBeds');
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 

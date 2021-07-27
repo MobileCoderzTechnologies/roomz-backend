@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import PropertyBed from './PropertyBed';
+import PropertyType from './PropertyType';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -170,8 +172,23 @@ export default class PropertyListing extends BaseModel {
   public is_deleted: boolean;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+
+  @hasMany(() => PropertyBed, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public beds: HasMany<typeof PropertyBed>;
+
+  @hasOne(() => PropertyType, {
+    localKey: 'property_type',
+    foreignKey: 'id',
+  })
+  public type: HasOne<typeof PropertyType>;
+
 }
+
