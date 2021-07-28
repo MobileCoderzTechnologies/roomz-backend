@@ -110,19 +110,19 @@ export default class PropertyListing extends BaseModel {
   public advance_notice: number;
 
   @column()
-  public cut_off_time: string;
+  public cut_off_time: number;
 
   @column()
-  public guests_book_time: string;
+  public guests_book_time: number;
 
   @column()
-  public ci_arrive_after: string; // ci +> check in
+  public ci_arrive_after: number; // ci +> check in
 
   @column()
-  public ci_arrive_before: string; 
+  public ci_arrive_before: number; 
 
   @column()
-  public ci_leave_before: string;
+  public ci_leave_before: number;
 
   @column()
   public min_stay: number; //in nights
@@ -152,10 +152,10 @@ export default class PropertyListing extends BaseModel {
   public notice_guest_ba: number; // ba => before arrive
 
   @column()
-  public guest_ci_from: string; // ci => check in
+  public guest_ci_from: number; // ci => check in
 
   @column()
-  public guest_ci_to: string; // ci => check in
+  public guest_ci_to: number; // ci => check in
 
   @column()
   public weekly_discount: number; // discount in percentage

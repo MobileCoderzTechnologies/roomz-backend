@@ -53,36 +53,43 @@ Route.group(() => {
 
   Route.get('home-rules', 'User/HostingController.getHomeRule');
 
-  Route.post('list-property/type', 'User/PropertyController.addPropertyType');
+  // property controller
 
-  Route.put('list-property/beds/:id', 'User/PropertyController.addBeds');
+  Route.group(() => {
+    Route.post('type', 'User/PropertyController.addPropertyType');
 
-  Route.put('list-property/address/:id', 'User/PropertyController.addPropertyAddress');
+    Route.put('beds/:id', 'User/PropertyController.addBeds');
 
-  Route.put('list-property/location/:id', 'User/PropertyController.addPropertyLocation');
+    Route.put('address/:id', 'User/PropertyController.addPropertyAddress');
 
-  Route.put('list-property/amenities/:id', 'User/PropertyController.addPropertyAmenities');
+    Route.put('location/:id', 'User/PropertyController.addPropertyLocation');
 
-  Route.put('list-property/guest-requirements/:id', 'User/PropertyController.addPropertyGuestRequirements');
+    Route.put('amenities/:id', 'User/PropertyController.addPropertyAmenities');
 
-  Route.put('list-property/house-rules/:id', 'User/PropertyController.setPropertyHomeRules');
+    Route.put('guest-requirements/:id', 'User/PropertyController.addPropertyGuestRequirements');
 
-  Route.put('list-property/property-details/:id', 'User/PropertyController.addPropertyDetails');
+    Route.put('house-rules/:id', 'User/PropertyController.setPropertyHomeRules');
 
-  Route.put('list-property/description/:id', 'User/PropertyController.addPropertyDescription');
+    Route.put('property-details/:id', 'User/PropertyController.addPropertyDetails');
 
-  Route.put('list-property/name/:id', 'User/PropertyController.addPropertyName');
+    Route.put('description/:id', 'User/PropertyController.addPropertyDescription');
 
-  Route.put('list-property/availability/:id', 'User/PropertyController.setPropertyAvailability');
+    Route.put('name/:id', 'User/PropertyController.addPropertyName');
 
-  Route.put('list-property/phone-number/:id', 'User/PropertyController.addSecPhoneNumber');
+    Route.put('availability/:id', 'User/PropertyController.setPropertyAvailability');
 
-  Route.put('list-property/pricing/:id', 'User/PropertyController.setPropertyPricing');
+    Route.put('phone-number/:id', 'User/PropertyController.addSecPhoneNumber');
 
+    Route.put('pricing/:id', 'User/PropertyController.setPropertyPricing');
 
+    Route.put('laws-and-calender/:id', 'User/PropertyController.lawsAndCalender');
 
+    Route.put('questions/:id', 'User/PropertyController.PropertyQuestions');
+
+  }).prefix('list-property');
 
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
+
 
 
 /************************ Admin Controller ************************/

@@ -15,7 +15,7 @@ export default class PropertyBed extends BaseModel {
   public property_id: number;
 
   @column()
-  public is_common_space: boolean;
+  public serial_number: number;
 
   @column()
   public count: number;

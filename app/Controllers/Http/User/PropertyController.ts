@@ -137,19 +137,19 @@ export default class PropertyController {
     *          "bed_id": 1,
     *          "bedroom_name": "Common Space",
     *          "count": 2,
-    *          "is_common_space": true
+    *          "serial_number": 0 
     *      },
     *       {
     *          "bed_id": 2,
     *          "bedroom_name": "BedRoom 1",
     *          "count": 2,
-    *          "is_common_space": false
+    *          "serial_number": 1
     *      },
     *      {
     *          "bed_id": 2,
     *          "bedroom_name": "BedRoom 1",
     *          "count": 3,
-    *          "is_common_space": false
+    *          "serial_number": 1
     *      }
     *      .
     *      .
@@ -183,21 +183,21 @@ export default class PropertyController {
     *                    "bed_id": 1,
     *                    "property_id": 2,
     *                    "bedroom_name": "Common Space",
-    *                    "is_common_space": 1,
+    *                    "serial_number": 0,
     *                    "count": 2,
     *                },
     *                {
     *                    "bed_id": 2,
     *                    "property_id": 2,
     *                    "bedroom_name": "BedRoom 1",
-    *                    "is_common_space": 0,
+    *                    "serial_number": 1,
     *                    "count": 2,
     *                },
     *                {
     *                    "bed_id": 2,
     *                    "property_id": 2,
     *                    "bedroom_name": "BedRoom 1",
-    *                    "is_common_space": 0,
+    *                    "serial_number": 1,
     *                    "count": 2
     *                }
     *            ]
@@ -239,7 +239,7 @@ export default class PropertyController {
                         bedroom_name: schema.string({ trim: true }, [
                             rules.minLength(3),
                         ]),
-                        is_common_space: schema.boolean(),
+                        serial_number: schema.number(),
                         count: schema.number(),
                     })
                 )
@@ -299,7 +299,7 @@ export default class PropertyController {
                     'bed_id',
                     'property_id',
                     'bedroom_name',
-                    'is_common_space',
+                    'serial_number',
                     'count'
                 ))
                 .finally();
@@ -1646,11 +1646,11 @@ export default class PropertyController {
       * @apiParam {Number} id Property ID (pass as params)
       * 
       * @apiParam {Number} advance_notice sameDay = 0, 1day: 1, 2day: 2, 3day: 3
-      * @apiParam {String} cut_off_time Same Day cut-off time 
-      * @apiParam {String} guests_book_time How far the future guests can book 
-      * @apiParam {String} ci_arrive_after Check In arrive after 
-      * @apiParam {String} ci_arrive_before Check In arrive before 
-      * @apiParam {String} ci_leave_before Check In leave before 
+      * @apiParam {Number} cut_off_time Same Day cut-off time 
+      * @apiParam {Number} guests_book_time How far the future guests can book 
+      * @apiParam {Number} ci_arrive_after Check In arrive after 
+      * @apiParam {Number} ci_arrive_before Check In arrive before 
+      * @apiParam {Number} ci_leave_before Check In leave before 
       * @apiParam {Number} min_stay  NUmber of nights
       * @apiParam {Number} max_stay  NUmber of nights
       * 
@@ -1658,11 +1658,11 @@ export default class PropertyController {
       * @apiParamExample {json} Request-Example:
       *   {
       *       "advance_notice": 2,
-      *       "cut_off_time": "10 AM",
-      *       "guests_book_time": "4 PM",
-      *       "ci_arrive_after": "11 AM",
-      *       "ci_arrive_before": "12 PM",
-      *       "ci_leave_before": "12 PM",
+      *       "cut_off_time": 10,
+      *       "guests_book_time": 4,
+      *       "ci_arrive_after": 10,
+      *       "ci_arrive_before": "13",
+      *       "ci_leave_before": "16",
       *       "min_stay": 2,
       *       "max_stay": 2
       *    }
@@ -1728,11 +1728,11 @@ export default class PropertyController {
         try {
             let validateSchema = schema.create({
                 advance_notice: schema.number(),
-                cut_off_time: schema.string({ trim: true }),
-                guests_book_time: schema.string({ trim: true }),
-                ci_arrive_before: schema.string({ trim: true }),
-                ci_arrive_after: schema.string({ trim: true }),
-                ci_leave_before: schema.string({ trim: true }),
+                cut_off_time: schema.number(),
+                guests_book_time: schema.number(),
+                ci_arrive_before: schema.number(),
+                ci_arrive_after: schema.number(),
+                ci_leave_before: schema.number(),
                 min_stay: schema.number([
                     rules.range(1, 100)
                 ]),
@@ -1978,6 +1978,391 @@ export default class PropertyController {
             if (!property) property = [];
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property price added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+    /**
+      * @api {put} /user/hosting/list-property/laws-and-calender/:id Laws and Calender
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName laws-and-calender
+      * @apiGroup List Property
+      *
+      * @apiParam {Number} id Property ID (pass as params)
+      * 
+      * @apiParam {Boolean} [is_local_laws] Guests Agree your country laws
+      * @apiParam {Boolean} [is_updated_calender] Keep calender updated
+      * 
+      * 
+      * 
+      * @apiParamExample {json} Request-Example:
+      *   {
+      *       "is_local_laws": true,
+      *       "is_updated_calender": true,
+      *    }
+      *
+      * @apiSuccessExample {json} Success-Response:
+      *     HTTP/1.1 201 Created
+      *     
+      * {
+      *    "message": "Property updated",
+      *    "data": [
+      *        {
+      *            "id": 2,
+      *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+      *            "property_type": 1,
+      *            "is_beach_house": 0,
+      *            "is_dedicated_guest_space": 1,
+      *            "is_business_hosting": 1,
+      *            "no_of_guests": 2,
+      *            "no_of_bedrooms": 1,
+      *            "no_of_bathrooms": 2,
+      *            "country": "India",
+      *            "street": "Noida Sector 63",
+      *            "address_optional": "H Block",
+      *            "state": "UP",
+      *            "city": "Noida",
+      *            "zip_code": "300221",
+      *            "longitude": 10.24,
+      *            "latitude": 20.134,
+      *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+      *            "is_email_confirmed": 1,
+      *            "is_phone_confirmed": 1,
+      *            "is_agree_hr": 1,
+      *            "is_payment_information": 1,
+      *            "is_trip_purpose": 1,
+      *            "is_id_submitted": 1,
+      *            "is_no_negative_reviews": 1,
+      *            "description": "This house is newly constructed and loaded with all facilites.",
+      *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+      *            "desc_interaction_guests": null,
+      *            "desc_neighbourhood": null,
+      *            "desc_getting_around": null,
+      *            "name": "Smart House 3 Star",
+      *            "country_code": "+91",
+      *            "sec_phone_number": "9882554563",
+      *            "advance_notice": 2,
+      *            "cut_off_time": "10 AM",
+      *            "guests_book_time": "4 PM",
+      *            "ci_arrive_after": "11 AM",
+      *            "ci_arrive_before": "12 PM",
+      *            "ci_leave_before": "12 PM",
+      *            "min_stay": 2,
+      *            "max_stay": 2,
+      *            "base_price": 20,
+      *            "is_discount_20": false,
+      *            "is_local_laws": true,
+      *            "is_updated_calender": true,
+      *        }
+      *    ]
+      * }
+      *
+      *
+      */
+
+
+    async lawsAndCalender({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                is_local_laws: schema.boolean.optional([
+                    rules.requiredIfNotExists('is_updated_calender')
+                ]),
+                is_updated_calender: schema.boolean.optional([
+                    rules.requiredIfNotExists('is_local_laws')
+                ])
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const laws_calender = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(laws_calender);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name',
+                    'country_code',
+                    'sec_phone_number',
+                    'advance_notice',
+                    'cut_off_time',
+                    'guests_book_time',
+                    'ci_arrive_after',
+                    'ci_arrive_before',
+                    'ci_leave_before',
+                    'min_stay',
+                    'max_stay',
+                    'base_price',
+                    'is_discount_20',
+                    'is_local_laws',
+                    'is_updated_calender'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property updated'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+    /**
+          * @api {put} /user/hosting/list-property/questions/:id Questions
+          * @apiHeader {String} Device-Type Device Type ios/android.
+          * @apiHeader {String} App-Version Version Code 1.0.0.
+          * @apiHeader {String} Accept-Language Language Code en OR ar.
+          * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+          * @apiVersion 1.0.0
+          * @apiName questions
+          * @apiGroup List Property
+          *
+          * @apiParam {Number} id Property ID (pass as params)
+          * 
+          * @apiParam {Number} [rented_before] I am new = 2, or I have = 1
+          * @apiParam {Number} [have_guests] Not Sure Yet = 1, part-time = 2, as often as possible = 3.
+          * @apiParam {Number} [notice_guest_ba] SameDay = 0, 1day = 1, 2day =2, ba=>before arrive.
+          * @apiParam {Number} [guest_ci_from] Guest Check In Start Time ex: 10.30
+          * @apiParam {Number} [guest_ci_to] Guest Check In End Time ex: 16
+          * 
+          * 
+          * 
+          * @apiParamExample {json} Request-Example 1:
+          *   {
+          *        "notice_guest_ba": 2,
+          *        "guest_ci_from": 10,
+          *        "guest_ci_to": 16
+          *    }
+          * @apiParamExample {json} Request-Example 2:
+          *   {
+          *        "rented_before": 1,
+          *        "have_guests": 1,
+          *    }
+          *
+          * @apiSuccessExample {json} Success-Response:
+          *     HTTP/1.1 201 Created
+          *     
+          * {
+          *    "message": "Property updated",
+          *    "data": [
+          *        {
+          *            "id": 2,
+          *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+          *            "property_type": 1,
+          *            "is_beach_house": 0,
+          *            "is_dedicated_guest_space": 1,
+          *            "is_business_hosting": 1,
+          *            "no_of_guests": 2,
+          *            "no_of_bedrooms": 1,
+          *            "no_of_bathrooms": 2,
+          *            "country": "India",
+          *            "street": "Noida Sector 63",
+          *            "address_optional": "H Block",
+          *            "state": "UP",
+          *            "city": "Noida",
+          *            "zip_code": "300221",
+          *            "longitude": 10.24,
+          *            "latitude": 20.134,
+          *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+          *            "is_email_confirmed": 1,
+          *            "is_phone_confirmed": 1,
+          *            "is_agree_hr": 1,
+          *            "is_payment_information": 1,
+          *            "is_trip_purpose": 1,
+          *            "is_id_submitted": 1,
+          *            "is_no_negative_reviews": 1,
+          *            "description": "This house is newly constructed and loaded with all facilites.",
+          *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+          *            "desc_interaction_guests": null,
+          *            "desc_neighbourhood": null,
+          *            "desc_getting_around": null,
+          *            "name": "Smart House 3 Star",
+          *            "country_code": "+91",
+          *            "sec_phone_number": "9882554563",
+          *            "advance_notice": 2,
+          *            "cut_off_time": 10,
+          *            "guests_book_time": 16,
+          *            "ci_arrive_after": 11,
+          *            "ci_arrive_before": 14,
+          *            "ci_leave_before": 16,
+          *            "min_stay": 2,
+          *            "max_stay": 2,
+          *            "base_price": 20,
+          *            "is_discount_20": false,
+          *            "is_local_laws": true,
+          *            "is_updated_calender": true,
+          *            "have_guests": 2,
+          *            "rented_before": 1,
+          *            "notice_guest_ba": 2,
+          *            "guest_ci_from": 10,
+          *            "guest_ci_to": 16
+          *        }
+          *    ]
+          * }
+          *
+          *
+          */
+
+
+    async PropertyQuestions({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                rented_before: schema.number.optional([
+                    rules.requiredIfNotExists('notice_guest_ba'),
+                    rules.requiredIfExists('have_guests')
+                ]),
+                have_guests: schema.number.optional([
+                    rules.requiredIfNotExists('notice_guest_ba'),
+                    rules.requiredIfExists('rented_before')
+                ]),
+                notice_guest_ba: schema.number.optional([
+                    rules.requiredIfNotExists('have_guests')
+                ]),
+                guest_ci_from: schema.number.optional([
+                    rules.requiredIfExists('notice_guest_ba')
+                ]),
+                guest_ci_to: schema.number.optional([
+                    rules.requiredIfExists('guest_ci_from')
+                ])
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const questions = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(questions);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name',
+                    'country_code',
+                    'sec_phone_number',
+                    'advance_notice',
+                    'cut_off_time',
+                    'guests_book_time',
+                    'ci_arrive_after',
+                    'ci_arrive_before',
+                    'ci_leave_before',
+                    'min_stay',
+                    'max_stay',
+                    'base_price',
+                    'is_discount_20',
+                    'is_local_laws',
+                    'is_updated_calender',
+                    'rented_before',
+                    'have_guests',
+                    'notice_guest_ba',
+                    'guest_ci_from',
+                    'guest_ci_to'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property updated'),
                 data: property
             });
 

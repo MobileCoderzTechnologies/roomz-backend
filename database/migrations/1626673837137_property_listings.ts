@@ -53,15 +53,15 @@ export default class PropertyListings extends BaseSchema {
       table.string('sec_phone_number', 255).nullable();
       //Availability
       table.integer('advance_notice', 255).nullable();
-      table.string('cut_off_time', 255).nullable();
-      table.string('guests_book_time', 255).nullable();
-      table.string('ci_arrive_after', 255).nullable();
-      table.string('ci_arrive_before', 255).nullable();
-      table.string('ci_leave_before', 255).nullable();
+      table.decimal('cut_off_time', 10,2).nullable();
+      table.decimal('guests_book_time', 10,2).nullable();
+      table.decimal('ci_arrive_after', 10,2).nullable();
+      table.decimal('ci_arrive_before', 10,2).nullable();
+      table.decimal('ci_leave_before', 10,2).nullable();
       table.integer('min_stay').nullable();
       table.integer('max_stay').nullable();
 
-      
+
       table.integer('base_price').nullable();
       table.boolean('is_discount_20').defaultTo(true);
 
@@ -71,9 +71,9 @@ export default class PropertyListings extends BaseSchema {
       table.integer('rented_before').nullable();
       table.integer('have_guests').nullable();
       table.integer('notice_guest_ba').nullable();
-      table.string('guest_ci_from', 255).nullable();
-      table.string('guest_ci_to', 255).nullable();
-      
+      table.decimal('guest_ci_from', 10, 2).nullable();
+      table.decimal('guest_ci_to', 10, 2).nullable();
+
       table.integer('weekly_discount').nullable();
       table.integer('monthly_discount').nullable();
 
