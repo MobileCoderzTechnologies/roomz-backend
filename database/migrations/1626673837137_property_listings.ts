@@ -3,7 +3,7 @@ import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 export default class PropertyListings extends BaseSchema {
   protected tableName = 'property_listings'
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.uuid('uid');
@@ -17,16 +17,16 @@ export default class PropertyListings extends BaseSchema {
       table.integer('no_of_bathrooms').notNullable().defaultTo(0);
 
       // address 
-      table.string('country',255).nullable();
+      table.string('country', 255).nullable();
       table.string('address_optional', 255).nullable();
       table.string('street', 255).nullable();
       table.string('city', 255).nullable();
       table.string('state', 255).nullable();
       table.string('zip_code', 255).nullable();
-      table.decimal('latitude', 10,6).nullable();
-      table.decimal('longitude', 10,6).nullable();
+      table.decimal('latitude', 10, 6).nullable();
+      table.decimal('longitude', 10, 6).nullable();
       table.text('location').nullable();
-      
+
       // Review Roomz's guest requirements 
 
       table.boolean('is_email_confirmed').nullable();
@@ -46,43 +46,47 @@ export default class PropertyListings extends BaseSchema {
 
       //name
       table.string('name', 255).nullable();
-      
+
       // alternate phone number
 
       table.string('country_code', 255).nullable();
       table.string('sec_phone_number', 255).nullable();
       //Availability
-      table.string('advance_notice', 255).nullable();
+      table.integer('advance_notice', 255).nullable();
       table.string('cut_off_time', 255).nullable();
-      table.string('guests_book', 255).nullable();
-      table.string('check_in_aa', 255).nullable();
-      table.string('check_in_ab', 255).nullable();
-      table.string('check_in_lb', 255).nullable();
+      table.string('guests_book_time', 255).nullable();
+      table.string('ci_arrive_after', 255).nullable();
+      table.string('ci_arrive_before', 255).nullable();
+      table.string('ci_leave_before', 255).nullable();
       table.integer('min_stay').nullable();
       table.integer('max_stay').nullable();
+
+      
       table.integer('base_price').nullable();
       table.boolean('is_discount_20').defaultTo(true);
 
       table.boolean('is_local_laws').notNullable().defaultTo(true);
       table.boolean('is_updated_calender').nullable();
+
       table.integer('rented_before').nullable();
       table.integer('have_guests').nullable();
       table.integer('notice_guest_ba').nullable();
       table.string('guest_ci_from', 255).nullable();
       table.string('guest_ci_to', 255).nullable();
+      
       table.integer('weekly_discount').nullable();
       table.integer('monthly_discount').nullable();
 
 
       table.boolean('is_draft').defaultTo(true);
-      table.boolean('is_completed').defaultTo(false);
+      table.boolean('is_published').defaultTo(false);
       table.boolean('is_deleted').defaultTo(false);
 
       table.timestamps(true)
     })
   }
 
-  public async down () {
+  public async down() {
     this.schema.dropTable(this.tableName)
   }
 }

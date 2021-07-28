@@ -120,7 +120,7 @@ export default class PropertyController {
     * @apiName beds
     * @apiGroup List Property
     *
-    * @apiParam {Number} id Property unique ID (pass as params)
+    * @apiParam {Number} id Property ID (pass as params)
     * 
     * @apiParam {Number} no_of_guests
     * @apiParam {Number} no_of_bathrooms
@@ -328,7 +328,7 @@ export default class PropertyController {
     * @apiName address
     * @apiGroup List Property
     *
-    * @apiParam {Number} id Property unique ID (pass as params)
+    * @apiParam {Number} id Property ID (pass as params)
     * 
     * @apiParam {String} country property located in country
     * @apiParam {String} street  house name/number street/road
@@ -471,7 +471,7 @@ export default class PropertyController {
     * @apiName location
     * @apiGroup List Property
     *
-    * @apiParam {Number} id Property unique ID (pass as params)
+    * @apiParam {Number} id Property ID (pass as params)
     * 
     * @apiParam {Number} longitude Ex 10.24
     * @apiParam {Number} latitude  Ex 20.135
@@ -605,7 +605,7 @@ export default class PropertyController {
     * @apiName amenities
     * @apiGroup List Property
     *
-    * @apiParam {Number} id Property unique ID (pass as params)
+    * @apiParam {Number} id Property ID (pass as params)
     * 
     * @apiParam {Number[]} amenities Array of Ids of amenities
     * 
@@ -724,7 +724,7 @@ export default class PropertyController {
    * @apiName guest-requirements
    * @apiGroup List Property
    *
-   * @apiParam {Number} id Property unique ID (pass as params)
+   * @apiParam {Number} id Property ID (pass as params)
    * 
    * @apiParam {Boolean} is_email_confirmed 
    * @apiParam {Boolean} is_phone_confirmed 
@@ -884,7 +884,7 @@ export default class PropertyController {
     * @apiName house-rules
     * @apiGroup List Property
     *
-    * @apiParam {Number} id Property unique ID (pass as params)
+    * @apiParam {Number} id Property  ID (pass as params)
     * 
     * @apiParam {object[]} property_rules Array of house rules
     * 
@@ -1060,7 +1060,7 @@ export default class PropertyController {
     * @apiName property-details
     * @apiGroup List Property
     *
-    * @apiParam {Number} id Property unique ID (pass as params)
+    * @apiParam {Number} id Property ID (pass as params)
     * 
     * @apiParam {object[]} property_details Array of details
     * 
@@ -1182,7 +1182,7 @@ export default class PropertyController {
       * @apiName description
       * @apiGroup List Property
       *
-      * @apiParam {Number} id Property unique ID (pass as params)
+      * @apiParam {Number} id Property ID (pass as params)
       * 
       * @apiParam {string} description Describe your place to guests 
       * @apiParam {String} [desc_your_space] about your spaces 
@@ -1350,7 +1350,7 @@ export default class PropertyController {
       * @apiName name
       * @apiGroup List Property
       *
-      * @apiParam {Number} id Property unique ID (pass as params)
+      * @apiParam {Number} id Property  ID (pass as params)
       * 
       * @apiParam {string} name Name of Listing 
       * 
@@ -1472,6 +1472,512 @@ export default class PropertyController {
             if (!property) property = [];
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property name added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+    /**
+      * @api {put} /user/hosting/list-property/phone-number/:id Add Sec Phone Number
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName phone_number
+      * @apiGroup List Property
+      *
+      * @apiParam {Number} id Property  ID (pass as params)
+      * 
+      * @apiParam {string} [country_code] Country Code 
+      * @apiParam {string} [sec_phone_number] Phone Number 
+      * 
+      * 
+      * @apiParamExample {json} Request-Example:
+      *  {
+      *     "country_code": "+91",
+      *     "sec_phone_number": "9882553654"
+      *   }
+      *
+      * @apiSuccessExample {json} Success-Response:
+      *     HTTP/1.1 201 Created
+      *     
+      * {
+      *    "message": "Property secondary phone number added",
+      *    "data": [
+      *        {
+      *            "id": 2,
+      *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+      *            "property_type": 1,
+      *            "is_beach_house": 0,
+      *            "is_dedicated_guest_space": 1,
+      *            "is_business_hosting": 1,
+      *            "no_of_guests": 2,
+      *            "no_of_bedrooms": 1,
+      *            "no_of_bathrooms": 2,
+      *            "country": "India",
+      *            "street": "Noida Sector 63",
+      *            "address_optional": "H Block",
+      *            "state": "UP",
+      *            "city": "Noida",
+      *            "zip_code": "300221",
+      *            "longitude": 10.24,
+      *            "latitude": 20.134,
+      *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+      *            "is_email_confirmed": 1,
+      *            "is_phone_confirmed": 1,
+      *            "is_agree_hr": 1,
+      *            "is_payment_information": 1,
+      *            "is_trip_purpose": 1,
+      *            "is_id_submitted": 1,
+      *            "is_no_negative_reviews": 1,
+      *            "description": "This house is newly constructed and loaded with all facilites.",
+      *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+      *            "desc_interaction_guests": null,
+      *            "desc_neighbourhood": null,
+      *            "desc_getting_around": null,
+      *            "name": "Smart House 3 Star",
+      *            "country_code": "+91",
+      *            "sec_phone_number": "9882553654"
+      *        }
+      *    ]
+      * }
+      *
+      *
+      */
+
+
+    async addSecPhoneNumber({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                country_code: schema.string.optional(),
+                sec_phone_number: schema.string.optional(),
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const phone_data = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(phone_data);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name',
+                    'country_code',
+                    'sec_phone_number'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property secondary phone number added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+    /**
+      * @api {put} /user/hosting/list-property/availability/:id Set Availability
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName availability
+      * @apiGroup List Property
+      *
+      * @apiParam {Number} id Property ID (pass as params)
+      * 
+      * @apiParam {Number} advance_notice sameDay = 0, 1day: 1, 2day: 2, 3day: 3
+      * @apiParam {String} cut_off_time Same Day cut-off time 
+      * @apiParam {String} guests_book_time How far the future guests can book 
+      * @apiParam {String} ci_arrive_after Check In arrive after 
+      * @apiParam {String} ci_arrive_before Check In arrive before 
+      * @apiParam {String} ci_leave_before Check In leave before 
+      * @apiParam {Number} min_stay  NUmber of nights
+      * @apiParam {Number} max_stay  NUmber of nights
+      * 
+      * 
+      * @apiParamExample {json} Request-Example:
+      *   {
+      *       "advance_notice": 2,
+      *       "cut_off_time": "10 AM",
+      *       "guests_book_time": "4 PM",
+      *       "ci_arrive_after": "11 AM",
+      *       "ci_arrive_before": "12 PM",
+      *       "ci_leave_before": "12 PM",
+      *       "min_stay": 2,
+      *       "max_stay": 2
+      *    }
+      *
+      * @apiSuccessExample {json} Success-Response:
+      *     HTTP/1.1 201 Created
+      *     
+      * {
+      *    "message": "Property name added",
+      *    "data": [
+      *        {
+      *            "id": 2,
+      *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+      *            "property_type": 1,
+      *            "is_beach_house": 0,
+      *            "is_dedicated_guest_space": 1,
+      *            "is_business_hosting": 1,
+      *            "no_of_guests": 2,
+      *            "no_of_bedrooms": 1,
+      *            "no_of_bathrooms": 2,
+      *            "country": "India",
+      *            "street": "Noida Sector 63",
+      *            "address_optional": "H Block",
+      *            "state": "UP",
+      *            "city": "Noida",
+      *            "zip_code": "300221",
+      *            "longitude": 10.24,
+      *            "latitude": 20.134,
+      *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+      *            "is_email_confirmed": 1,
+      *            "is_phone_confirmed": 1,
+      *            "is_agree_hr": 1,
+      *            "is_payment_information": 1,
+      *            "is_trip_purpose": 1,
+      *            "is_id_submitted": 1,
+      *            "is_no_negative_reviews": 1,
+      *            "description": "This house is newly constructed and loaded with all facilites.",
+      *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+      *            "desc_interaction_guests": null,
+      *            "desc_neighbourhood": null,
+      *            "desc_getting_around": null,
+      *            "name": "Smart House 3 Star",
+      *            "country_code": "+91",
+      *            "sec_phone_number": "9882554563",
+      *            "advance_notice": 2,
+      *            "cut_off_time": "10 AM",
+      *            "guests_book_time": "4 PM",
+      *            "ci_arrive_after": "11 AM",
+      *            "ci_arrive_before": "12 PM",
+      *            "ci_leave_before": "12 PM",
+      *            "min_stay": 2,
+      *            "max_stay": 2
+      *        }
+      *    ]
+      * }
+      *
+      *
+      */
+
+
+    async setPropertyAvailability({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                advance_notice: schema.number(),
+                cut_off_time: schema.string({ trim: true }),
+                guests_book_time: schema.string({ trim: true }),
+                ci_arrive_before: schema.string({ trim: true }),
+                ci_arrive_after: schema.string({ trim: true }),
+                ci_leave_before: schema.string({ trim: true }),
+                min_stay: schema.number([
+                    rules.range(1, 100)
+                ]),
+                max_stay: schema.number([
+                    rules.range(1, 100)
+                ])
+
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const availability = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(availability);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name',
+                    'country_code',
+                    'sec_phone_number',
+                    'advance_notice',
+                    'cut_off_time',
+                    'guests_book_time',
+                    'ci_arrive_after',
+                    'ci_arrive_before',
+                    'ci_leave_before',
+                    'min_stay',
+                    'max_stay'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property availability added'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+    /**
+      * @api {put} /user/hosting/list-property/pricing/:id Set Price
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName pricing
+      * @apiGroup List Property
+      *
+      * @apiParam {Number} id Property ID (pass as params)
+      * 
+      * @apiParam {Number} base_price price of your Property per night
+      * @apiParam {Boolean} [is_discount_20] 20% discount on your property (default = true)
+      * 
+      * 
+      * 
+      * @apiParamExample {json} Request-Example:
+      *   {
+      *       "base_price": 20,
+      *       "is_discount_20": false,
+      *    }
+      *
+      * @apiSuccessExample {json} Success-Response:
+      *     HTTP/1.1 201 Created
+      *     
+      * {
+      *    "message": "Property price added",
+      *    "data": [
+      *        {
+      *            "id": 2,
+      *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+      *            "property_type": 1,
+      *            "is_beach_house": 0,
+      *            "is_dedicated_guest_space": 1,
+      *            "is_business_hosting": 1,
+      *            "no_of_guests": 2,
+      *            "no_of_bedrooms": 1,
+      *            "no_of_bathrooms": 2,
+      *            "country": "India",
+      *            "street": "Noida Sector 63",
+      *            "address_optional": "H Block",
+      *            "state": "UP",
+      *            "city": "Noida",
+      *            "zip_code": "300221",
+      *            "longitude": 10.24,
+      *            "latitude": 20.134,
+      *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+      *            "is_email_confirmed": 1,
+      *            "is_phone_confirmed": 1,
+      *            "is_agree_hr": 1,
+      *            "is_payment_information": 1,
+      *            "is_trip_purpose": 1,
+      *            "is_id_submitted": 1,
+      *            "is_no_negative_reviews": 1,
+      *            "description": "This house is newly constructed and loaded with all facilites.",
+      *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+      *            "desc_interaction_guests": null,
+      *            "desc_neighbourhood": null,
+      *            "desc_getting_around": null,
+      *            "name": "Smart House 3 Star",
+      *            "country_code": "+91",
+      *            "sec_phone_number": "9882554563",
+      *            "advance_notice": 2,
+      *            "cut_off_time": "10 AM",
+      *            "guests_book_time": "4 PM",
+      *            "ci_arrive_after": "11 AM",
+      *            "ci_arrive_before": "12 PM",
+      *            "ci_leave_before": "12 PM",
+      *            "min_stay": 2,
+      *            "max_stay": 2,
+      *            "base_price": 20,
+      *            "is_discount_20": false
+      *        }
+      *    ]
+      * }
+      *
+      *
+      */
+
+
+    async setPropertyPricing({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                base_price: schema.number(),
+                is_discount_20: schema.boolean.optional()
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const price = { ...body };
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update(price);
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name',
+                    'country_code',
+                    'sec_phone_number',
+                    'advance_notice',
+                    'cut_off_time',
+                    'guests_book_time',
+                    'ci_arrive_after',
+                    'ci_arrive_before',
+                    'ci_leave_before',
+                    'min_stay',
+                    'max_stay',
+                    'base_price',
+                    'is_discount_20'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property price added'),
                 data: property
             });
 

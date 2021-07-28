@@ -73,6 +73,15 @@ Route.group(() => {
 
   Route.put('list-property/name/:id', 'User/PropertyController.addPropertyName');
 
+  Route.put('list-property/availability/:id', 'User/PropertyController.setPropertyAvailability');
+
+  Route.put('list-property/phone-number/:id', 'User/PropertyController.addSecPhoneNumber');
+
+  Route.put('list-property/pricing/:id', 'User/PropertyController.setPropertyPricing');
+
+
+
+
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
 

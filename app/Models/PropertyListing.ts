@@ -107,22 +107,22 @@ export default class PropertyListing extends BaseModel {
   public sec_phone_number: string;
 
   @column()
-  public advance_notice: string;
+  public advance_notice: number;
 
   @column()
   public cut_off_time: string;
 
   @column()
-  public guests_book: string;
+  public guests_book_time: string;
 
   @column()
-  public check_in_aa: string; // aa => arrive after
+  public ci_arrive_after: string; // ci +> check in
 
   @column()
-  public check_in_ab: string; //ab => arrive before
+  public ci_arrive_before: string; 
 
   @column()
-  public check_in_lb: string //lb => leave before
+  public ci_leave_before: string;
 
   @column()
   public min_stay: number; //in nights
