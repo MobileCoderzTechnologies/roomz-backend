@@ -9,6 +9,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator';
 // Transaltion
 import i18n from 'App/Helpers/i18n';
 import { v4 as uuid } from "uuid";
+import { PROPERTY_STATUS } from 'App/Constants/PropertyConstant';
 const t = i18n.__;
 
 
@@ -2373,6 +2374,239 @@ export default class PropertyController {
             });
         }
     }
+
+
+
+    /**
+          * @api {put} /user/hosting/list-property/discounts/:id Long Term Discounts
+          * @apiHeader {String} Device-Type Device Type ios/android.
+          * @apiHeader {String} App-Version Version Code 1.0.0.
+          * @apiHeader {String} Accept-Language Language Code en OR ar.
+          * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+          * @apiVersion 1.0.0
+          * @apiName discounts
+          * @apiGroup List Property
+          *
+          * @apiParam {Number} id Property ID (pass as params)
+          * 
+          * @apiParam {Number} weekly_discount 
+          * @apiParam {Number} monthly_discount
+          *  
+          * 
+          * @apiParamExample {json} Request-Example :
+          *   {
+          *        "weekly_discount": 5,
+          *        "monthly_discount": 17,
+          *    }
+          *
+          * @apiSuccessExample {json} Success-Response:
+          *     HTTP/1.1 201 Created
+          *     
+          * {
+          *    "message": "Property updated",
+          *    "data": [
+          *        {
+          *            "id": 2,
+          *            "uid": "31195908-2d43-4905-a28e-faa17de2588b",
+          *            "property_type": 1,
+          *            "is_beach_house": 0,
+          *            "is_dedicated_guest_space": 1,
+          *            "is_business_hosting": 1,
+          *            "no_of_guests": 2,
+          *            "no_of_bedrooms": 1,
+          *            "no_of_bathrooms": 2,
+          *            "country": "India",
+          *            "street": "Noida Sector 63",
+          *            "address_optional": "H Block",
+          *            "state": "UP",
+          *            "city": "Noida",
+          *            "zip_code": "300221",
+          *            "longitude": 10.24,
+          *            "latitude": 20.134,
+          *            "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+          *            "is_email_confirmed": 1,
+          *            "is_phone_confirmed": 1,
+          *            "is_agree_hr": 1,
+          *            "is_payment_information": 1,
+          *            "is_trip_purpose": 1,
+          *            "is_id_submitted": 1,
+          *            "is_no_negative_reviews": 1,
+          *            "description": "This house is newly constructed and loaded with all facilites.",
+          *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
+          *            "desc_interaction_guests": null,
+          *            "desc_neighbourhood": null,
+          *            "desc_getting_around": null,
+          *            "name": "Smart House 3 Star",
+          *            "country_code": "+91",
+          *            "sec_phone_number": "9882554563",
+          *            "advance_notice": 2,
+          *            "cut_off_time": 10,
+          *            "guests_book_time": 16,
+          *            "ci_arrive_after": 11,
+          *            "ci_arrive_before": 14,
+          *            "ci_leave_before": 16,
+          *            "min_stay": 2,
+          *            "max_stay": 2,
+          *            "base_price": 20,
+          *            "is_discount_20": false,
+          *            "is_local_laws": true,
+          *            "is_updated_calender": true,
+          *            "have_guests": 2,
+          *            "rented_before": 1,
+          *            "notice_guest_ba": 2,
+          *            "guest_ci_from": 10,
+          *            "guest_ci_to": 16,
+          *            "weekly_discount": 5,
+          *            "monthly_discount": 17,
+          *        }
+          *    ]
+          * }
+          *
+          *
+          */
+
+
+    async longTermDiscounts({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            let validateSchema = schema.create({
+                weekly_discount: schema.number.optional([
+                    rules.requiredIfNotExists('monthly_discount')
+                ]),
+                monthly_discount: schema.number.optional([
+                    rules.requiredIfNotExists('weekly_discount')
+                ])
+            });
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const { monthly_discount = 0, weekly_discount = 0 } = body;
+
+        try {
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update({ monthly_discount, weekly_discount });
+
+            let property = await PropertyListing.query()
+                .where('id', property_id)
+                .select(
+                    'id',
+                    'uid',
+                    'property_type',
+                    'is_beach_house',
+                    'is_dedicated_guest_space',
+                    'is_business_hosting',
+                    'no_of_guests',
+                    'no_of_bedrooms',
+                    'no_of_bathrooms',
+                    'country',
+                    'street',
+                    'address_optional',
+                    'state',
+                    'city',
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location',
+                    'is_email_confirmed',
+                    'is_phone_confirmed',
+                    'is_agree_hr',
+                    'is_payment_information',
+                    'is_trip_purpose',
+                    'is_id_submitted',
+                    'is_no_negative_reviews',
+                    'description',
+                    'desc_your_space',
+                    'desc_interaction_guests',
+                    'desc_neighbourhood',
+                    'desc_getting_around',
+                    'name',
+                    'country_code',
+                    'sec_phone_number',
+                    'advance_notice',
+                    'cut_off_time',
+                    'guests_book_time',
+                    'ci_arrive_after',
+                    'ci_arrive_before',
+                    'ci_leave_before',
+                    'min_stay',
+                    'max_stay',
+                    'base_price',
+                    'is_discount_20',
+                    'is_local_laws',
+                    'is_updated_calender',
+                    'rented_before',
+                    'have_guests',
+                    'notice_guest_ba',
+                    'guest_ci_from',
+                    'guest_ci_to',
+                    'monthly_discount',
+                    'weekly_discount',
+                    'status'
+                )
+                .finally();
+
+            if (!property) property = [];
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property updated'),
+                data: property
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+    /**
+          * @api {get} /user/hosting/list-property/publish/:id Publish Property
+          * @apiHeader {String} Device-Type Device Type ios/android.
+          * @apiHeader {String} App-Version Version Code 1.0.0.
+          * @apiHeader {String} Accept-Language Language Code en OR ar.
+          * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+          * @apiVersion 1.0.0
+          * @apiName publish
+          * @apiGroup List Property
+          *
+          * @apiParam {Number} id Property ID (pass as params)
+          * @apiSuccessExample {json} Success-Response:
+          *     HTTP/1.1 200 Success
+          * {
+          *      "message": "Property published"
+          *  }
+          * 
+          */
+
+    async publishProperty({ params, response }: HttpContextContract) {
+        try {
+            const property_id = params.id;
+
+            await PropertyListing.query()
+                .where('id', property_id)
+                .update({ status: PROPERTY_STATUS.published });
+
+            return response.status(Response.HTTP_OK).json({
+                message: t('Property published'),
+            });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
 
 
 

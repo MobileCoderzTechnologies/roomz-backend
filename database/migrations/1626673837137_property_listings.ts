@@ -1,4 +1,5 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { PROPERTY_STATUS } from 'App/Constants/PropertyConstant';
 
 export default class PropertyListings extends BaseSchema {
   protected tableName = 'property_listings'
@@ -78,10 +79,7 @@ export default class PropertyListings extends BaseSchema {
       table.integer('monthly_discount').nullable();
 
 
-      table.boolean('is_draft').defaultTo(true);
-      table.boolean('is_published').defaultTo(false);
-      table.boolean('is_deleted').defaultTo(false);
-
+      table.integer('status').notNullable().defaultTo(PROPERTY_STATUS.draft)
       table.timestamps(true)
     })
   }

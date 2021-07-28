@@ -23,3 +23,10 @@ export const ADVANCE_NOTICE = {
   day3: 3,
   day7: 7,
 };
+
+export const PROPERTY_STATUS = {
+  draft: 1,
+  published: 2,
+  blocked: 3,
+  deleted: 4,
+}

@@ -56,7 +56,7 @@ Route.group(() => {
   // property controller
 
   Route.group(() => {
-    Route.post('type', 'User/PropertyController.addPropertyType');
+    Route.post('type/:id?', 'User/PropertyController.addPropertyType');
 
     Route.put('beds/:id', 'User/PropertyController.addBeds');
 
@@ -85,6 +85,10 @@ Route.group(() => {
     Route.put('laws-and-calender/:id', 'User/PropertyController.lawsAndCalender');
 
     Route.put('questions/:id', 'User/PropertyController.PropertyQuestions');
+
+    Route.put('discounts/:id', 'User/PropertyController.longTermDiscounts');
+
+    Route.get('publish/:id','User/PropertyController.publishProperty');
 
   }).prefix('list-property');
 
