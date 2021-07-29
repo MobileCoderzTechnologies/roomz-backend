@@ -8,9 +8,9 @@ import PropertyDetail from 'App/Models/PropertyDetail';
 import { schema, rules } from '@ioc:Adonis/Core/Validator';
 // Transaltion
 import i18n from 'App/Helpers/i18n';
+const t = i18n.__;
 import { v4 as uuid } from "uuid";
 import { PROPERTY_STATUS } from 'App/Constants/PropertyConstant';
-const t = i18n.__;
 
 
 export default class PropertyController {
@@ -59,7 +59,8 @@ export default class PropertyController {
   *   }
   *
   */
-    async addPropertyType({ request, response }: HttpContextContract) {
+    async addPropertyType({ request, params, response }: HttpContextContract) {
+        const property_id = params.id || null;
         const property_type = request.input("property_type");
         const is_beach_house = request.input("is_beach_house");
         const is_dedicated_guest_space = request.input("is_dedicated_guest_space");
@@ -92,13 +93,39 @@ export default class PropertyController {
         }
 
         try {
-            const property = await PropertyListing.create({
-                uid: uuid(),
-                property_type,
-                is_beach_house,
-                is_dedicated_guest_space,
-                is_business_hosting
-            });
+            let property;
+            if (property_id) {
+                await PropertyListing.query()
+                    .where('id', property_id)
+                    .update({
+                        property_type,
+                        is_beach_house,
+                        is_dedicated_guest_space,
+                        is_business_hosting
+                    });
+
+                property = await PropertyListing.query()
+                    .where('id', property_id)
+                    .select(
+                        'id',
+                        'uid',
+                        'property_type',
+                        'is_beach_house',
+                        'is_dedicated_guest_space',
+                        'is_business_hosting'
+                    )
+                    .first();
+            }
+            else {
+                property = await PropertyListing.create({
+                    uid: uuid(),
+                    property_type,
+                    is_beach_house,
+                    is_dedicated_guest_space,
+                    is_business_hosting
+                });
+            }
+
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property type added'),
                 data: property
@@ -731,7 +758,7 @@ export default class PropertyController {
    * @apiParam {Boolean} is_phone_confirmed 
    * @apiParam {Boolean} is_payment_information 
    * @apiParam {Boolean} is_trip_purpose 
-   * @apiParam {Boolean} is_no_negative_reviews 
+   * @apiParam {Boolean} is_recommended_from_oh 
    * @apiParam {Boolean} is_id_submitted  guest submitted their id
    * @apiParam {Boolean} is_agree_hr guests agree for home rules (hr) 
    * 
@@ -746,7 +773,7 @@ export default class PropertyController {
    *   "is_agree_hr": true,
    *   "is_trip_purpose": true,
    *   "is_id_submitted": true,
-   *   "is_no_negative_reviews": true
+   *   "is_recommended_from_oh": true
    *   }
    *
    * @apiSuccessExample {json} Success-Response:
@@ -780,7 +807,7 @@ export default class PropertyController {
    *            "is_payment_information": 1,
    *            "is_trip_purpose": 1,
    *            "is_id_submitted": 1,
-   *            "is_no_negative_reviews": 1,
+   *            "is_recommended_from_oh": 1,
    *        }
    *    ]
    * }
@@ -810,7 +837,7 @@ export default class PropertyController {
                 is_agree_hr: schema.boolean.optional(),
                 is_trip_purpose: schema.boolean.optional(),
                 is_id_submitted: schema.boolean.optional(),
-                is_no_negative_reviews: schema.boolean.optional(),
+                is_recommended_from_oh: schema.boolean.optional(),
             });
             await request.validate({ schema: validateSchema });
         } catch (error) {
@@ -856,7 +883,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews'
+                    'is_recommended_from_oh'
                 )
                 .finally();
 
@@ -1231,7 +1258,7 @@ export default class PropertyController {
       *            "is_payment_information": 1,
       *            "is_trip_purpose": 1,
       *            "is_id_submitted": 1,
-      *            "is_no_negative_reviews": 1,
+      *            "is_recommended_from_oh": 1,
       *            "description": "This house is newly constructed and loaded with all facilites.",
       *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
       *            "desc_interaction_guests": null,
@@ -1315,7 +1342,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -1392,7 +1419,7 @@ export default class PropertyController {
       *            "is_payment_information": 1,
       *            "is_trip_purpose": 1,
       *            "is_id_submitted": 1,
-      *            "is_no_negative_reviews": 1,
+      *            "is_recommended_from_oh": 1,
       *            "description": "This house is newly constructed and loaded with all facilites.",
       *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
       *            "desc_interaction_guests": null,
@@ -1460,7 +1487,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -1539,7 +1566,7 @@ export default class PropertyController {
       *            "is_payment_information": 1,
       *            "is_trip_purpose": 1,
       *            "is_id_submitted": 1,
-      *            "is_no_negative_reviews": 1,
+      *            "is_recommended_from_oh": 1,
       *            "description": "This house is newly constructed and loaded with all facilites.",
       *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
       *            "desc_interaction_guests": null,
@@ -1607,7 +1634,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -1699,7 +1726,7 @@ export default class PropertyController {
       *            "is_payment_information": 1,
       *            "is_trip_purpose": 1,
       *            "is_id_submitted": 1,
-      *            "is_no_negative_reviews": 1,
+      *            "is_recommended_from_oh": 1,
       *            "description": "This house is newly constructed and loaded with all facilites.",
       *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
       *            "desc_interaction_guests": null,
@@ -1786,7 +1813,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -1876,7 +1903,7 @@ export default class PropertyController {
       *            "is_payment_information": 1,
       *            "is_trip_purpose": 1,
       *            "is_id_submitted": 1,
-      *            "is_no_negative_reviews": 1,
+      *            "is_recommended_from_oh": 1,
       *            "description": "This house is newly constructed and loaded with all facilites.",
       *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
       *            "desc_interaction_guests": null,
@@ -1954,7 +1981,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -2045,7 +2072,7 @@ export default class PropertyController {
       *            "is_payment_information": 1,
       *            "is_trip_purpose": 1,
       *            "is_id_submitted": 1,
-      *            "is_no_negative_reviews": 1,
+      *            "is_recommended_from_oh": 1,
       *            "description": "This house is newly constructed and loaded with all facilites.",
       *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
       *            "desc_interaction_guests": null,
@@ -2129,7 +2156,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -2232,7 +2259,7 @@ export default class PropertyController {
           *            "is_payment_information": 1,
           *            "is_trip_purpose": 1,
           *            "is_id_submitted": 1,
-          *            "is_no_negative_reviews": 1,
+          *            "is_recommended_from_oh": 1,
           *            "description": "This house is newly constructed and loaded with all facilites.",
           *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
           *            "desc_interaction_guests": null,
@@ -2332,7 +2359,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',
@@ -2430,7 +2457,7 @@ export default class PropertyController {
           *            "is_payment_information": 1,
           *            "is_trip_purpose": 1,
           *            "is_id_submitted": 1,
-          *            "is_no_negative_reviews": 1,
+          *            "is_recommended_from_oh": 1,
           *            "description": "This house is newly constructed and loaded with all facilites.",
           *            "desc_your_space": "There is a common area 20x20 ft, and a loan wiht 100x100 ft.",
           *            "desc_interaction_guests": null,
@@ -2521,7 +2548,7 @@ export default class PropertyController {
                     'is_payment_information',
                     'is_trip_purpose',
                     'is_id_submitted',
-                    'is_no_negative_reviews',
+                    'is_recommended_from_oh',
                     'description',
                     'desc_your_space',
                     'desc_interaction_guests',

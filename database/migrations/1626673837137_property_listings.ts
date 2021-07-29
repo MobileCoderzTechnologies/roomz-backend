@@ -36,7 +36,7 @@ export default class PropertyListings extends BaseSchema {
       table.boolean('is_agree_hr').nullable();
       table.boolean('is_trip_purpose').nullable();
       table.boolean('is_id_submitted').nullable();
-      table.boolean('is_no_negative_reviews').nullable();
+      table.boolean('is_recommended_from_oh').nullable();
 
       //description
       table.text('description').nullable();

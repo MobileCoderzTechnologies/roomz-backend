@@ -79,7 +79,7 @@ export default class PropertyListing extends BaseModel {
   public is_id_submitted: boolean; // id issued by government
 
   @column()
-  public is_no_negative_reviews: boolean; // reviews and recommended by other hosts
+  public is_recommended_from_oh: boolean; // reviews and recommended by other hosts
 
   // property description 
   @column()
@@ -164,13 +164,8 @@ export default class PropertyListing extends BaseModel {
   public monthly_discount: number;
 
   @column()
-  public is_draft: boolean;
+  public status: number;
 
-  @column()
-  public is_completed: boolean;
-
-  @column()
-  public is_deleted: boolean;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;

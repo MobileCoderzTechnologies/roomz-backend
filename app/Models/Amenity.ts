@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { afterFetch, BaseModel, column } from '@ioc:Adonis/Lucid/Orm';
+import i18n from 'App/Helpers/i18n';
+const t = i18n.__;
 
 export default class Amenity extends BaseModel {
   @column({ isPrimary: true })
@@ -21,5 +23,14 @@ export default class Amenity extends BaseModel {
   public description: string;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+  @afterFetch()
+  public static async translate(query){
+    query.map(item => {
+      item.name = t(item.name);
+      if(item.description) item.description = t(item.description);
+      return item;
+    });
+  }
 }
