@@ -30,4 +30,28 @@ export class FileUploadOnS3 {
       return false;
     }
   }
+
+
+  static async removeFileFromS3(fileRemoteName) {
+    try {
+      const s3 = new S3({
+        accessKeyId: Env.get('S3_KEY'),
+        secretAccessKey: Env.get('S3_SECRET'),
+        region: Env.get('S3_REGION')
+      });
+      const params = {
+        Bucket: Env.get('S3_BUCKET'),
+        Delete: {
+          Objects: [{
+            Key: fileRemoteName
+          }]
+        }
+      };
+      await s3.deleteObjects(params);
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
 }

@@ -43,6 +43,17 @@ Route.group(() => {
 
 
 Route.group(() => {
+
+  Route.get('my-profile', 'User/UsersController.getMyProfile');
+
+  Route.post('profile-photo', 'User/UsersController.updateProfilePhoto');
+
+  Route.put('phone-number', 'User/UsersController.updatePhoneNumber');
+
+}).prefix('user').middleware(['locale', 'auth', 'userStatus'])
+
+
+Route.group(() => {
   Route.get('bed-types', 'User/HostingController.getBedTypes');
 
   Route.get('property-types', 'User/HostingController.getPropertyTypes');
@@ -90,7 +101,7 @@ Route.group(() => {
 
     Route.put('discounts/:id', 'User/PropertyController.longTermDiscounts');
 
-    Route.get('publish/:id','User/PropertyController.publishProperty');
+    Route.get('publish/:id', 'User/PropertyController.publishProperty');
 
   }).prefix('list-property');
 

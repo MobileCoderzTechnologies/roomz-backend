@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import { afterFetch, afterFind, afterPaginate, BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm';
+import Env from '@ioc:Adonis/Core/Env';
 import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class User extends BaseModel {
@@ -71,5 +72,22 @@ export default class User extends BaseModel {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password);
     }
+  };
+
+  @afterFind()
+  public static profileUrl(user: User) {
+      if (user.avatar) {
+        user.avatar = `${Env.get('ASSET_URL_S3')}${user.avatar}`;
+      }
+  };
+
+  @afterFetch()
+  public static profileUrls(users: User[]) {
+    users = users.map(user => {
+      if (user.avatar) {
+        user.avatar = `${Env.get('ASSET_URL_S3')}${user.avatar}`;
+      }
+      return user;
+    })
   }
 }
