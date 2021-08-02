@@ -81,6 +81,8 @@ export default class PropertyListing extends BaseModel {
   @column()
   public is_recommended_from_oh: boolean; // reviews and recommended by other hosts
 
+  @column()
+  public cover_photo: boolean;
   // property description 
   @column()
   public description: string;

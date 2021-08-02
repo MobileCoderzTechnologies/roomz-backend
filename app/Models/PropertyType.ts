@@ -21,7 +21,7 @@ export default class PropertyType extends BaseModel {
 
   @afterFetch()
   public static async translate(query){
-    query.map(item => {
+    query = query.map(item => {
       item.property_type = t(item.bed_type);
       return item;
     });

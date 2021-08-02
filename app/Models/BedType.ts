@@ -23,7 +23,6 @@ export default class BedType extends BaseModel {
   public static async translate(query){
     query = query.map(item => {
       item.bed_type = t(item.bed_type);
-      item.k = 1;
       return item;
     });
   }

@@ -83,5 +83,15 @@
 	"small double": "small double",
 	"couch": "couch",
 	"bunk bed": "bunk bed",
-	"floor matters": "floor matters"
+	"floor matters": "floor matters",
+	"Must Climb Stairs": "Must Climb Stairs",
+	"Describe the stairs(for example, how many flights)": "Describe the stairs(for example, how many flights)",
+	"Potential for noise": "Potential for noise",
+	"Pet(s) live on property": "Pet(s) live on property",
+	"No parking on property": "No parking on property",
+	"Some space are shared": "Some space are shared",
+	"Amenity limitations": "Amenity limitations",
+	"Surveillance or recording devices on property": "Surveillance or recording devices on property",
+	"Weapons on Property": "Weapons on Property",
+	"Dangerous animals on property": "Dangerous animals on property"
 }

@@ -53,6 +53,8 @@ Route.group(() => {
 
   Route.get('home-rules', 'User/HostingController.getHomeRule');
 
+  Route.post('image-upload', 'FilesController.uploadImage');
+
   // property controller
 
   Route.group(() => {

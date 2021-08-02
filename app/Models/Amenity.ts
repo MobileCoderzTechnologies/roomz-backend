@@ -27,7 +27,7 @@ export default class Amenity extends BaseModel {
 
   @afterFetch()
   public static async translate(query){
-    query.map(item => {
+    query = query.map(item => {
       item.name = t(item.name);
       if(item.description) item.description = t(item.description);
       return item;
