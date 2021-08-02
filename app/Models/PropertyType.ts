@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, afterFetch } from '@ioc:Adonis/Lucid/Orm';
+import i18n from 'App/Helpers/i18n';
+const t = i18n.__;
 
 export default class PropertyType extends BaseModel {
   @column({ isPrimary: true })
@@ -15,5 +17,13 @@ export default class PropertyType extends BaseModel {
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+  @afterFetch()
+  public static async translate(query){
+    query = query.map(item => {
+      item.property_type = t(item.bed_type);
+      return item;
+    });
+  }
 }

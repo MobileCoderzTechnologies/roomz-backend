@@ -5,7 +5,7 @@ import Response from "App/Helpers/Response";
 import User from "App/Models/User";
 // Transaltion
 import i18n from 'App/Helpers/i18n';
-import { ApiFeatures } from 'App/utils/apiFeatures';
+import { ApiFeatures } from 'App/Utils/apiFeatures';
 // import Database from '@ioc:Adonis/Lucid/Database';
 const t = i18n.__;
 export default class UsersController {

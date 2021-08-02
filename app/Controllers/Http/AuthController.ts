@@ -1,5 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, rules } from '@ioc:Adonis/Core/Validator';
 import { v4 as uuid } from "uuid";
 import Response from "App/Helpers/Response";
 import SendOtp from "App/Helpers/SendOtp";
@@ -58,7 +58,7 @@ export default class AuthController {
 
     const validatoionSchema = schema.create({
       login_type: schema.string({ trim: true }),
-    })
+    });
 
     try {
       await request.validate({ schema: validatoionSchema })

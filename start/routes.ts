@@ -37,15 +37,65 @@ Route.group(() => {
   Route.post('login', 'AuthController.login');
 
   Route.post('social-login', 'AuthController.socialLogin');
+
+
 }).prefix("auth").middleware('locale');
 
 
 Route.group(() => {
   Route.get('bed-types', 'User/HostingController.getBedTypes');
+
   Route.get('property-types', 'User/HostingController.getPropertyTypes');
+
   Route.get('amenities', 'User/HostingController.getAmenities');
-  Route.get('home-details', 'User/HostingController.getHomeRule');
+
+  Route.get('home-details', 'User/HostingController.getHomeDetails');
+
+  Route.get('home-rules', 'User/HostingController.getHomeRule');
+
+  Route.post('image-upload', 'FilesController.uploadImage');
+
+  // property controller
+
+  Route.group(() => {
+    Route.post('type/:id?', 'User/PropertyController.addPropertyType');
+
+    Route.put('beds/:id', 'User/PropertyController.addBeds');
+
+    Route.put('address/:id', 'User/PropertyController.addPropertyAddress');
+
+    Route.put('location/:id', 'User/PropertyController.addPropertyLocation');
+
+    Route.put('amenities/:id', 'User/PropertyController.addPropertyAmenities');
+
+    Route.put('guest-requirements/:id', 'User/PropertyController.addPropertyGuestRequirements');
+
+    Route.put('house-rules/:id', 'User/PropertyController.setPropertyHomeRules');
+
+    Route.put('property-details/:id', 'User/PropertyController.addPropertyDetails');
+
+    Route.put('description/:id', 'User/PropertyController.addPropertyDescription');
+
+    Route.put('name/:id', 'User/PropertyController.addPropertyName');
+
+    Route.put('availability/:id', 'User/PropertyController.setPropertyAvailability');
+
+    Route.put('phone-number/:id', 'User/PropertyController.addSecPhoneNumber');
+
+    Route.put('pricing/:id', 'User/PropertyController.setPropertyPricing');
+
+    Route.put('laws-and-calender/:id', 'User/PropertyController.lawsAndCalender');
+
+    Route.put('questions/:id', 'User/PropertyController.PropertyQuestions');
+
+    Route.put('discounts/:id', 'User/PropertyController.longTermDiscounts');
+
+    Route.get('publish/:id','User/PropertyController.publishProperty');
+
+  }).prefix('list-property');
+
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
+
 
 
 /************************ Admin Controller ************************/
