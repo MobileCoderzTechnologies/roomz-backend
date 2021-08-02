@@ -23,6 +23,7 @@ export class FileUploadOnS3 {
         ACL: 'public-read'
       }).promise()
         .then(res => {
+          console.log(res);
           return fileRemoteName;
         });
     } catch (err) {

@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon'
-import { afterFetch, afterFind, afterPaginate, BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm';
+import { DateTime } from 'luxon';
+import { afterFetch, afterFind, BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm';
 import Env from '@ioc:Adonis/Core/Env';
 import Hash from '@ioc:Adonis/Core/Hash'
 

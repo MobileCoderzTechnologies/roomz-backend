@@ -161,7 +161,7 @@ export default class UsersController {
   * @apiSuccessExample {json} Success-Response:
   *     HTTP/1.1 201 Created
   *  {
-  *  "message": "Profile photo updated",
+  *  "message": "Phone number updated",
   *  "data": [
   *      {
   *          "id": 19,
