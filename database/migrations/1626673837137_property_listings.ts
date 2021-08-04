@@ -8,6 +8,7 @@ export default class PropertyListings extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.uuid('uid');
+      table.integer('user_id').unsigned().nullable();
       table.integer('property_type').unsigned().nullable();
       table.boolean('is_beach_house').nullable();
       table.boolean('is_dedicated_guest_space').notNullable().defaultTo(false);

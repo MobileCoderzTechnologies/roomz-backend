@@ -10,6 +10,7 @@ export default class Amenities extends BaseSchema {
       table.enu('type',['space', 'safety', 'normal']).nullable();
       table.string('name', 255).notNullable();
       table.string('description',255).nullable();
+      table.string('icon_url', 255).nullable();
       table.timestamps(true)
     })
   }

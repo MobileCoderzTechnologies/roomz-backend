@@ -7,6 +7,7 @@ import PropertyAmenity from './PropertyAmenity';
 import PropertyRule from './PropertyRule';
 import PropertyImage from './PropertyImage';
 import PropertyDetail from './PropertyDetail';
+import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -14,6 +15,9 @@ export default class PropertyListing extends BaseModel {
 
   @column()
   public uid: string;
+
+  @column()
+  public user_id: number;
 
   @column()
   public property_type: number;
@@ -182,15 +186,15 @@ export default class PropertyListing extends BaseModel {
   @afterFind()
   public static async coverImage(property: PropertyListing) {
     if (property.cover_photo) {
-      property.cover_photo = `${Env.get('ASSET_URL_S3')}${property.cover_photo}`;
+      property.cover_photo = `${Env.get('ASSET_URL_S3')}${S3_DIRECTORIES.propertyFiles}${property.cover_photo}`;
     }
   }
 
   @afterFetch()
-  public static async coverImages(properties: PropertyListing[]){
+  public static async coverImages(properties: PropertyListing[]) {
     properties = properties.map(property => {
-      if(property.cover_photo){
-        property.cover_photo = `${Env.get('ASSET_URL_S3')}${property.cover_photo}`;
+      if (property.cover_photo) {
+        property.cover_photo = `${Env.get('ASSET_URL_S3')}${S3_DIRECTORIES.propertyFiles}${property.cover_photo}`;
       }
       return property;
     })
