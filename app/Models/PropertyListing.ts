@@ -1,5 +1,6 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from 'luxon';
+import Env from '@ioc:Adonis/Core/Env';
+import { afterFetch, afterFind, BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import PropertyBed from './PropertyBed';
 import PropertyType from './PropertyType';
 import PropertyAmenity from './PropertyAmenity';
@@ -82,7 +83,7 @@ export default class PropertyListing extends BaseModel {
   public is_recommended_from_oh: boolean; // reviews and recommended by other hosts
 
   @column()
-  public cover_photo: boolean;
+  public cover_photo: string;
   // property description 
   @column()
   public description: string;
@@ -121,7 +122,7 @@ export default class PropertyListing extends BaseModel {
   public ci_arrive_after: number; // ci +> check in
 
   @column()
-  public ci_arrive_before: number; 
+  public ci_arrive_before: number;
 
   @column()
   public ci_leave_before: number;
@@ -175,6 +176,22 @@ export default class PropertyListing extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime;
 
+  @afterFind()
+  public static async coverImage(property: PropertyListing) {
+    if (property.cover_photo) {
+      property.cover_photo = `${Env.get('ASSET_URL_S3')}${property.cover_photo}`;
+    }
+  }
+
+  @afterFetch()
+  public static async coverImages(properties: PropertyListing[]){
+    properties = properties.map(property => {
+      if(property.cover_photo){
+        property.cover_photo = `${Env.get('ASSET_URL_S3')}${property.cover_photo}`;
+      }
+      return property;
+    })
+  }
 
   @hasMany(() => PropertyBed, {
     localKey: 'id',

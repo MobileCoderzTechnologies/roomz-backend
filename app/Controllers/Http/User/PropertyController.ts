@@ -298,9 +298,16 @@ export default class PropertyController {
                 .delete();
 
             const bed_data = beds.map(e => {
-                e.property_id = property_id;
-                e.uid = uuid();
-                return e;
+                const { bed_id, bedroom_name, serial_number, count } = e;
+                const obj = {
+                    bed_id,
+                    bedroom_name,
+                    serial_number,
+                    property_id,
+                    count,
+                    uid: uuid()
+                };
+                return obj;
             });
 
             await PropertyBed.createMany(bed_data);
@@ -446,12 +453,19 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const address = { ...body };
+        const { state, country, street, city, zip_code, address_optional } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(address);
+                .update({
+                    state,
+                    country,
+                    city,
+                    zip_code,
+                    street,
+                    address_optional
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -578,12 +592,16 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const location = { ...body };
+        const { location, longitude, latitude } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(location);
+                .update({
+                    location,
+                    latitude,
+                    longitude
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1040,7 +1058,16 @@ export default class PropertyController {
         const rule_data = property_rules.filter(e => e.is_additional !== false).map(e => {
             e.property_id = property_id;
             e.uid = uuid();
-            return e;
+            const obj = {
+                property_id,
+                uid: uuid(),
+                rule_id: e.rule_id,
+                is_cancelled: e.is_cancelled,
+                cancel_reason: e.cancel_reason,
+                is_additional: e.is_additional,
+                description: e.description
+            }
+            return obj;
         });
 
         try {
@@ -1163,9 +1190,13 @@ export default class PropertyController {
         const body = request.body();
         const property_details = body.property_details;
         const rule_data = property_details.map(e => {
-            e.property_id = property_id;
-            e.uid = uuid();
-            return e;
+            const obj = {
+                property_id,
+                uid: uuid(),
+                detail_id: e.detail_id,
+                explanation: e.explanation
+            }
+            return obj;
         });
 
         try {
@@ -1308,12 +1339,18 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const property_description = { ...body };
+        const { description, desc_getting_around, desc_interaction_guests, desc_neighbourhood, desc_your_space } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(property_description);
+                .update({
+                    description,
+                    desc_getting_around,
+                    desc_interaction_guests,
+                    desc_neighbourhood,
+                    desc_your_space
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1453,12 +1490,12 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const name = { ...body };
+        const { name } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(name);
+                .update({ name });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1600,12 +1637,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const phone_data = { ...body };
+        const { phone_number, country_code } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(phone_data);
+                .update({
+                    phone_number,
+                    country_code
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1779,12 +1819,28 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const availability = { ...body };
+        const { advance_notice,
+            cut_off_time,
+            guests_book_time,
+            ci_arrive_before,
+            ci_arrive_after,
+            ci_leave_before,
+            min_stay,
+            max_stay } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(availability);
+                .update({
+                    advance_notice,
+                    cut_off_time,
+                    guests_book_time,
+                    ci_arrive_before,
+                    ci_arrive_after,
+                    ci_leave_before,
+                    min_stay,
+                    max_stay
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1947,12 +2003,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const price = { ...body };
+        const { base_price, is_discount_20 } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(price);
+                .update({
+                    base_price,
+                    is_discount_20
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -2122,12 +2181,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const laws_calender = { ...body };
+        const { is_local_laws, is_updated_calender } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(laws_calender);
+                .update({
+                    is_local_laws,
+                    is_updated_calender
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)

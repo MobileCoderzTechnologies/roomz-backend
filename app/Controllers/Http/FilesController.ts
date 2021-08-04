@@ -1,71 +1,40 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
+import Env from '@ioc:Adonis/Core/Env';
+import Response from "App/Helpers/Response";
 import { FileUploadOnS3 } from 'App/Helpers/fileUpload';
-// import * as sharp from 'sharp';
+// import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
+import i18n from 'App/Helpers/i18n';
+const t = i18n.__;
 
 export default class FilesController {
 
-  async uploadImage({request, response }: HttpContextContract) {
-    // const imageConfiguration = [
-    //   {
-    //     imagePath: "334x192",
-    //     height: 334,
-    //     width: 192
-    //   },
-    //   {
-    //     imagePath: "160x150",
-    //     height: 160,
-    //     width: 150
-    //   },
-    //   {
-    //     imagePath: "375x280",
-    //     height: 375,
-    //     width: 280
-    //   },
-    //   {
-    //     imagePath: "125x100",
-    //     height: 125,
-    //     width: 100
-    //   },
-    //   {
-    //     imagePath: "328x202",
-    //     height: 328,
-    //     width: 202
-    //   },
-    //   {
-    //     imagePath: "235x158",
-    //     height: 235,
-    //     width: 158
-    //   },
-    //   {
-    //     imagePath: "576x250",
-    //     height: 576,
-    //     width: 250
-    //   }
-    // ];
-    const files = request.files('images');
-
-    for(const file of files){
-      const fileName = file.clientName;
-      const fileNameDir = fileName.split('.')[0];
-      const directory = `property-files/${Date.now()}${fileNameDir}`;
-      const name = await FileUploadOnS3.uploadFile(file, directory, fileName);
-      console.log(name);
-    }
-
-    response.status(200).json({
-      files
-    })
-
-  }
-
-
-
-  async makeCopies({}: HttpContextContract){
+  async uploadImage({ request, response }: HttpContextContract) {
     try {
-     
-      
+      const files = request.files('images');
+      const response_arr: { image_url: string }[] = [];
+      for (const file of files) {
+        const file_name = file.clientName;
+        const file_name_dir = file_name.split('.')[0];
+        const directory = `property-files/${file_name_dir}`;
+        const name = await FileUploadOnS3.uploadFile(file, directory, file_name, null);
+        await FileUploadOnS3.makeImageCopies(file, directory);
+
+        if (name) {
+          const image_url = `${Env.get('ASSET_URL_S3')}${name}`;
+          response_arr.push({
+            image_url
+          });
+        }
+      }
+      response.status(200).json({
+        data: response_arr
+      })
     } catch (error) {
-      
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
     }
+
   }
 }
