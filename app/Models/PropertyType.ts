@@ -22,7 +22,7 @@ export default class PropertyType extends BaseModel {
   @afterFetch()
   public static async translate(query){
     query = query.map(item => {
-      item.property_type = t(item.bed_type);
+      item.property_type = t(item.property_type);
       return item;
     });
   }

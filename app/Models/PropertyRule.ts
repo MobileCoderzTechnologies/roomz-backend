@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import HomeRule from './HomeRule';
 
 export default class PropertyRule extends BaseModel {
   @column({ isPrimary: true })
@@ -30,5 +31,12 @@ export default class PropertyRule extends BaseModel {
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+
+  @hasOne(() => HomeRule, {
+    localKey: 'rule_id',
+    foreignKey: 'id'
+  })
+  public rule: HasOne<typeof HomeRule>;
 }

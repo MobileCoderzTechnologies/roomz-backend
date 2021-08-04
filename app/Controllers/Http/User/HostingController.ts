@@ -5,9 +5,13 @@ import PropertyType from "App/Models/PropertyType";
 import Amenity from "App/Models/Amenity";
 import HomeDetail from "App/Models/HomeDetail";
 import HomeRule from "App/Models/HomeRule";
-// Transaltion
 import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
+
+import Env from '@ioc:Adonis/Core/Env';
+import { FileUploadOnS3 } from 'App/Helpers/fileUpload';
+import { IMAGE_SIZES } from 'App/Constants/ImageSizesConstant';
+
 
 export default class HostingController {
   /**
@@ -362,10 +366,134 @@ export default class HostingController {
   }
 
 
+  /**
+      * @api {Post} /user/hosting/upload-images/:id Upload Images
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName upload-images
+      * @apiGroup Hosting
+      * 
+      * @apiParam {Files} images Array of images, request body formdata
+      * 
+      *
+      * 
+      * @apiSuccessExample {json} Success-Response:
+      *   HTTP/1.1 200 OK
+      * 
+      * {
+          "data": [
+              {
+                  "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email/08-Recognizing your email.png"
+              },
+              {
+                  "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email - Social/08-Recognizing your email - Social.png"
+              }
+              .
+              .
+              .
+              .
+          ]
+        }
+      */
+
+  async uploadImage({ request, response }: HttpContextContract) {
+    try {
+      const files = request.files('images');
+      const response_arr: { image_url: string }[] = [];
+      for (const file of files) {
+        const file_name = file.clientName;
+        const file_name_dir = file_name.split('.')[0];
+        const directory = `property-files/${file_name_dir}`;
+        const name = await FileUploadOnS3.uploadFile(file, directory, file_name, null);
+        await FileUploadOnS3.makeImageCopies(file, directory);
+
+        if (name) {
+          const image_url = `${Env.get('ASSET_URL_S3')}${name}`;
+          response_arr.push({
+            image_url
+          });
+        }
+      }
+      response.status(200).json({
+        data: response_arr
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
 
 
+  /**
+      * @api {Post} /user/hosting/remove-images/:id Remove Images
+      * @apiHeader {String} Device-Type Device Type ios/android.
+      * @apiHeader {String} App-Version Version Code 1.0.0.
+      * @apiHeader {String} Accept-Language Language Code en OR ar.
+      * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+      * @apiVersion 1.0.0
+      * @apiName remove-images
+      * @apiGroup Hosting
+      * 
+      * @apiParam {Object[]} images array of image urls 
+      * 
+      * @apiParamExample {json} Request-Example 
+        {
+          "images": [
+              {
+                  "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing%20your%20email/08-Recognizing%20your%20email.png"
+              }
+          ]
+        }
+      *
+      * 
+      * @apiSuccessExample {json} Success-Response:
+      *   HTTP/1.1 200 OK
+      * {
+      *      "message": "Images deleted"
+      *  }
+      */
 
+  async deleteImages({ request, response }: HttpContextContract) {
+    try {
+      const body = request.body();
+      const images = body.images;
+      const imageConfiguration = IMAGE_SIZES;
+      const bucket_name = Env.get('S3_BUCKET');
+      for (const image of images) {
+        const { image_url } = image;
+        const image_key = image_url.split(`/${bucket_name}`)[1];
 
+        console.log('image_key', image_key);
+        // delete image 
+        const is_deleted = await FileUploadOnS3.removeFileFromS3(image_key);
+        console.log('main image deleted', is_deleted);
+        // deleting resized image
+        const key_split = image_key.split('/');
+        key_split.pop();
+        const key_string = key_split.join('/');
 
+        for (const config of imageConfiguration) {
+          const key = `${key_string}/${config.imagePath}.jpeg`;
+          const is_deleted = await FileUploadOnS3.removeFileFromS3(key);
 
+          console.log('key ', key);
+          console.log(`${config.imagePath} is deleted`, is_deleted);
+        }
+
+      }
+      response.status(200).json({
+        message: t('Images deleted')
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
 }

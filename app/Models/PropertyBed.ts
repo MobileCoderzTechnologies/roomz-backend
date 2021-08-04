@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import BedType from './BedType';
 
 export default class PropertyBed extends BaseModel {
   @column({ isPrimary: true })
@@ -27,5 +28,11 @@ export default class PropertyBed extends BaseModel {
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+  @hasOne(() => BedType, {
+    localKey: 'bed_id',
+    foreignKey: 'id'
+  })
+  public bed_type: HasOne<typeof BedType>;
 }

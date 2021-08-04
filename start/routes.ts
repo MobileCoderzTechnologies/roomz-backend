@@ -64,7 +64,9 @@ Route.group(() => {
 
   Route.get('home-rules', 'User/HostingController.getHomeRule');
 
-  Route.post('image-upload', 'FilesController.uploadImage');
+  Route.post('upload-images','User/HostingController.uploadImage');
+
+  Route.post('remove-images','User/HostingController.deleteImages');
 
   // property controller
 
@@ -100,6 +102,10 @@ Route.group(() => {
     Route.put('questions/:id', 'User/PropertyController.PropertyQuestions');
 
     Route.put('discounts/:id', 'User/PropertyController.longTermDiscounts');
+
+    Route.get('preview/:id', 'User/PropertyController.propertyPreview');
+
+    Route.put('photos/:id', 'User/PropertyController.addPropertyPhotos');
 
     Route.get('publish/:id', 'User/PropertyController.publishProperty');
 

@@ -1,8 +1,13 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from 'luxon';
+import Env from '@ioc:Adonis/Core/Env';
+import { afterFetch, afterFind, BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import PropertyBed from './PropertyBed';
 import PropertyType from './PropertyType';
 import PropertyAmenity from './PropertyAmenity';
+import PropertyRule from './PropertyRule';
+import PropertyImage from './PropertyImage';
+import PropertyDetail from './PropertyDetail';
+import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -10,6 +15,9 @@ export default class PropertyListing extends BaseModel {
 
   @column()
   public uid: string;
+
+  @column()
+  public user_id: number;
 
   @column()
   public property_type: number;
@@ -82,7 +90,7 @@ export default class PropertyListing extends BaseModel {
   public is_recommended_from_oh: boolean; // reviews and recommended by other hosts
 
   @column()
-  public cover_photo: boolean;
+  public cover_photo: string;
   // property description 
   @column()
   public description: string;
@@ -121,7 +129,7 @@ export default class PropertyListing extends BaseModel {
   public ci_arrive_after: number; // ci +> check in
 
   @column()
-  public ci_arrive_before: number; 
+  public ci_arrive_before: number;
 
   @column()
   public ci_leave_before: number;
@@ -175,6 +183,22 @@ export default class PropertyListing extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime;
 
+  @afterFind()
+  public static async coverImage(property: PropertyListing) {
+    if (property.cover_photo) {
+      property.cover_photo = `${Env.get('ASSET_URL_S3')}${S3_DIRECTORIES.propertyFiles}${property.cover_photo}`;
+    }
+  }
+
+  @afterFetch()
+  public static async coverImages(properties: PropertyListing[]) {
+    properties = properties.map(property => {
+      if (property.cover_photo) {
+        property.cover_photo = `${Env.get('ASSET_URL_S3')}${S3_DIRECTORIES.propertyFiles}${property.cover_photo}`;
+      }
+      return property;
+    })
+  }
 
   @hasMany(() => PropertyBed, {
     localKey: 'id',
@@ -194,5 +218,22 @@ export default class PropertyListing extends BaseModel {
   })
   public type: HasOne<typeof PropertyType>;
 
+  @hasMany(() => PropertyRule, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public rules: HasMany<typeof PropertyRule>
+
+  @hasMany(() => PropertyImage, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public images: HasMany<typeof PropertyImage>
+
+  @hasMany(() => PropertyDetail, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public details: HasMany<typeof PropertyDetail>
 }
 

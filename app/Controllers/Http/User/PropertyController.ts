@@ -3,6 +3,7 @@ import Response from "App/Helpers/Response";
 import PropertyListing from 'App/Models/PropertyListing';
 import PropertyBed from 'App/Models/PropertyBed';
 import PropertyAmenity from 'App/Models/PropertyAmenity';
+import PropertyImage from 'App/Models/PropertyImage';
 import PropertyRule from 'App/Models/PropertyRule';
 import PropertyDetail from 'App/Models/PropertyDetail';
 import { schema, rules } from '@ioc:Adonis/Core/Validator';
@@ -11,6 +12,7 @@ import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
 import { v4 as uuid } from "uuid";
 import { PROPERTY_STATUS } from 'App/Constants/PropertyConstant';
+import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
 
 
 export default class PropertyController {
@@ -59,7 +61,8 @@ export default class PropertyController {
   *   }
   *
   */
-    async addPropertyType({ request, params, response }: HttpContextContract) {
+    async addPropertyType({ request, auth, params, response }: HttpContextContract) {
+        const user_id = auth.user?.id;
         const property_id = params.id || null;
         const property_type = request.input("property_type");
         const is_beach_house = request.input("is_beach_house");
@@ -98,6 +101,7 @@ export default class PropertyController {
                 await PropertyListing.query()
                     .where('id', property_id)
                     .update({
+                        user_id,
                         property_type,
                         is_beach_house,
                         is_dedicated_guest_space,
@@ -119,6 +123,7 @@ export default class PropertyController {
             else {
                 property = await PropertyListing.create({
                     uid: uuid(),
+                    user_id,
                     property_type,
                     is_beach_house,
                     is_dedicated_guest_space,
@@ -254,8 +259,9 @@ export default class PropertyController {
     */
 
 
-    async addBeds({ request, response, params }: HttpContextContract) {
+    async addBeds({ request, auth, response, params }: HttpContextContract) {
         const property_id = params.id;
+        const user_id = auth.user?.id
         try {
             let validateSchema = schema.create({
                 no_of_guests: schema.number(),
@@ -286,7 +292,7 @@ export default class PropertyController {
 
         try {
             await PropertyListing.query()
-                .where('id', property_id)
+                .where({ id: property_id, user_id })
                 .update({
                     no_of_bathrooms,
                     no_of_bedrooms,
@@ -298,9 +304,16 @@ export default class PropertyController {
                 .delete();
 
             const bed_data = beds.map(e => {
-                e.property_id = property_id;
-                e.uid = uuid();
-                return e;
+                const { bed_id, bedroom_name, serial_number, count } = e;
+                const obj = {
+                    bed_id,
+                    bedroom_name,
+                    serial_number,
+                    property_id,
+                    count,
+                    uid: uuid()
+                };
+                return obj;
             });
 
             await PropertyBed.createMany(bed_data);
@@ -416,8 +429,9 @@ export default class PropertyController {
     */
 
 
-    async addPropertyAddress({ request, response, params }: HttpContextContract) {
+    async addPropertyAddress({ request, auth, response, params }: HttpContextContract) {
         const property_id = params.id;
+        const user_id = auth.user?.id
         try {
             let validateSchema = schema.create({
                 country: schema.string({ trim: true }, [
@@ -446,12 +460,19 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const address = { ...body };
+        const { state, country, street, city, zip_code, address_optional } = body;
 
         try {
             await PropertyListing.query()
-                .where('id', property_id)
-                .update(address);
+                .where({ id: property_id, user_id })
+                .update({
+                    state,
+                    country,
+                    city,
+                    zip_code,
+                    street,
+                    address_optional
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -558,8 +579,9 @@ export default class PropertyController {
     */
 
 
-    async addPropertyLocation({ request, response, params }: HttpContextContract) {
+    async addPropertyLocation({ request, auth, response, params }: HttpContextContract) {
         const property_id = params.id;
+        const user_id = auth.user?.id
         try {
             let validateSchema = schema.create({
                 latitude: schema.number(),
@@ -578,12 +600,16 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const location = { ...body };
+        const { location, longitude, latitude } = body;
 
         try {
             await PropertyListing.query()
-                .where('id', property_id)
-                .update(location);
+                .where({ id: property_id, user_id })
+                .update({
+                    location,
+                    latitude,
+                    longitude
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1040,7 +1066,16 @@ export default class PropertyController {
         const rule_data = property_rules.filter(e => e.is_additional !== false).map(e => {
             e.property_id = property_id;
             e.uid = uuid();
-            return e;
+            const obj = {
+                property_id,
+                uid: uuid(),
+                rule_id: e.rule_id,
+                is_cancelled: e.is_cancelled,
+                cancel_reason: e.cancel_reason,
+                is_additional: e.is_additional,
+                description: e.description
+            }
+            return obj;
         });
 
         try {
@@ -1163,9 +1198,13 @@ export default class PropertyController {
         const body = request.body();
         const property_details = body.property_details;
         const rule_data = property_details.map(e => {
-            e.property_id = property_id;
-            e.uid = uuid();
-            return e;
+            const obj = {
+                property_id,
+                uid: uuid(),
+                detail_id: e.detail_id,
+                explanation: e.explanation
+            }
+            return obj;
         });
 
         try {
@@ -1308,12 +1347,18 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const property_description = { ...body };
+        const { description, desc_getting_around, desc_interaction_guests, desc_neighbourhood, desc_your_space } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(property_description);
+                .update({
+                    description,
+                    desc_getting_around,
+                    desc_interaction_guests,
+                    desc_neighbourhood,
+                    desc_your_space
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1453,12 +1498,12 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const name = { ...body };
+        const { name } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(name);
+                .update({ name });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1600,12 +1645,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const phone_data = { ...body };
+        const { phone_number, country_code } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(phone_data);
+                .update({
+                    phone_number,
+                    country_code
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1779,12 +1827,28 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const availability = { ...body };
+        const { advance_notice,
+            cut_off_time,
+            guests_book_time,
+            ci_arrive_before,
+            ci_arrive_after,
+            ci_leave_before,
+            min_stay,
+            max_stay } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(availability);
+                .update({
+                    advance_notice,
+                    cut_off_time,
+                    guests_book_time,
+                    ci_arrive_before,
+                    ci_arrive_after,
+                    ci_leave_before,
+                    min_stay,
+                    max_stay
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -1947,12 +2011,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const price = { ...body };
+        const { base_price, is_discount_20 } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(price);
+                .update({
+                    base_price,
+                    is_discount_20
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -2122,12 +2189,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const laws_calender = { ...body };
+        const { is_local_laws, is_updated_calender } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
-                .update(laws_calender);
+                .update({
+                    is_local_laws,
+                    is_updated_calender
+                });
 
             let property = await PropertyListing.query()
                 .where('id', property_id)
@@ -2615,10 +2685,19 @@ export default class PropertyController {
           * 
           */
 
-    async publishProperty({ params, response }: HttpContextContract) {
+    async publishProperty({ params, response, auth }: HttpContextContract) {
         try {
             const property_id = params.id;
+            const user_id = auth.user?.id;
+            const property = await PropertyListing.query()
+                .where({ id: property_id, user_id })
+                .first();
 
+            if (!property) {
+                return response.status(Response.HTTP_BAD_REQUEST).json({
+                    message: t('Invalid property id'),
+                });
+            }
             await PropertyListing.query()
                 .where('id', property_id)
                 .update({ status: PROPERTY_STATUS.published });
@@ -2635,8 +2714,344 @@ export default class PropertyController {
     }
 
 
+    /**
+          * @api {get} /user/hosting/list-property/preview/:id Preview Property
+          * @apiHeader {String} Device-Type Device Type ios/android.
+          * @apiHeader {String} App-Version Version Code 1.0.0.
+          * @apiHeader {String} Accept-Language Language Code en OR ar.
+          * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+          * @apiVersion 1.0.0
+          * @apiName preview
+          * @apiGroup List Property
+          *
+          * @apiParam {Number} id Property ID (pass as params)
+          * @apiSuccessExample {json} Success-Response:
+          *     HTTP/1.1 200 Success
+          * {
+            "data": [
+                {
+                    "id": 1,
+                    "uid": "f420c40d-f1ee-435b-a9e5-d9cb33c0605e",
+                    "property_type": 2,
+                    "is_beach_house": 1,
+                    "is_dedicated_guest_space": 0,
+                    "is_business_hosting": 1,
+                    "no_of_guests": 2,
+                    "no_of_bedrooms": 1,
+                    "no_of_bathrooms": 2,
+                    "country": "India",
+                    "address_optional": "H Block",
+                    "street": "Noida Sector 63",
+                    "city": "Noida",
+                    "state": "UP",
+                    "zip_code": "300221",
+                    "latitude": 20.134,
+                    "longitude": 10.24,
+                    "location": "A-121, Sec-63 Noida, Utter Pradesh 201301",
+                    "is_email_confirmed": 1,
+                    "is_phone_confirmed": 1,
+                    "is_payment_information": 1,
+                    "is_agree_hr": 1,
+                    "is_trip_purpose": 1,
+                    "is_id_submitted": 1,
+                    "is_recommended_from_oh": 0,
+                    "cover_photo": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/06-OTP_verification/06-OTP_verification.png",
+                    "type": {
+                        "property_type": "Apartment",
+                        "id": 2
+                    },
+                    "images": [
+                        {
+                            "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/06-OTP_verification/06-OTP_verification.png",
+                            "property_id": 1
+                        }
+                        .
+                        .
+                        .
+                    ],
+                    "amenities": [
+                        {
+                            "amenity_id": 2,
+                            "property_id": 1,
+                            "amenity_name": {
+                                "name": "TVZ",
+                                "id": 2
+                            }
+                        },
+                        .
+                        .
+                        .
+                    ],
+                    "beds": [
+                        {
+                            "bed_id": 1,
+                            "serial_number": 0,
+                            "count": 2,
+                            "bedroom_name": "Common Space",
+                            "property_id": 1,
+                            "bed_type": {
+                                "bed_type": "double",
+                                "id": 1
+                            }
+                        },
+                        .
+                        .
+                        .
+                    ],
+                    "rules": [
+                        {
+                            "rule_id": 4,
+                            "is_additional": 0,
+                            "is_cancelled": 0,
+                            "cancel_reason": null,
+                            "description": null,
+                            "rule": {
+                                "rule": "Smoking allowed",
+                                "id": 4
+                            }
+                        },
+                        {
+                            "rule_id": 5,
+                            "is_additional": 0,
+                            "is_cancelled": 0,
+                            "cancel_reason": null,
+                            "description": null,
+                            "rule": {
+                                "rule": "Events allowed",
+                                "id": 5
+                            }
+                        },
+                        {
+                            "rule_id": null,
+                            "is_additional": 1,
+                            "is_cancelled": 0,
+                            "cancel_reason": null,
+                            "description": "test"
+                        }
+                        .
+                        .
+                        .
+                    ]
+                }
+            ]
+        }
+          * 
+          */
+
+    async propertyPreview({ response, auth, params }: HttpContextContract) {
+        try {
+            const property_id = params.id;
+            const user_id = auth.user?.id;
+            const property = await PropertyListing.query()
+                .where({ id: property_id, user_id })
+                .preload('type', builder => builder.select('property_type'))
+                .preload('beds', builder => {
+                    builder.select(
+                        'bed_id',
+                        'serial_number',
+                        'count',
+                        'bedroom_name'
+                    )
+                        .preload('bed_type', builder => builder.select('bed_type'))
+                })
+                .preload('amenities', builder => {
+                    builder
+                        .select('amenity_id')
+                        .preload('amenity_name', builder => builder.select(
+                            'name', 
+                            'type', 
+                            'description',
+                            'icon_url'))
+                })
+                .preload('details', builder => {
+                    builder
+                        .select('detail_id', 'explanation')
+                        .preload('detail', detailQuery => detailQuery.select(
+                            'name',
+                            'description'
+                        ))
+                })
+                .preload('images', builder => builder.select('image_url'))
+                .first();
+
+            const rules_fixed = await PropertyRule.query()
+                .where({ property_id, is_additional: false })
+                .select(
+                    'rule_id',
+                    'is_additional',
+                    'is_cancelled',
+                    'cancel_reason',
+                    'description'
+                )
+                .preload('rule', builder => builder.select('rule'))
+                .finally();
 
 
+            const rules_additional = await PropertyRule.query()
+                .where({ property_id, is_additional: true })
+                .select(
+                    'rule_id',
+                    'is_additional',
+                    'is_cancelled',
+                    'cancel_reason',
+                    'description'
+                );
+
+            const rules = rules_fixed.concat(rules_additional);
+            const property_json = property?.toJSON();
+
+            const data = [{ ...property_json, rules }]
+            response.status(200).json({
+                data
+            })
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+    /**
+    * @api {put} /user/hosting/list-property/photos/:id Property Images
+    * @apiHeader {String} Device-Type Device Type ios/android.
+    * @apiHeader {String} App-Version Version Code 1.0.0.
+    * @apiHeader {String} Accept-Language Language Code en OR ar.
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+    * @apiVersion 1.0.0
+    * @apiName photos
+    * @apiGroup List Property
+    *
+    * @apiParam {Number} id Property ID (pass as params)
+    * 
+    * @apiParam {String} cover_photo url of an image
+    * @apiParam {Object[]} images urls of images
+    * 
+    * 
+    * @apiParamExample {json} Request-Example:
+    *   {
+            "cover_photo": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email/08-Recognizing your email.png",
+            "images": [
+                {
+                    "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email/08-Recognizing your email.png"
+                },
+                {
+                    "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email - Social/08-Recognizing your email - Social.png"
+                }
+            ]
+        }
+    *
+    * @apiSuccessExample {json} Success-Response:
+    *     HTTP/1.1 201 Created
+    *     {
+            "message": "Property images added",
+            "data": {
+                "cover_photo": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email/08-Recognizing your email.png",
+                "images": [
+                    {
+                        "property_id": 1,
+                        "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email/08-Recognizing your email.png"
+                    },
+                    {
+                        "property_id": 1,
+                        "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/08-Recognizing your email - Social/08-Recognizing your email - Social.png"
+                    }
+                ]
+            }
+        }
+    *
+    *    
+    *
+    * @apiErrorExample {json} Error-Response:
+    *
+    *     HTTP/1.1 400 Bad Request
+    *     {
+    *    "message": "validation Failed",
+    *    "error": {
+    *        "images": [
+    *            "number validation failed"
+    *        ]
+    *    }
+    *   }
+    *
+    */
+
+
+    async addPropertyPhotos({ request, response, params, auth }: HttpContextContract) {
+        const property_id = params.id;
+        const user_id = auth.user?.id;
+
+        try {
+            const validateSchema = schema.create({
+                cover_photo: schema.string.optional(),
+                images: schema.array(
+                    [rules.minLength(1)]
+                ).members(schema.object().members(
+                    {
+                        image_url: schema.string()
+                    }
+                ))
+            })
+
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const cover_photo = body.cover_photo || null;
+        if (cover_photo) {
+            const photo_key = cover_photo.split(S3_DIRECTORIES.propertyFiles)[1];
+            await PropertyListing.query()
+                .where({ id: property_id, user_id })
+                .update({ cover_photo: photo_key })
+        }
+        const images = body.images;
+
+        const images_data = images.map(e => {
+            const image_key = e.image_url.split(S3_DIRECTORIES.propertyFiles)[1];
+            const item = {
+                property_id,
+                image_url: e.image_url,
+                image_key
+            }
+            return item;
+        });
+
+        try {
+            await PropertyImage.query()
+                .where({ property_id })
+                .delete();
+
+            await PropertyImage.createMany(images_data);
+
+            let images = await PropertyImage.query()
+                .where({ property_id })
+                .select('property_id', 'image_url')
+                .finally();
+
+            const data = {
+                cover_photo,
+                images
+            }
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property images added'),
+                data
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
 
 
 

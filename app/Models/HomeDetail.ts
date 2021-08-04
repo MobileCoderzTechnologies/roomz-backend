@@ -29,5 +29,6 @@ export default class HomeDetail extends BaseModel {
       if(item.description) item.description = t(item.description);
       return item;
     });
-  }
+  };
+
 }
