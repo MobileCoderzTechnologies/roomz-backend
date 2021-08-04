@@ -4,6 +4,9 @@ import { afterFetch, afterFind, BaseModel, column, HasMany, hasMany, HasOne, has
 import PropertyBed from './PropertyBed';
 import PropertyType from './PropertyType';
 import PropertyAmenity from './PropertyAmenity';
+import PropertyRule from './PropertyRule';
+import PropertyImage from './PropertyImage';
+import PropertyDetail from './PropertyDetail';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -211,5 +214,22 @@ export default class PropertyListing extends BaseModel {
   })
   public type: HasOne<typeof PropertyType>;
 
+  @hasMany(() => PropertyRule, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public rules: HasMany<typeof PropertyRule>
+
+  @hasMany(() => PropertyImage, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public images: HasMany<typeof PropertyImage>
+
+  @hasMany(() => PropertyDetail, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public details: HasMany<typeof PropertyDetail>
 }
 

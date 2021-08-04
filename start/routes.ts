@@ -101,6 +101,8 @@ Route.group(() => {
 
     Route.put('discounts/:id', 'User/PropertyController.longTermDiscounts');
 
+    Route.get('preview/:id', 'User/PropertyController.propertyPreview');
+
     Route.get('publish/:id', 'User/PropertyController.publishProperty');
 
   }).prefix('list-property');
