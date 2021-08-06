@@ -73,7 +73,7 @@ export default class PropertyController {
             if (property_type === 1 || property_type == 2) {
                 validateSchema = schema.create({
                     property_type: schema.number(),
-                    is_beach_house: schema.boolean(),
+                    is_beach_house: schema.boolean.optional(),
                     is_dedicated_guest_space: schema.boolean(),
                     is_business_hosting: schema.boolean(),
                 });
