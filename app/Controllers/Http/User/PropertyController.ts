@@ -967,64 +967,96 @@ export default class PropertyController {
     *            "is_additional": true,
     *            "description": "test"
     *        }
-    *    ]
+    *    ],
+    * "property_details": [
+    *        {
+    *            "detail_id": 1,
+    *            "explanation": "tell something"
+    *        },
+    *        {
+    *            "detail_id": 2
+    *        },
+    *        {
+    *            "detail_id": 3
+    *        }
+    *    ] 
     *  }
     *
     * @apiSuccessExample {json} Success-Response:
     *     HTTP/1.1 201 Created
-    *     {
-    *  "message": "Property rules added",
-    *  "data": [
-    *    {
-    *        "rule_id": 1,
-    *        "property_id": 2,
-    *        "is_cancelled": 1,
-    *        "cancel_reason": "test",
-    *        "is_additional": 0,
-    *        "description": null
-    *    },
-    *    {
-    *        "rule_id": 2,
-    *        "property_id": 2,
-    *        "is_cancelled": 0,
-    *        "cancel_reason": null,
-    *        "is_additional": 0,
-    *        "description": null
-    *    },
-    *    {
-    *        "rule_id": 3,
-    *        "property_id": 2,
-    *        "is_cancelled": 0,
-    *        "cancel_reason": null,
-    *        "is_additional": 0,
-    *        "description": null
-    *    },
-    *    {
-    *        "rule_id": 4,
-    *        "property_id": 2,
-    *        "is_cancelled": 0,
-    *        "cancel_reason": null,
-    *        "is_additional": 0,
-    *        "description": null
-    *    },
-    *    {
-    *        "rule_id": 5,
-    *        "property_id": 2,
-    *        "is_cancelled": 0,
-    *        "cancel_reason": null,
-    *        "is_additional": 0,
-    *        "description": null
-    *    },
-    *    {
-    *        "rule_id": null,
-    *        "property_id": 2,
-    *        "is_cancelled": 0,
-    *        "cancel_reason": null,
-    *        "is_additional": 1,
-    *        "description": "test"
+    *     
+    * {
+    *    "message": "Property rules added",
+    *    "data": {
+    *        "rules": [
+    *            {
+    *                "rule_id": 1,
+    *                "property_id": 1,
+    *                "is_cancelled": 1,
+    *                "cancel_reason": "test",
+    *                "is_additional": 0,
+    *                "description": null
+    *            },
+    *            {
+    *                "rule_id": 2,
+    *                "property_id": 1,
+    *                "is_cancelled": 0,
+    *                "cancel_reason": null,
+    *                "is_additional": 0,
+    *                "description": null
+    *            },
+    *            {
+    *                "rule_id": 3,
+    *                "property_id": 1,
+    *                "is_cancelled": 0,
+    *                "cancel_reason": null,
+    *                "is_additional": 0,
+    *                "description": null
+    *            },
+    *            {
+    *                "rule_id": 4,
+    *                "property_id": 1,
+    *                "is_cancelled": 0,
+    *                "cancel_reason": null,
+    *                "is_additional": 0,
+    *                "description": null
+    *            },
+    *            {
+    *                "rule_id": 5,
+    *                "property_id": 1,
+    *                "is_cancelled": 0,
+    *                "cancel_reason": null,
+    *                "is_additional": 0,
+    *                "description": null
+    *            },
+    *            {
+    *                "rule_id": null,
+    *                "property_id": 1,
+    *                "is_cancelled": 0,
+    *                "cancel_reason": null,
+    *                "is_additional": 1,
+    *                "description": "test"
+    *            }
+    *        ],
+    *        "details": [
+    *            {
+    *                "detail_id": 1,
+    *                "property_id": 1,
+    *                "explanation": "tell something"
+    *            },
+    *            {
+    *                "detail_id": 2,
+    *                "property_id": 1,
+    *                "explanation": null
+    *            },
+    *            {
+    *                "detail_id": 3,
+    *                "property_id": 1,
+    *                "explanation": null
+    *            }
+    *        ]
     *    }
-    *   ]
-    * }
+    *  }
     
     */
 
@@ -1047,6 +1079,16 @@ export default class PropertyController {
                         ]),
                         description: schema.string.optional({ trim: true }, [
                             rules.requiredWhen('is_additional', '=', true)
+                        ])
+                    })
+                ),
+                property_details: schema.array([
+                    rules.minLength(2)
+                ]).members(
+                    schema.object().members({
+                        detail_id: schema.number(),
+                        explanation: schema.string.optional({ trim: true }, [
+                            rules.minLength(5)
                         ])
                     })
                 )
@@ -1078,6 +1120,18 @@ export default class PropertyController {
             return obj;
         });
 
+
+        const property_details = body.property_details;
+        const detail_data = property_details.map(e => {
+            const obj = {
+                property_id,
+                uid: uuid(),
+                detail_id: e.detail_id,
+                explanation: e.explanation
+            }
+            return obj;
+        });
+
         try {
             await PropertyRule.query()
                 .where({ property_id })
@@ -1085,7 +1139,7 @@ export default class PropertyController {
 
             await PropertyRule.createMany(rule_data);
 
-            const data = await PropertyRule.query()
+            const rules = await PropertyRule.query()
                 .where({ property_id })
                 .select(
                     'rule_id',
@@ -1097,6 +1151,25 @@ export default class PropertyController {
                 )
                 .finally();
 
+            await PropertyDetail.query()
+                .where({ property_id })
+                .delete();
+
+            await PropertyDetail.createMany(detail_data);
+
+            const details = await PropertyDetail.query()
+                .where({ property_id })
+                .select(
+                    'detail_id',
+                    'property_id',
+                    'explanation',
+                )
+                .finally();
+
+            const data = {
+                rules,
+                details
+            }
 
             return response.status(Response.HTTP_CREATED).json({
                 message: t('Property rules added'),
@@ -2858,8 +2931,8 @@ export default class PropertyController {
                     builder
                         .select('amenity_id')
                         .preload('amenity_name', builder => builder.select(
-                            'name', 
-                            'type', 
+                            'name',
+                            'type',
                             'description',
                             'icon_url'))
                 })

@@ -25,6 +25,7 @@ export default class PropertyListings extends BaseSchema {
       table.string('city', 255).nullable();
       table.string('state', 255).nullable();
       table.string('zip_code', 255).nullable();
+      
       table.decimal('latitude', 10, 6).nullable();
       table.decimal('longitude', 10, 6).nullable();
       table.text('location').nullable();
