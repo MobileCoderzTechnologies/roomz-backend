@@ -377,6 +377,9 @@ export default class PropertyController {
     * @apiParam {String} city Name of City.
     * @apiParam {String} state 
     * @apiParam {String} zip_code 
+    * @apiParam {Number} [longitude] Ex 10.24
+    * @apiParam {Number} [latitude]  Ex 20.135
+    * @apiParam {String} [location] A-121, Sec-63 Noida, Utter Pradesh 201301.
     * 
     * @apiParamExample {json} Request-Example:
     * {
@@ -448,7 +451,10 @@ export default class PropertyController {
                 ]),
                 zip_code: schema.string({ trim: true }, [
                     rules.minLength(3),
-                ])
+                ]),
+                latitude: schema.number.optional(),
+                longitude: schema.number.optional(),
+                location: schema.string.optional(),
             });
             await request.validate({ schema: validateSchema });
         } catch (error) {
@@ -460,7 +466,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const { state, country, street, city, zip_code, address_optional } = body;
+        const { state,
+            country,
+            street,
+            city,
+            zip_code,
+            address_optional,
+            latitude,
+            longitude,
+            location } = body;
 
         try {
             await PropertyListing.query()
@@ -471,7 +485,10 @@ export default class PropertyController {
                     city,
                     zip_code,
                     street,
-                    address_optional
+                    address_optional,
+                    latitude,
+                    longitude,
+                    location
                 });
 
             let property = await PropertyListing.query()
@@ -491,7 +508,10 @@ export default class PropertyController {
                     'address_optional',
                     'state',
                     'city',
-                    'zip_code'
+                    'zip_code',
+                    'longitude',
+                    'latitude',
+                    'location'
                 )
                 .finally();
 
@@ -1104,8 +1124,10 @@ export default class PropertyController {
         }
 
         const body = request.body();
+        console.log(body);
         const property_rules = body.property_rules;
-        const rule_data = property_rules.filter(e => e.is_additional !== false).map(e => {
+        console.log(property_rules);
+        const rule_data = property_rules.map(e => {
             e.property_id = property_id;
             e.uid = uuid();
             const obj = {
@@ -1188,6 +1210,7 @@ export default class PropertyController {
 
     /**
     * @api {put} /user/hosting/list-property/property-details/:id Property Details
+    * @apiPrivate
     * @apiHeader {String} Device-Type Device Type ios/android.
     * @apiHeader {String} App-Version Version Code 1.0.0.
     * @apiHeader {String} Accept-Language Language Code en OR ar.
