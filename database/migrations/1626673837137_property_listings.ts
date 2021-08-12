@@ -16,6 +16,7 @@ export default class PropertyListings extends BaseSchema {
 
       table.integer('no_of_guests').notNullable().defaultTo(0);
       table.integer('no_of_bedrooms').notNullable().defaultTo(0);
+      table.integer('no_of_beds').notNullable().defaultTo(0);
       table.decimal('no_of_bathrooms', 10,1).notNullable().defaultTo(0);
 
       // address 

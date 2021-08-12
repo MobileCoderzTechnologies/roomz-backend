@@ -5,6 +5,7 @@ import PropertyType from "App/Models/PropertyType";
 import Amenity from "App/Models/Amenity";
 import HomeDetail from "App/Models/HomeDetail";
 import HomeRule from "App/Models/HomeRule";
+import PropertyListing from 'App/Models/PropertyListing';
 import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
 
@@ -488,6 +489,24 @@ export default class HostingController {
       }
       response.status(200).json({
         message: t('Images deleted')
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
+
+  async getPropertyList({ request,response }: HttpContextContract) {
+    try {
+      const page = request.input('page', 1)
+      const limit = 10  
+      const PropertyList = await PropertyListing.query()
+      .select('id', 'uid', 'no_of_bedrooms', 'no_of_beds', 'no_of_bathrooms', 'city', 'location').orderBy('id=dec')
+      .paginate(page,limit).finally();
+      return response.status(Response.HTTP_OK).json({
+        data: PropertyList
       })
     } catch (error) {
       console.log(error)

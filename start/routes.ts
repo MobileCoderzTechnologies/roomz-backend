@@ -68,6 +68,8 @@ Route.group(() => {
 
   Route.post('remove-images','User/HostingController.deleteImages');
 
+  Route.get('property-list','User/HostingController.getPropertyList')
+
   // property controller
 
   Route.group(() => {

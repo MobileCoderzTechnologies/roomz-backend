@@ -38,6 +38,9 @@ export default class PropertyListing extends BaseModel {
   public no_of_bedrooms: number;
 
   @column()
+  public no_of_beds: number;
+
+  @column()
   public no_of_bathrooms: number;
 
   @column()

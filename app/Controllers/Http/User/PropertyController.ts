@@ -295,6 +295,7 @@ export default class PropertyController {
                 .where({ id: property_id, user_id })
                 .update({
                     no_of_bathrooms,
+                    no_of_beds:beds.length,
                     no_of_bedrooms,
                     no_of_guests
                 });
