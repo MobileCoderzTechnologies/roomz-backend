@@ -17,7 +17,7 @@ import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
 
 export default class PropertyController {
     /**
-  * @api {post} /user/hosting/list-property/type Property Type
+  * @api {post} /user/hosting/list-property/type/id? Property Type
   * @apiHeader {String} Device-Type Device Type ios/android.
   * @apiHeader {String} App-Version Version Code 1.0.0.
   * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -26,6 +26,7 @@ export default class PropertyController {
   * @apiName property-type
   * @apiGroup List Property
   *
+  * @apiParam {Number} [id] on updating a property pass property id as params, if adding a new property no need to pass id
   * @apiParam {Number} property_type property_type Property Type Id `
   * @apiParam {Boolean} [is_beach_house] required if property_type 'villa' or 'apartment'.
   * @apiParam {Boolean} is_dedicated_guest_space true or false.
@@ -295,7 +296,7 @@ export default class PropertyController {
                 .where({ id: property_id, user_id })
                 .update({
                     no_of_bathrooms,
-                    no_of_beds:beds.length,
+                    no_of_beds: beds.length,
                     no_of_bedrooms,
                     no_of_guests
                 });
@@ -2942,6 +2943,16 @@ export default class PropertyController {
             const property = await PropertyListing.query()
                 .where({ id: property_id, user_id })
                 .preload('type', builder => builder.select('property_type'))
+                .preload('user', builder => {
+                    builder.select(
+                        'id',
+                        'first_name',
+                        'last_name',
+                        'email',
+                        'phone_number',
+                        'avatar'
+                    )
+                })
                 .preload('beds', builder => {
                     builder.select(
                         'bed_id',

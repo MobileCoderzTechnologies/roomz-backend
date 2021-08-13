@@ -12,6 +12,7 @@ const t = i18n.__;
 import Env from '@ioc:Adonis/Core/Env';
 import { FileUploadOnS3 } from 'App/Helpers/fileUpload';
 import { IMAGE_SIZES } from 'App/Constants/ImageSizesConstant';
+import { PROPERTY_STATUS } from 'App/Constants/PropertyConstant';
 
 
 export default class HostingController {
@@ -498,13 +499,75 @@ export default class HostingController {
     }
   }
 
-  async getPropertyList({ request,response }: HttpContextContract) {
+
+  /**
+  * @api {get} /user/hosting/listing-status Listing Status
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+  * @apiVersion 1.0.0
+  * @apiName listing-status
+  * @apiGroup Hosting
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *   HTTP/1.1 200 OK
+  *   {
+  *  "data": {
+  *          "listing_status": false
+  *      }
+  * }
+  *    
+  *
+  * @apiErrorExample {json} Error-Response:
+  *
+  *     HTTP/1.1 500 Internal Serve Error
+  *     {
+  *        "message": "Something went wrong"
+  *      }
+  *
+  */
+  async listingStatus({ auth, response }: HttpContextContract) {
     try {
-      const page = request.input('page', 1)
-      const limit = 10  
+      const user_id = auth.user?.id;
+      const property = await PropertyListing.query()
+        .whereNot('status', PROPERTY_STATUS.deleted)
+        .where({ user_id })
+        .first();
+
+      const listing_status = property ? true : false;
+
+      return response.status(Response.HTTP_OK).json({
+        data: {
+          listing_status
+        }
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+        message: t('Something went wrong')
+      });
+    }
+  }
+
+
+  async getPropertyList({ auth, request, response }: HttpContextContract) {
+    try {
+      const user_id = auth.user?.id;
+      const queryString = request.qs();
+
+      const page = queryString.page * 1 || 1;
+      const limit = queryString.pageSize * 1 || 100;
+      // const status = queryString.status * 1 || null;
+      // const beds = queryString.beds * 1 || 0;
+      // const bedrooms = queryString.bedrooms * 1 || 0;
+      // const bathrooms = queryString.bathrooms * 1 || 0;
+      // const amenities = queryString.amenities || [];
+
       const PropertyList = await PropertyListing.query()
-      .select('id', 'uid', 'no_of_bedrooms', 'no_of_beds', 'no_of_bathrooms', 'city', 'location').orderBy('id=dec')
-      .paginate(page,limit).finally();
+        .where({ user_id })
+        .select('id', 'uid', 'no_of_bedrooms', 'no_of_beds', 'no_of_bathrooms', 'city', 'location').orderBy('id=dec')
+        .paginate(page, limit).finally();
       return response.status(Response.HTTP_OK).json({
         data: PropertyList
       })
@@ -516,3 +579,11 @@ export default class HostingController {
     }
   }
 }
+
+// searching, sorting
+// total count according to filter abd searching;
+// page data
+
+// amenities filter 
+// status filter
+// 

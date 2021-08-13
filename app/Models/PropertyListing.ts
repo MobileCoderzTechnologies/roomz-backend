@@ -8,6 +8,7 @@ import PropertyRule from './PropertyRule';
 import PropertyImage from './PropertyImage';
 import PropertyDetail from './PropertyDetail';
 import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
+import User from './User';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -220,6 +221,12 @@ export default class PropertyListing extends BaseModel {
     foreignKey: 'id',
   })
   public type: HasOne<typeof PropertyType>;
+
+  @hasOne(() => User, {
+    localKey: 'user_id',
+    foreignKey: 'id',
+  })
+  public user: HasOne<typeof User>;
 
   @hasMany(() => PropertyRule, {
     localKey: 'id',
