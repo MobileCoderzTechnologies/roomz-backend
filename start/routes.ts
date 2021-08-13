@@ -64,11 +64,11 @@ Route.group(() => {
 
   Route.get('home-rules', 'User/HostingController.getHomeRule');
 
-  Route.post('upload-images','User/HostingController.uploadImage');
+  Route.post('upload-images', 'User/HostingController.uploadImage');
 
-  Route.post('remove-images','User/HostingController.deleteImages');
+  Route.post('remove-images', 'User/HostingController.deleteImages');
 
-  Route.get('property-list','User/HostingController.getPropertyList');
+  Route.get('property-list', 'User/HostingController.getPropertyList');
 
   Route.get('listing-status', 'User/HostingController.listingStatus');
 
@@ -113,7 +113,9 @@ Route.group(() => {
 
     Route.get('publish/:id', 'User/PropertyController.publishProperty');
 
-  }).prefix('list-property');
+    Route.get('get-property/:id', 'User/PropertyController.getPropertyForUpdate');
+
+  }).prefix('list-property').middleware('propertyStatus');
 
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 

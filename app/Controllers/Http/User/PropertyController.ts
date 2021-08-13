@@ -3165,4 +3165,261 @@ export default class PropertyController {
 
 
 
+    /**
+          * @api {get} /user/hosting/list-property/get-property/:id Get Property For Update
+          * @apiHeader {String} Device-Type Device Type ios/android.
+          * @apiHeader {String} App-Version Version Code 1.0.0.
+          * @apiHeader {String} Accept-Language Language Code en OR ar.
+          * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+          * @apiVersion 1.0.0
+          * @apiName get-property
+          * @apiGroup List Property
+          *
+          * @apiParam {Number} id Property ID (pass as params)
+          * @apiSuccessExample {json} Success-Response:
+          *     HTTP/1.1 200 Success
+          * {
+                "property": [
+                    {
+                        "id": 2,
+                        "uid": "490d4ac9-1add-4a16-a731-f80053842773",
+                        "user_id": 19,
+                        "property_type": 1,
+                        "is_beach_house": null,
+                        "is_dedicated_guest_space": 1,
+                        "is_business_hosting": 0,
+                        "no_of_guests": 1,
+                        "no_of_bedrooms": 1,
+                        "no_of_beds": 6,
+                        "no_of_bathrooms": 1,
+                        "country": "India",
+                        "address_optional": "",
+                        "street": "Kolra",
+                        "city": "Dausa",
+                        "state": "Rajasthan",
+                        "zip_code": "321608",
+                        "latitude": 26.948408,
+                        "longitude": 76.800511,
+                        "location": "Unnamed Road, Mehandipur, Rajasthan 321610, India",
+                        "is_email_confirmed": 1,
+                        "is_phone_confirmed": 0,
+                        "is_payment_information": 1,
+                        "is_agree_hr": 1,
+                        "is_trip_purpose": 0,
+                        "is_id_submitted": 0,
+                        "is_recommended_from_oh": 0,
+                        "cover_photo": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/Screenshot from 2021-06-18 15-38-29/Screenshot from 2021-06-18 15-38-29.png",
+                        "description": "good for livig, hhhhjjjjjkkkk",
+                        "desc_your_space": "",
+                        "desc_interaction_guests": "",
+                        "desc_neighbourhood": "",
+                        "desc_getting_around": "",
+                        "name": "Smart House ",
+                        "country_code": "+91",
+                        "sec_phone_number": null,
+                        "advance_notice": 0,
+                        "cut_off_time": 22,
+                        "guests_book_time": 1,
+                        "ci_arrive_after": 10,
+                        "ci_arrive_before": 22,
+                        "ci_leave_before": 12,
+                        "min_stay": 1,
+                        "max_stay": 1,
+                        "base_price": 1,
+                        "is_discount_20": 1,
+                        "is_local_laws": 1,
+                        "is_updated_calender": 1,
+                        "rented_before": 1,
+                        "have_guests": 2,
+                        "notice_guest_ba": 0,
+                        "guest_ci_from": 10,
+                        "guest_ci_to": 22,
+                        "weekly_discount": 2,
+                        "monthly_discount": 2,
+                        "status": 2,
+                        "created_at": "2021-08-13T11:00:44.000+05:30",
+                        "updated_at": "2021-08-13T10:57:35.000+05:30",
+                        "type": {
+                            "property_type": "Villa",
+                            "id": 1
+                        },
+                        "beds": [
+                            {
+                                "bed_id": 4,
+                                "serial_number": 0,
+                                "count": 2,
+                                "bedroom_name": "Common Space",
+                                "property_id": 2
+                            },
+                            {
+                                "bed_id": 7,
+                                "serial_number": 0,
+                                "count": 3,
+                                "bedroom_name": "Common Space",
+                                "property_id": 2
+                            },
+                            {
+                                "bed_id": 9,
+                                "serial_number": 0,
+                                "count": 1,
+                                "bedroom_name": "Common Space",
+                                "property_id": 2
+                            },
+                            {
+                                "bed_id": 1,
+                                "serial_number": 1,
+                                "count": 2,
+                                "bedroom_name": "Bedroom 1",
+                                "property_id": 2
+                            },
+                            {
+                                "bed_id": 2,
+                                "serial_number": 1,
+                                "count": 3,
+                                "bedroom_name": "Bedroom 2",
+                                "property_id": 2
+                            },
+                            {
+                                "bed_id": 3,
+                                "serial_number": 1,
+                                "count": 1,
+                                "bedroom_name": "Bedroom 3",
+                                "property_id": 2
+                            }
+                        ],
+                        "amenities": [
+                            {
+                                "amenity_id": 1,
+                                "property_id": 2
+                            },
+                            {
+                                "amenity_id": 2,
+                                "property_id": 2
+                            },
+                            {
+                                "amenity_id": 3,
+                                "property_id": 2
+                            },
+                            {
+                                "amenity_id": 4,
+                                "property_id": 2
+                            }
+                        ],
+                        "details": [
+                            {
+                                "detail_id": 8,
+                                "explanation": null,
+                                "property_id": 2
+                            },
+                            {
+                                "detail_id": 9,
+                                "explanation": null,
+                                "property_id": 2
+                            }
+                        ],
+                        "rules": [
+                            {
+                                "rule_id": 1,
+                                "is_additional": 0,
+                                "is_cancelled": 0,
+                                "cancel_reason": null,
+                                "description": null,
+                                "property_id": 2
+                            },
+                            {
+                                "rule_id": 2,
+                                "is_additional": 0,
+                                "is_cancelled": 0,
+                                "cancel_reason": null,
+                                "description": null,
+                                "property_id": 2
+                            },
+                            {
+                                "rule_id": 3,
+                                "is_additional": 0,
+                                "is_cancelled": 0,
+                                "cancel_reason": null,
+                                "description": null,
+                                "property_id": 2
+                            },
+                            {
+                                "rule_id": 4,
+                                "is_additional": 0,
+                                "is_cancelled": 0,
+                                "cancel_reason": null,
+                                "description": null,
+                                "property_id": 2
+                            },
+                            {
+                                "rule_id": 5,
+                                "is_additional": 0,
+                                "is_cancelled": 0,
+                                "cancel_reason": null,
+                                "description": null,
+                                "property_id": 2
+                            }
+                        ],
+                        "images": [
+                            {
+                                "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/Screenshot from 2021-06-21 13-40-14/Screenshot from 2021-06-21 13-40-14.png",
+                                "property_id": 2
+                            }
+                                ]
+                            }
+                        ]
+       *        }
+          * 
+          */
+
+    async getPropertyForUpdate({ response, auth, params }: HttpContextContract) {
+        try {
+            const property_id = params.id;
+            const user_id = auth.user?.id;
+            let property = await PropertyListing.query()
+                .where({ id: property_id, user_id })
+                .preload('type', builder => builder.select('property_type'))
+                .preload('beds', builder => {
+                    builder.select(
+                        'bed_id',
+                        'serial_number',
+                        'count',
+                        'bedroom_name'
+                    )
+                })
+                .preload('amenities', builder => {
+                    builder
+                        .select('amenity_id')
+                })
+                .preload('details', builder => {
+                    builder
+                        .select('detail_id', 'explanation')
+                })
+                .preload('rules', builder => builder.select(
+                    'rule_id',
+                    'is_additional',
+                    'is_cancelled',
+                    'cancel_reason',
+                    'description'
+                ))
+                .preload('images', builder => builder.select('image_url'))
+                .finally();
+
+            if (!property) property = [];
+            response.status(200).json({
+                property
+            })
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
+
+
+
+
+
+
+
 }
