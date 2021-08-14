@@ -31,7 +31,7 @@ export default class PropertiesController {
         .whereNot({ status: PROPERTY_STATUS.deleted });
       const apiFeatures = new ApiFeatures(propertyQuery, queryString)
         .filtering()
-        .searching(['first_name', 'last_name', 'email'])
+        .searching(['name', 'city', 'street'])
         .sorting('created_at')
         .pagination();
 

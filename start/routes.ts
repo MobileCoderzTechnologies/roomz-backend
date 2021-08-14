@@ -119,6 +119,17 @@ Route.group(() => {
 
 }).prefix('user/hosting').middleware(['locale', 'auth', 'userStatus']);
 
+// travelling
+
+
+Route.group(() => {
+  Route.get('search-property', 'User/TravellingController.searchProperty');
+
+  Route.get('property-details/:id', 'User/TravellingController.propertyDetails');
+
+
+
+}).prefix("user/travelling").middleware('locale');
 
 
 /************************ Admin Controller ************************/
