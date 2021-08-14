@@ -134,4 +134,15 @@ Route.group(() => {
   Route.put('toggle-status/:userId', 'Admin/UserController.toggleStatus');
 
   Route.get('users-list', 'AdminController.getUsersList');
+
+  // property 
+
+  Route.get('property-list', 'Admin/PropertiesController.getPropertyList');
+
+  Route.get('property-details/:id', 'Admin/PropertiesController.propertyDetails');
+
+  Route.delete('delete-property/:id', 'Admin/PropertiesController.deleteProperty');
+
+  Route.get('block-property/:id', 'Admin/PropertiesController.toggleStatus');
+
 }).prefix("admin").middleware(['locale', 'auth']);

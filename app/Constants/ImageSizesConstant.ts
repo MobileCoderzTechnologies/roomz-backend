@@ -33,5 +33,10 @@ export const IMAGE_SIZES = [
     imagePath: "576x250",
     height: 250,
     width: 576
+  },
+  {
+    imagePath: "1366x460",
+    height: 460,
+    width: 1366
   }
 ];

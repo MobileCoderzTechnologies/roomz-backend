@@ -108,5 +108,7 @@
 	"Events allowed": "Events allowed",
 	"Property images added": "Property images added",
 	"Images deleted": "Images deleted",
-	"Toilet Paper": "Toilet Paper"
+	"Toilet Paper": "Toilet Paper",
+	"Property deleted successfully": "Property deleted successfully",
+	"Property status updated": "Property status updated"
 }

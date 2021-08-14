@@ -2950,7 +2950,8 @@ export default class PropertyController {
                         'last_name',
                         'email',
                         'phone_number',
-                        'avatar'
+                        'avatar',
+                        'created_at'
                     )
                 })
                 .preload('beds', builder => {
