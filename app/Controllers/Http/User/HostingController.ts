@@ -6,6 +6,7 @@ import Amenity from "App/Models/Amenity";
 import HomeDetail from "App/Models/HomeDetail";
 import HomeRule from "App/Models/HomeRule";
 import PropertyListing from 'App/Models/PropertyListing';
+import PropertyAmenity from 'App/Models/PropertyAmenity';
 import i18n from 'App/Helpers/i18n';
 const t = i18n.__;
 
@@ -551,6 +552,69 @@ export default class HostingController {
   }
 
 
+
+  /**
+  * @api {get} /user/hosting/my-properties?search=''&beds=4&bedrooms&amenities=1,2,3,4&status=1,2,3&page=1&pageSize=10 My Properties
+  * @apiHeader {String} Device-Type Device Type ios/android.
+  * @apiHeader {String} App-Version Version Code 1.0.0.
+  * @apiHeader {String} Accept-Language Language Code en OR ar.
+  * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+  * @apiVersion 1.0.0
+  * @apiName my-properties
+  * @apiGroup Hosting
+  * 
+  * @apiDescription This is the Description.
+  * It is multiline capable.
+  *
+  * Last line of Description.
+  *
+  * @apiSuccessExample {json} Success-Response:
+  *   HTTP/1.1 200 OK
+  *   {
+    "data": {
+        "meta": {
+            "total": 1,
+            "per_page": 100,
+            "current_page": 1,
+            "last_page": 1,
+            "first_page": 1,
+            "first_page_url": "/?page=1",
+            "last_page_url": "/?page=1",
+            "next_page_url": null,
+            "previous_page_url": null
+        },
+        "data": [
+            {
+                "id": 6,
+                "uid": "93b18dfe-0449-4868-9e9e-556957414123",
+                "no_of_bedrooms": 1,
+                "no_of_beds": 6,
+                "no_of_bathrooms": 1,
+                "city": "Dausa",
+                "location": "3W2G+X5M, Mahwa, Rajasthan 321608, India",
+                "updated_at": "2021-08-13T15:12:12.000+05:30",
+                "status": 1,
+                "cover_photo": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/Screenshot from 2021-06-18 15-38-29/Screenshot from 2021-06-18 15-38-29.png"
+            }
+            .
+            .
+            .
+
+              ]
+          }
+      }
+  *    
+  *
+  * @apiErrorExample {json} Error-Response:
+  *
+  *     HTTP/1.1 500 Internal Serve Error
+  *     {
+  *        "message": "Something went wrong"
+  *      }
+  *
+  */
+
+
   async getPropertyList({ auth, request, response }: HttpContextContract) {
     try {
       const user_id = auth.user?.id;
@@ -558,18 +622,68 @@ export default class HostingController {
 
       const page = queryString.page * 1 || 1;
       const limit = queryString.pageSize * 1 || 100;
-      // const status = queryString.status * 1 || null;
-      // const beds = queryString.beds * 1 || 0;
-      // const bedrooms = queryString.bedrooms * 1 || 0;
-      // const bathrooms = queryString.bathrooms * 1 || 0;
-      // const amenities = queryString.amenities || [];
+      const no_of_beds = queryString.beds * 1 || 0;
+      const no_of_bathrooms = queryString.bathrooms * 1 || 0;
+      const no_of_bedrooms = queryString.bedrooms * 1 || 0;
+      const amenityString = queryString.amenities || '';
+      const statusString = queryString.status || '';
 
-      const PropertyList = await PropertyListing.query()
+      const search = queryString.search || '';
+
+      let query = PropertyListing.query()
+        .whereNot({ status: PROPERTY_STATUS.deleted })
         .where({ user_id })
-        .select('id', 'uid', 'no_of_bedrooms', 'no_of_beds', 'no_of_bathrooms', 'city', 'location').orderBy('id=dec')
-        .paginate(page, limit).finally();
+
+      if (no_of_beds) query = query.where({ no_of_beds })
+      if (no_of_bathrooms) query = query.where({ no_of_bathrooms })
+      if (no_of_bedrooms) query = query.where({ no_of_bedrooms })
+
+      if (statusString) {
+        const status = statusString.split(',');
+        query = query.whereIn('status', status)
+      }
+
+      if (search) {
+        query = query.whereRaw(`name LIKE '%${search}%' OR city LIKE '%${search}%'`)
+      }
+
+      if (amenityString) {
+        const amenities = amenityString.split(',');
+        let amenity_data = await PropertyAmenity.query()
+          .whereIn('amenity_id', amenities)
+          .distinct('property_id')
+          .select(
+            'property_id'
+          )
+          .finally();
+
+        const ids: number[] = [];
+        amenity_data.forEach(item => {
+          ids.push(item.property_id);
+        });
+
+        query = query.whereIn('id', ids);
+      }
+
+
+
+      const propertyList = await query.select(
+        'id',
+        'uid',
+        'no_of_bedrooms',
+        'no_of_beds',
+        'no_of_bathrooms',
+        'city',
+        'location',
+        'updated_at',
+        'status',
+        'cover_photo'
+      )
+        .orderBy('id', 'desc')
+        .paginate(page, limit);
+
       return response.status(Response.HTTP_OK).json({
-        data: PropertyList
+        data: propertyList
       })
     } catch (error) {
       console.log(error)
@@ -580,10 +694,4 @@ export default class HostingController {
   }
 }
 
-// searching, sorting
-// total count according to filter abd searching;
-// page data
 
-// amenities filter 
-// status filter
-// 

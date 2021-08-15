@@ -96,10 +96,13 @@ export default class TravellingController {
 
   /**
         * @api {get} /admin/property-details/:id Property Details
+        * @apiHeader {String} Device-Type Device Type ios/android.
+        * @apiHeader {String} App-Version Version Code 1.0.0.
+        * @apiHeader {String} Accept-Language Language Code en OR ar.
         * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
         * @apiVersion 1.0.0
         * @apiName property-details
-        * @apiGroup Admin
+        * @apiGroup Travelling
         *
         * @apiParam {String} id Property ID (pass as params)
         * @apiSuccessExample {json} Success-Response:
