@@ -12,7 +12,7 @@ const t = i18n.__;
 
 export default class PropertiesController {
 
-  /*
+  /** 
   * @api {get} /admin/property-list?name=''& Property List
   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
   * @apiVersion 1.0.0
@@ -50,7 +50,7 @@ export default class PropertiesController {
   }
 
 
-  /*
+  /**
   * @api {delete} /admin/delete-property/:uid Delete Property
   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
   * @apiVersion 1.0.0
@@ -95,7 +95,7 @@ export default class PropertiesController {
   }
 
 
-  /*
+  /**
   * @api {get} /admin/block-property/:uid Block Unblock Property
   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
   * @apiVersion 1.0.0

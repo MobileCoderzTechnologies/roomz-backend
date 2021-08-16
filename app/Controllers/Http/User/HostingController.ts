@@ -694,28 +694,30 @@ export default class HostingController {
   }
 
 
-  /*
-* @api {delete} /user/hosting/delete-property/?ids=1,2,3 Delete Property
-* @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
-* @apiVersion 1.0.0
-* @apiName delete-property
-* @apiGroup Hosting
-*
-* @apiParam {String} id Property ID (pass as params)
-* @apiSuccessExample {json} Success-Response:
-*     HTTP/1.1 200 Success
-* 
-* {
-*  "message": "Property deleted successfully"
-*  }
-*/
-  async deleteProperty({ request, response }: HttpContextContract) {
+  /** 
+    * @api {delete} /user/hosting/delete-property/?ids=1,2,3 Delete Property
+    * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+    * @apiVersion 1.0.0
+    * @apiName delete-property
+    * @apiGroup Hosting
+    *
+    * @apiParam {String} id Property ID (pass as params)
+    * @apiSuccessExample {json} Success-Response:
+    *     HTTP/1.1 200 Success
+    * 
+    * {
+    *  "message": "Property deleted successfully"
+    *  }
+    */
+  async deleteProperty({ request, auth, response }: HttpContextContract) {
     try {
+      const user_id = auth.user?.id;
       const queryString = request.qs();
       const ids = queryString.ids.split(',');
       const deleting = ids.map(e => e = Number(e));
 
       await PropertyListing.query()
+        .where({ user_id })
         .whereIn('id', deleting)
         .update({ status: PROPERTY_STATUS.deleted })
 
