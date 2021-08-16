@@ -1104,9 +1104,7 @@ export default class PropertyController {
                         ])
                     })
                 ),
-                property_details: schema.array([
-                    rules.minLength(2)
-                ]).members(
+                property_details: schema.array().members(
                     schema.object().members({
                         detail_id: schema.number(),
                         explanation: schema.string.optional({ trim: true }, [
@@ -2765,7 +2763,7 @@ export default class PropertyController {
 
 
     /**
-          * @api {get} /user/hosting/list-property/publish/:id Publish Property
+          * @api {put} /user/hosting/list-property/publish/:id Publish Property
           * @apiHeader {String} Device-Type Device Type ios/android.
           * @apiHeader {String} App-Version Version Code 1.0.0.
           * @apiHeader {String} Accept-Language Language Code en OR ar.
@@ -2783,7 +2781,7 @@ export default class PropertyController {
           * 
           */
 
-    async publishProperty({ params, response, auth }: HttpContextContract) {
+    async publishProperty({ request, params, response, auth }: HttpContextContract) {
         try {
             const property_id = params.id;
             const user_id = auth.user?.id;
@@ -2796,12 +2794,35 @@ export default class PropertyController {
                     message: t('Invalid property id'),
                 });
             }
+
+
+
+            const body = request.body();
+            const status = body.status;
+
+            if (property?.status === PROPERTY_STATUS.pendingForApproval && status === PROPERTY_STATUS.published) {
+                return response.status(Response.HTTP_BAD_REQUEST).json({
+                    message: t('please wait for admin approval')
+                });
+            }
+
+
             await PropertyListing.query()
                 .where('id', property_id)
-                .update({ status: PROPERTY_STATUS.published });
+                .update({ status });
+
+            let message;
+            if (status === PROPERTY_STATUS.pendingForApproval) {
+                message = t('Property pending for admin approval')
+            }
+
+
+            if (status === PROPERTY_STATUS.published) {
+                message === t('Property published')
+            }
 
             return response.status(Response.HTTP_OK).json({
-                message: t('Property published'),
+                message,
             });
         } catch (error) {
             console.log(error)

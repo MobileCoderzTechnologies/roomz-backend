@@ -28,7 +28,7 @@ export default class PropertiesController {
 
       const queryString = request.qs();
       const propertyQuery = PropertyListing.query()
-        .whereNot({ status: PROPERTY_STATUS.deleted });
+        .whereNotIn('status', [PROPERTY_STATUS.deleted, PROPERTY_STATUS.draft]);
       const apiFeatures = new ApiFeatures(propertyQuery, queryString)
         .filtering()
         .searching(['name', 'city', 'street'])

@@ -7,8 +7,8 @@ export default class PropertyImages extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id');
       table.integer('property_id').unsigned().nullable();
-      table.string('image_key', 255).notNullable();
-      table.string('image_url', 255).nullable();
+      table.text('image_key').notNullable();
+      table.text('image_url').nullable();
       table.timestamps(true)
     })
   }

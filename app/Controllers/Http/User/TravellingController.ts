@@ -99,7 +99,6 @@ export default class TravellingController {
         * @apiHeader {String} Device-Type Device Type ios/android.
         * @apiHeader {String} App-Version Version Code 1.0.0.
         * @apiHeader {String} Accept-Language Language Code en OR ar.
-        * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
         * @apiVersion 1.0.0
         * @apiName property-details
         * @apiGroup Travelling

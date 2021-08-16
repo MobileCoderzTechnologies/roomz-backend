@@ -26,7 +26,9 @@ export const ADVANCE_NOTICE = {
 
 export const PROPERTY_STATUS = {
   draft: 1,
-  published: 2,
-  blocked: 3,
-  deleted: 4,
+  pendingForApproval: 2,
+  published: 3,
+  unlisted: 4,
+  blocked: 5,
+  deleted: 6,
 }

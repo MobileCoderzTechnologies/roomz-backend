@@ -42,7 +42,7 @@ export default class PropertyListings extends BaseSchema {
       table.boolean('is_recommended_from_oh').nullable();
 
       // cover photo
-      table.string('cover_photo').nullable();
+      table.text('cover_photo').nullable();
 
       //description
       table.text('description').nullable();

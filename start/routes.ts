@@ -72,6 +72,8 @@ Route.group(() => {
 
   Route.get('listing-status', 'User/HostingController.listingStatus');
 
+  Route.delete('delete-properties', 'User/HostingController.deleteProperty');
+
   // property controller
 
   Route.group(() => {
@@ -111,7 +113,7 @@ Route.group(() => {
 
     Route.put('photos/:id', 'User/PropertyController.addPropertyPhotos');
 
-    Route.get('publish/:id', 'User/PropertyController.publishProperty');
+    Route.put('publish/:id', 'User/PropertyController.publishProperty');
 
     Route.get('get-property/:id', 'User/PropertyController.getPropertyForUpdate');
 
