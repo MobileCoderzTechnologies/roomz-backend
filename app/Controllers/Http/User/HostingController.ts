@@ -677,7 +677,10 @@ export default class HostingController {
         'location',
         'updated_at',
         'status',
-        'cover_photo'
+        'cover_photo',
+        'name',
+        'no_of_guests',
+        'state'
       )
         .orderBy('id', 'desc')
         .paginate(page, limit);
@@ -695,10 +698,10 @@ export default class HostingController {
 
 
   /** 
-    * @api {delete} /user/hosting/delete-property/?ids=1,2,3 Delete Property
+    * @api {delete} /user/hosting/delete-properties/?ids=1,2,3 Delete Property
     * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
     * @apiVersion 1.0.0
-    * @apiName delete-property
+    * @apiName delete-properties
     * @apiGroup Hosting
     *
     * @apiParam {String} id Property ID (pass as params)
