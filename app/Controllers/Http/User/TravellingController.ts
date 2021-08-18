@@ -72,7 +72,8 @@ export default class TravellingController {
 
       const queryString = request.qs();
       const propertyQuery = PropertyListing.query()
-        .whereNot({ status: PROPERTY_STATUS.deleted });
+        .whereNot({ status: PROPERTY_STATUS.deleted })
+        .preload('images');
       const apiFeatures = new ApiFeatures(propertyQuery, queryString)
         .filtering()
         .searching(['name', 'city', 'street'])
