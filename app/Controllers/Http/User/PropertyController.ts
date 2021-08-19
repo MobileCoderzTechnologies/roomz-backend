@@ -2980,9 +2980,12 @@ export default class PropertyController {
                         'bed_id',
                         'serial_number',
                         'count',
-                        'bedroom_name'
+                        'bedroom_name',
                     )
-                        .preload('bed_type', builder => builder.select('bed_type'))
+                        .preload('bed_type', builder => builder.select(
+                            'bed_type',
+                            'icon'
+                        ))
                 })
                 .preload('amenities', builder => {
                     builder

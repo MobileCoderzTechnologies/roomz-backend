@@ -116,11 +116,11 @@ export default class PropertiesController {
 
       if (property) {
         if (property.status === PROPERTY_STATUS.blocked) {
-          property.status = PROPERTY_STATUS.draft;
+          property.status = PROPERTY_STATUS.published;
         }
 
         if (property.status !== PROPERTY_STATUS.blocked) {
-          property.status = PROPERTY_STATUS.draft;
+          property.status = PROPERTY_STATUS.blocked;
         }
         property.save();
 

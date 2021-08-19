@@ -8,6 +8,7 @@ export default class BedTypes extends BaseSchema {
       table.increments('id');
       table.uuid('uid');
       table.string('bed_type', 255).notNullable();
+      table.text('icon').notNullable();
       table.timestamps(true, true);
     })
   } 

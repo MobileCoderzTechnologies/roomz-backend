@@ -14,13 +14,16 @@ export default class BedType extends BaseModel {
   public uid: string
 
   @column()
-  public bed_type: string
+  public bed_type: string;
+
+  @column()
+  public icon: string;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime;
 
   @afterFetch()
-  public static async translate(query){
+  public static async translate(query) {
     query = query.map(item => {
       item.bed_type = t(item.bed_type);
       return item;

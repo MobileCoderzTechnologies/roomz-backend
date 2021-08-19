@@ -72,8 +72,18 @@ export default class TravellingController {
 
       const queryString = request.qs();
       const propertyQuery = PropertyListing.query()
-        .whereNot({ status: PROPERTY_STATUS.deleted })
-        .preload('images');
+        .whereNotIn('status', [PROPERTY_STATUS.deleted, PROPERTY_STATUS.draft, PROPERTY_STATUS.blocked])
+        .preload('type', builder => builder.select('property_type'))
+        .preload('images', builder => {
+          builder.limit(3)
+          builder.select('image_url')
+        })
+        .preload('amenities', builder => {
+          builder.limit(5);
+          builder.select('amenity_id')
+          builder.preload('amenity_name', query => query.select('name'))
+        })
+        .preload('images', builder => builder.select('image_url'))
       const apiFeatures = new ApiFeatures(propertyQuery, queryString)
         .filtering()
         .searching(['name', 'city', 'street'])
@@ -221,6 +231,7 @@ export default class TravellingController {
   async propertyDetails({ response, params }: HttpContextContract) {
     try {
       const property_id = params.id;
+
       const property = await PropertyListing.query()
         .where({ id: property_id })
         .preload('type', builder => builder.select('property_type'))
@@ -240,9 +251,12 @@ export default class TravellingController {
             'bed_id',
             'serial_number',
             'count',
-            'bedroom_name'
+            'bedroom_name',
           )
-            .preload('bed_type', builder => builder.select('bed_type'))
+            .preload('bed_type', builder => builder.select(
+              'bed_type',
+              'icon'
+            ))
         })
         .preload('amenities', builder => {
           builder
@@ -290,12 +304,25 @@ export default class TravellingController {
 
       const similar_places = await PropertyListing.query()
         .where({ city: property?.city })
+        .whereNot({ id: property_id })
         .select(
           'id',
           'cover_photo',
           'name',
           'location',
-        ).preload('images', builder => builder.select('image_url'))
+          'city',
+          'property_type'
+        )
+        .preload('type', builder => builder.select('property_type'))
+        .preload('amenities', builder => {
+          builder.limit(5);
+          builder.select('amenity_id')
+          builder.preload('amenity_name', query => query.select('name'))
+        })
+        .preload('images', builder => {
+          builder.limit(3)
+          builder.select('image_url')
+        })
         .finally();
 
       const rules = rules_fixed.concat(rules_additional);
