@@ -111,5 +111,7 @@
 	"Toilet Paper": "Toilet Paper",
 	"Property deleted successfully": "Property deleted successfully",
 	"Property status updated": "Property status updated",
-	"please wait for admin approval": "please wait for admin approval"
+	"please wait for admin approval": "please wait for admin approval",
+	"Phone number updated": "Phone number updated",
+	"Property pending for admin approval": "Property pending for admin approval"
 }

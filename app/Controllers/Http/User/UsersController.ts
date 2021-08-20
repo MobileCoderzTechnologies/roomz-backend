@@ -241,7 +241,7 @@ export default class UsersController {
           .finally();
 
         response.status(Response.HTTP_CREATED).json({
-          message: t('Profile photo updated'),
+          message: t('Phone number updated'),
           data: user
         })
       } else if (otpRes && typeof otpRes.status === 'string' && otpRes.valid === false) {

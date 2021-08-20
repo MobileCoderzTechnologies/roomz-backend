@@ -72,7 +72,7 @@ export default class TravellingController {
 
       const queryString = request.qs();
       const propertyQuery = PropertyListing.query()
-        .whereNotIn('status', [PROPERTY_STATUS.deleted, PROPERTY_STATUS.draft, PROPERTY_STATUS.blocked])
+        .where('status', PROPERTY_STATUS.published)
         .preload('type', builder => builder.select('property_type'))
         .preload('images', builder => {
           builder.limit(3)
@@ -319,12 +319,12 @@ export default class TravellingController {
         )
         .preload('type', builder => builder.select('property_type'))
         .preload('amenities', builder => {
-          builder.limit(5);
+          // builder.limit(5);
           builder.select('amenity_id')
           builder.preload('amenity_name', query => query.select('name'))
         })
         .preload('images', builder => {
-          builder.limit(3)
+          // builder.limit(3)
           builder.select('image_url')
         })
         .finally();
