@@ -305,13 +305,17 @@ export default class TravellingController {
       const similar_places = await PropertyListing.query()
         .where({ city: property?.city })
         .whereNot({ id: property_id })
+        .where('status', PROPERTY_STATUS.published)
         .select(
           'id',
           'cover_photo',
           'name',
           'location',
           'city',
-          'property_type'
+          'property_type',
+          'no_of_bedrooms',
+          'no_of_guests',
+          'no_of_bathrooms'
         )
         .preload('type', builder => builder.select('property_type'))
         .preload('amenities', builder => {
