@@ -156,6 +156,6 @@ Route.group(() => {
 
   Route.delete('delete-property/:id', 'Admin/PropertiesController.deleteProperty');
 
-  Route.get('block-property/:id', 'Admin/PropertiesController.toggleStatus');
+  Route.put('block-property/:id', 'Admin/PropertiesController.toggleStatus');
 
 }).prefix("admin").middleware(['locale', 'auth']);

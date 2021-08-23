@@ -7,7 +7,7 @@ const t = i18n.__;
 
 // import Env from '@ioc:Adonis/Core/Env';
 import { PROPERTY_STATUS } from 'App/Constants/PropertyConstant';
-import { ApiFeatures } from 'App/Utils/apiFeatures';
+// import { ApiFeatures } from 'App/Utils/apiFeatures';
 
 
 export default class TravellingController {
@@ -71,9 +71,19 @@ export default class TravellingController {
     try {
 
       const queryString = request.qs();
-      const propertyQuery = PropertyListing.query()
+      const search = queryString.search || null;
+      const page = queryString.page * 1 || 1;
+      const pageSize = queryString.pageSize * 1 || 10;
+
+      let query = PropertyListing.query()
         .where('status', PROPERTY_STATUS.published)
-        .preload('type', builder => builder.select('property_type'))
+
+      if (search) {
+        query = PropertyListing.query()
+          .whereRaw(`status=${PROPERTY_STATUS.published} AND (name LIKE '%${search}%' OR city LIKE '%${search}%')`)
+      }
+
+      const propertyQuery = query.preload('type', builder => builder.select('property_type'))
         .preload('images', builder => {
           builder.limit(3)
           builder.select('image_url')
@@ -84,13 +94,14 @@ export default class TravellingController {
           builder.preload('amenity_name', query => query.select('name'))
         })
         .preload('images', builder => builder.select('image_url'))
-      const apiFeatures = new ApiFeatures(propertyQuery, queryString)
-        .filtering()
-        .searching(['name', 'city', 'street'])
-        .sorting('created_at')
-        .pagination();
+        .paginate(page, pageSize);
+      // const apiFeatures = new ApiFeatures(propertyQuery, queryString)
+      //   .filtering()
+      //   .searching(['name', 'city', 'street'])
+      //   .sorting('created_at')
+      //   .pagination();
 
-      const properties = await apiFeatures.query;
+      const properties = await propertyQuery;
 
       return response.status(Response.HTTP_OK).json({
         properties

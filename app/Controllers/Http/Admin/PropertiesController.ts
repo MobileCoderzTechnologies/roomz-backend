@@ -12,7 +12,7 @@ const t = i18n.__;
 
 export default class PropertiesController {
 
-  /** 
+  /**
   * @api {get} /admin/property-list?name=''& Property List
   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
   * @apiVersion 1.0.0
@@ -60,7 +60,7 @@ export default class PropertiesController {
   * @apiParam {String} id Property ID (pass as params)
   * @apiSuccessExample {json} Success-Response:
   *     HTTP/1.1 200 Success
-  * 
+  *
   * {
   *  "message": "Property deleted successfully"
   *  }
@@ -96,7 +96,7 @@ export default class PropertiesController {
 
 
   /**
-  * @api {get} /admin/block-property/:uid Block Unblock Property
+  * @api {patch} /admin/block-property/:uid Block Unblock Property
   * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
   * @apiVersion 1.0.0
   * @apiName block-property
@@ -107,28 +107,19 @@ export default class PropertiesController {
   *     HTTP/1.1 200 Success
   */
 
-  async toggleStatus({ response, params }: HttpContextContract) {
+  async toggleStatus({ response, request, params }: HttpContextContract) {
     try {
-      const propertyId = params.id;
-      const property = await PropertyListing.query()
-        .where('uid', propertyId)
-        .first();
-      
-      if (property) {
-        if (property.status === PROPERTY_STATUS.blocked) {
-          property.status = PROPERTY_STATUS.published;
-        }
+      const property_id = params.id;
+      const body = request.body();
 
-        if (property.status !== PROPERTY_STATUS.blocked) {
-          property.status = PROPERTY_STATUS.blocked;
-        }
-        property.save();
+      const status = body.status;
+      await PropertyListing.query()
+        .where('uid', property_id)
+        .update({ status });
 
-        return response.status(Response.HTTP_OK).json({
-          message: t('Property status updated'),
-          property
-        });
-      }
+      return response.status(Response.HTTP_OK).json({
+        message: t('Property status updated'),
+      });
 
     } catch (error) {
       console.log(error)
@@ -258,7 +249,7 @@ export default class PropertiesController {
                 }
             ]
         }
-          * 
+          *
           */
 
   async propertyDetails({ response, params }: HttpContextContract) {
