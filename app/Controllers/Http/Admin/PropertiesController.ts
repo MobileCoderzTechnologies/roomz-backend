@@ -113,7 +113,7 @@ export default class PropertiesController {
       const property = await PropertyListing.query()
         .where('uid', propertyId)
         .first();
-
+      
       if (property) {
         if (property.status === PROPERTY_STATUS.blocked) {
           property.status = PROPERTY_STATUS.published;

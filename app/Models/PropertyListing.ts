@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import Env from '@ioc:Adonis/Core/Env';
-import { afterFetch, afterFind, BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { afterFetch, afterFind, BaseModel, beforeSave, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import PropertyBed from './PropertyBed';
 import PropertyType from './PropertyType';
 import PropertyAmenity from './PropertyAmenity';
@@ -191,6 +191,13 @@ export default class PropertyListing extends BaseModel {
   public static async coverImage(property: PropertyListing) {
     if (property.cover_photo) {
       property.cover_photo = `${Env.get('ASSET_URL_S3')}${S3_DIRECTORIES.propertyFiles}${property.cover_photo}`;
+    }
+  }
+
+  @beforeSave()
+  public static async coverPhoto(property: PropertyListing) {
+    if (property.cover_photo) {
+      property.cover_photo = property.cover_photo.split(S3_DIRECTORIES.propertyFiles)[1];
     }
   }
 
