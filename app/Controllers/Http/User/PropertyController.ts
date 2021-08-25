@@ -121,7 +121,8 @@ export default class PropertyController {
                         'property_type',
                         'is_beach_house',
                         'is_dedicated_guest_space',
-                        'is_business_hosting'
+                        'is_business_hosting',
+                        'area'
                     )
                     .first();
             }
@@ -132,7 +133,8 @@ export default class PropertyController {
                     property_type,
                     is_beach_house,
                     is_dedicated_guest_space,
-                    is_business_hosting
+                    is_business_hosting,
+                    area
                 });
             }
 

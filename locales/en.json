@@ -113,5 +113,6 @@
 	"Property status updated": "Property status updated",
 	"please wait for admin approval": "please wait for admin approval",
 	"Phone number updated": "Phone number updated",
-	"Property pending for admin approval": "Property pending for admin approval"
+	"Property pending for admin approval": "Property pending for admin approval",
+	"Invalid phone number or country code": "Invalid phone number or country code"
 }

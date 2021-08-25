@@ -129,7 +129,7 @@ export default class AuthController {
       } catch (e) {
         console.log(e)
         return response.status(Response.HTTP_BAD_REQUEST).json({
-          message: t('Invalid phone number or counrty code'),
+          message: t('Invalid phone number or country code'),
         });
       }
       const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
@@ -139,8 +139,10 @@ export default class AuthController {
         });
       }
       const country_code = request.input("country_code");
-      const username = country_code.replace('+', '') + phone_number;
-      const phoneUser = await User.findBy('username', username);
+      // const username = country_code.replace('+', '') + phone_number;
+      const phoneUser = await User.query()
+        .where({ country_code, phone_number })
+        .first();
       if (phoneUser) {
         if (phoneUser.is_deleted) {
           return response.status(Response.HTTP_FORBIDDEN).json({
@@ -327,8 +329,11 @@ export default class AuthController {
     const classCtrl = new SendOtp();
     const otpRes = await classCtrl.verifyOtp(country_code + phone_number, otp);
     if (otpRes && typeof otpRes.status === 'string' && otpRes.valid) {
-      const username = country_code.replace('+', '') + phone_number;
-      const phoneUser = await User.findBy('username', username);
+      // const username = country_code.replace('+', '') + phone_number;
+      const phoneUser = await User.query()
+        .where({ country_code, phone_number })
+        .first();
+
       if (phoneUser) {
         const accessToken = await auth.use('api').generate(phoneUser)
         const data = {
