@@ -2820,9 +2820,9 @@ export default class PropertyController {
 
 
             if (status === PROPERTY_STATUS.published) {
-                message === t('Property published')
+                message = t('Property published')
             }
-
+            
             return response.status(Response.HTTP_OK).json({
                 message,
             });
