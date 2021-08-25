@@ -337,7 +337,8 @@ export default class PropertyController {
                     'is_business_hosting',
                     'no_of_guests',
                     'no_of_bedrooms',
-                    'no_of_bathrooms'
+                    'no_of_bathrooms',
+                    'area'
                 )
                 .preload('type', builder => builder.select(
                     'id',
@@ -511,7 +512,8 @@ export default class PropertyController {
                     'zip_code',
                     'longitude',
                     'latitude',
-                    'location'
+                    'location',
+                    'area'
                 )
                 .finally();
 
@@ -651,7 +653,8 @@ export default class PropertyController {
                     'zip_code',
                     'longitude',
                     'latitude',
-                    'location'
+                    'location',
+                    'area'
                 )
                 .finally();
 
@@ -2338,7 +2341,8 @@ export default class PropertyController {
                     'base_price',
                     'is_discount_20',
                     'is_local_laws',
-                    'is_updated_calender'
+                    'is_updated_calender',
+                    'cancellation_policy'
                 )
                 .finally();
 
@@ -2542,6 +2546,7 @@ export default class PropertyController {
                     'is_discount_20',
                     'is_local_laws',
                     'is_updated_calender',
+                    'cancellation_policy',
                     'rented_before',
                     'have_guests',
                     'notice_guest_ba',
@@ -2731,6 +2736,7 @@ export default class PropertyController {
                     'is_discount_20',
                     'is_local_laws',
                     'is_updated_calender',
+                    'cancellation_policy',
                     'rented_before',
                     'have_guests',
                     'notice_guest_ba',
