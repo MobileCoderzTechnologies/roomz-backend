@@ -644,7 +644,8 @@ export default class HostingController {
       }
 
       if (search) {
-        query = query.whereRaw(`name LIKE '%${search}%' OR city LIKE '%${search}%'`)
+        query = query.orWhere('city', 'LIKE', '%' + search + '%')
+        // query = query.whereRaw(`name LIKE '%${search}%' OR city LIKE '%${search}%'`)
       }
 
       if (amenityString) {
