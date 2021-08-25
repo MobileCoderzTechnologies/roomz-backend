@@ -33,6 +33,9 @@ export default class PropertyListing extends BaseModel {
   public is_business_hosting: boolean;
 
   @column()
+  public area: boolean;
+
+  @column()
   public no_of_guests: number;
 
   @column()
@@ -152,6 +155,9 @@ export default class PropertyListing extends BaseModel {
 
   @column()
   public is_local_laws: boolean // agree for country laws
+
+  @column()
+  public cancellation_policy: string;
 
   @column()
   public is_updated_calender: boolean;

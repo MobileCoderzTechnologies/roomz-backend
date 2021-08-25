@@ -69,6 +69,7 @@ export default class PropertyController {
         const is_beach_house = request.input("is_beach_house");
         const is_dedicated_guest_space = request.input("is_dedicated_guest_space");
         const is_business_hosting = request.input("is_business_hosting");
+        const area = request.input("area");
         try {
             let validateSchema;
             if (property_type === 1 || property_type == 2) {
@@ -77,6 +78,7 @@ export default class PropertyController {
                     is_beach_house: schema.boolean.optional(),
                     is_dedicated_guest_space: schema.boolean(),
                     is_business_hosting: schema.boolean(),
+                    area: schema.number.optional()
                 });
             }
             else {
@@ -84,6 +86,7 @@ export default class PropertyController {
                     property_type: schema.number(),
                     is_dedicated_guest_space: schema.boolean(),
                     is_business_hosting: schema.boolean(),
+                    area: schema.number.optional()
                 });
             }
 
@@ -106,7 +109,8 @@ export default class PropertyController {
                         property_type,
                         is_beach_house,
                         is_dedicated_guest_space,
-                        is_business_hosting
+                        is_business_hosting,
+                        area
                     });
 
                 property = await PropertyListing.query()
@@ -439,20 +443,12 @@ export default class PropertyController {
         const user_id = auth.user?.id
         try {
             let validateSchema = schema.create({
-                country: schema.string({ trim: true }, [
-                    rules.minLength(2),
-                ]),
-                street: schema.string({ trim: true }, [
-                    rules.minLength(2),
-                ]),
-                city: schema.string({ trim: true }, [
-                    rules.minLength(2),
-                ]),
-                state: schema.string({ trim: true }, [
-                    rules.minLength(2),
-                ]),
+                country: schema.string({ trim: true }),
+                street: schema.string({ trim: true }),
+                city: schema.string({ trim: true }),
+                state: schema.string({ trim: true }),
                 zip_code: schema.string({ trim: true }, [
-                    rules.minLength(3),
+                    rules.minLength(6),
                 ]),
                 latitude: schema.number.optional(),
                 longitude: schema.number.optional(),
@@ -2268,12 +2264,9 @@ export default class PropertyController {
         const property_id = params.id;
         try {
             let validateSchema = schema.create({
-                is_local_laws: schema.boolean.optional([
-                    rules.requiredIfNotExists('is_updated_calender')
-                ]),
-                is_updated_calender: schema.boolean.optional([
-                    rules.requiredIfNotExists('is_local_laws')
-                ])
+                is_local_laws: schema.boolean.optional(),
+                is_updated_calender: schema.boolean.optional(),
+                cancellation_policy: schema.string.optional()
             });
             await request.validate({ schema: validateSchema });
         } catch (error) {
@@ -2285,14 +2278,15 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const { is_local_laws, is_updated_calender } = body;
+        const { is_local_laws, is_updated_calender, cancellation_policy } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
                 .update({
                     is_local_laws,
-                    is_updated_calender
+                    is_updated_calender,
+                    cancellation_policy
                 });
 
             let property = await PropertyListing.query()

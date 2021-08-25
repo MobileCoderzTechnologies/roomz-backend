@@ -13,11 +13,12 @@ export default class PropertyListings extends BaseSchema {
       table.boolean('is_beach_house').nullable();
       table.boolean('is_dedicated_guest_space').notNullable().defaultTo(false);
       table.boolean('is_business_hosting').notNullable().defaultTo(false);
+      table.decimal('area', 10, 2).defaultTo(null);
 
       table.integer('no_of_guests').notNullable().defaultTo(0);
       table.integer('no_of_bedrooms').notNullable().defaultTo(0);
       table.integer('no_of_beds').notNullable().defaultTo(0);
-      table.decimal('no_of_bathrooms', 10,1).notNullable().defaultTo(0);
+      table.decimal('no_of_bathrooms', 10, 1).notNullable().defaultTo(0);
 
       // address 
       table.string('country', 255).nullable();
@@ -26,7 +27,7 @@ export default class PropertyListings extends BaseSchema {
       table.string('city', 255).nullable();
       table.string('state', 255).nullable();
       table.string('zip_code', 255).nullable();
-      
+
       table.decimal('latitude', 10, 6).nullable();
       table.decimal('longitude', 10, 6).nullable();
       table.text('location').nullable();
@@ -60,11 +61,11 @@ export default class PropertyListings extends BaseSchema {
       table.string('sec_phone_number', 255).nullable();
       //Availability
       table.integer('advance_notice', 255).nullable();
-      table.decimal('cut_off_time', 10,2).nullable();
-      table.decimal('guests_book_time', 10,2).nullable();
-      table.decimal('ci_arrive_after', 10,2).nullable();
-      table.decimal('ci_arrive_before', 10,2).nullable();
-      table.decimal('ci_leave_before', 10,2).nullable();
+      table.decimal('cut_off_time', 10, 2).nullable();
+      table.decimal('guests_book_time', 10, 2).nullable();
+      table.decimal('ci_arrive_after', 10, 2).nullable();
+      table.decimal('ci_arrive_before', 10, 2).nullable();
+      table.decimal('ci_leave_before', 10, 2).nullable();
       table.integer('min_stay').nullable();
       table.integer('max_stay').nullable();
 
@@ -73,6 +74,7 @@ export default class PropertyListings extends BaseSchema {
       table.boolean('is_discount_20').defaultTo(true);
 
       table.boolean('is_local_laws').notNullable().defaultTo(true);
+      table.string('cancellation_policy', 255).nullable();
       table.boolean('is_updated_calender').nullable();
 
       table.integer('rented_before').nullable();
