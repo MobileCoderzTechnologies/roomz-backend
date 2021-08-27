@@ -450,9 +450,7 @@ export default class PropertyController {
                 street: schema.string({ trim: true }),
                 city: schema.string({ trim: true }),
                 state: schema.string({ trim: true }),
-                zip_code: schema.string({ trim: true }, [
-                    rules.minLength(6),
-                ]),
+                zip_code: schema.string({ trim: true }),
                 latitude: schema.number.optional(),
                 longitude: schema.number.optional(),
                 location: schema.string.optional(),
@@ -608,9 +606,7 @@ export default class PropertyController {
             let validateSchema = schema.create({
                 latitude: schema.number(),
                 longitude: schema.number(),
-                location: schema.string({ trim: true }, [
-                    rules.minLength(2),
-                ]),
+                location: schema.string({ trim: true }),
             });
             await request.validate({ schema: validateSchema });
         } catch (error) {
@@ -1108,9 +1104,7 @@ export default class PropertyController {
                 property_details: schema.array().members(
                     schema.object().members({
                         detail_id: schema.number(),
-                        explanation: schema.string.optional({ trim: true }, [
-                            rules.minLength(5)
-                        ])
+                        explanation: schema.string.optional({ trim: true })
                     })
                 )
             })
@@ -1412,26 +1406,11 @@ export default class PropertyController {
         const property_id = params.id;
         try {
             let validateSchema = schema.create({
-                description: schema.string({ trim: true }, [
-                    rules.minLength(20),
-                    rules.maxLength(500),
-                ]),
-                desc_your_space: schema.string.optional({ trim: true }, [
-                    rules.minLength(20),
-                    rules.maxLength(500)
-                ]),
-                desc_interaction_guests: schema.string.optional({ trim: true }, [
-                    rules.minLength(20),
-                    rules.maxLength(500)
-                ]),
-                desc_neighbourhood: schema.string.optional({ trim: true }, [
-                    rules.minLength(20),
-                    rules.maxLength(500)
-                ]),
-                desc_getting_around: schema.string.optional({ trim: true }, [
-                    rules.minLength(20),
-                    rules.maxLength(500)
-                ]),
+                description: schema.string({ trim: true }),
+                desc_your_space: schema.string.optional({ trim: true }),
+                desc_interaction_guests: schema.string.optional({ trim: true }),
+                desc_neighbourhood: schema.string.optional({ trim: true }),
+                desc_getting_around: schema.string.optional({ trim: true }),
 
             });
             await request.validate({ schema: validateSchema });
@@ -1580,10 +1559,7 @@ export default class PropertyController {
         const property_id = params.id;
         try {
             let validateSchema = schema.create({
-                name: schema.string({ trim: true }, [
-                    rules.minLength(5),
-                    rules.maxLength(50),
-                ]),
+                name: schema.string({ trim: true }),
             });
             await request.validate({ schema: validateSchema });
         } catch (error) {
@@ -1910,7 +1886,7 @@ export default class PropertyController {
                     rules.range(1, 100)
                 ]),
                 max_stay: schema.number([
-                    rules.range(1, 100)
+                    rules.range(1, 121)
                 ])
 
             });
@@ -2822,7 +2798,7 @@ export default class PropertyController {
             if (status === PROPERTY_STATUS.published) {
                 message = t('Property published')
             }
-            
+
             return response.status(Response.HTTP_OK).json({
                 message,
             });

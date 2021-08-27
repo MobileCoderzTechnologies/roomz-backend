@@ -8,7 +8,7 @@ const t = i18n.__;
 import { FileUploadOnS3 } from 'App/Helpers/fileUpload';
 import Env from '@ioc:Adonis/Core/Env';
 import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
-import SendOtp from 'App/Helpers/SendOtp';
+// import SendOtp from 'App/Helpers/SendOtp';
 export default class UsersController {
 
   /**
@@ -229,9 +229,57 @@ export default class UsersController {
       const phone_number = (request.input("phone_number") + '').replace(/^0+/, '');
       const country_code = request.input("country_code");
       const otp = request.input("otp");
-      const classCtrl = new SendOtp();
-      const otpRes = await classCtrl.verifyOtp(country_code + phone_number, otp);
-      if (otpRes && typeof otpRes.status === 'string' && otpRes.valid) {
+      // const classCtrl = new SendOtp();
+      // const otpRes = await classCtrl.verifyOtp(country_code + phone_number, otp);
+      // if (otpRes && typeof otpRes.status === 'string' && otpRes.valid) {
+
+      //   const phoneUser = await User.query()
+      //     .where({ phone_number, country_code })
+      //     .first();
+
+      //   if (phoneUser) {
+      //     return response.status(Response.HTTP_BAD_REQUEST).json({
+      //       message: t('user with this phone number already exists')
+      //     });
+      //   }
+
+      //   await User.query()
+      //     .where({ 'uid': user_id })
+      //     .update({ phone_number, country_code, is_verified: 1 })
+
+      //   const user = await User.query()
+      //     .where({ uid: user_id })
+      //     .finally();
+
+      //   response.status(Response.HTTP_CREATED).json({
+      //     message: t('Phone number updated'),
+      //     data: user
+      //   })
+      // } else if (otpRes && typeof otpRes.status === 'string' && otpRes.valid === false) {
+      //   return response.status(Response.HTTP_BAD_REQUEST).json({
+      //     message: t('Invalid verification code')
+      //   });
+      // } else if (otpRes && otpRes.status === 404) {
+      //   return response.status(Response.HTTP_OTP_EXPIRED).json({
+      //     message: t('OTP expired')
+      //   });
+      // } else {
+      //   return response.status(Response.HTTP_BAD_REQUEST).json({
+      //     message: t('OTP error')
+      //   });
+      // }
+
+      if (otp == '1111') {
+        const phoneUser = await User.query()
+          .where({ phone_number, country_code })
+          .first();
+
+        if (phoneUser) {
+          return response.status(Response.HTTP_BAD_REQUEST).json({
+            message: t('user with this phone number already exists')
+          });
+        }
+
         await User.query()
           .where({ 'uid': user_id })
           .update({ phone_number, country_code, is_verified: 1 })
@@ -243,18 +291,13 @@ export default class UsersController {
         response.status(Response.HTTP_CREATED).json({
           message: t('Phone number updated'),
           data: user
-        })
-      } else if (otpRes && typeof otpRes.status === 'string' && otpRes.valid === false) {
+        });
+
+
+      }
+      else{
         return response.status(Response.HTTP_BAD_REQUEST).json({
           message: t('Invalid verification code')
-        });
-      } else if (otpRes && otpRes.status === 404) {
-        return response.status(Response.HTTP_OTP_EXPIRED).json({
-          message: t('OTP expired')
-        });
-      } else {
-        return response.status(Response.HTTP_BAD_REQUEST).json({
-          message: t('OTP error')
         });
       }
     } catch (error) {

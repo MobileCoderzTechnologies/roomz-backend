@@ -115,5 +115,6 @@
 	"Phone number updated": "Phone number updated",
 	"Property pending for admin approval": "Property pending for admin approval",
 	"Invalid phone number or country code": "Invalid phone number or country code",
-	"Property not found": "Property not found"
+	"Property not found": "Property not found",
+	"user with this phone number already exists": "user with this phone number already exists"
 }
