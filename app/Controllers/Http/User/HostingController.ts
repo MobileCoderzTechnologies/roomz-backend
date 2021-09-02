@@ -405,6 +405,7 @@ export default class HostingController {
   async uploadImage({ request, response }: HttpContextContract) {
     try {
       const files = request.files('images');
+      console.log(files);
       const response_arr: { image_url: string }[] = [];
       for (const file of files) {
         const file_name = file.clientName;
@@ -413,6 +414,7 @@ export default class HostingController {
         const name = await FileUploadOnS3.uploadFile(file, directory, file_name, null);
         await FileUploadOnS3.makeImageCopies(file, directory);
 
+        console.log(name);
         if (name) {
           const image_url = `${Env.get('ASSET_URL_S3')}${name}`;
           response_arr.push({
@@ -644,8 +646,8 @@ export default class HostingController {
       }
 
       if (search) {
-        query = query.orWhere('city', 'LIKE', '%' + search + '%')
-        // query = query.whereRaw(`name LIKE '%${search}%' OR city LIKE '%${search}%'`)
+        // query = query.orWhere('city', 'LIKE', '%' + search + '%')
+        query = query.whereRaw(`city LIKE '%${search}%'`)
       }
 
       if (amenityString) {

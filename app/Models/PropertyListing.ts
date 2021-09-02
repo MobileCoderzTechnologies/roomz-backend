@@ -151,7 +151,7 @@ export default class PropertyListing extends BaseModel {
   public base_price: number // in dolor ($)
 
   @column()
-  public is_discount_20: boolean // 20 % discount
+  public discount_percent: number // % discount
 
   @column()
   public is_local_laws: boolean // agree for country laws

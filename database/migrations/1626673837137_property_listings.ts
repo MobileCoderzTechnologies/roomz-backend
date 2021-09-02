@@ -71,7 +71,7 @@ export default class PropertyListings extends BaseSchema {
 
 
       table.integer('base_price').nullable();
-      table.boolean('is_discount_20').defaultTo(true);
+      table.integer('discount_percent').defaultTo(0);
 
       table.boolean('is_local_laws').notNullable().defaultTo(true);
       table.string('cancellation_policy', 255).nullable();

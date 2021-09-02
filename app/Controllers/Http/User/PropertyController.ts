@@ -447,10 +447,10 @@ export default class PropertyController {
         try {
             let validateSchema = schema.create({
                 country: schema.string({ trim: true }),
-                street: schema.string({ trim: true }),
+                street: schema.string.optional({ trim: true }),
                 city: schema.string({ trim: true }),
                 state: schema.string({ trim: true }),
-                zip_code: schema.string({ trim: true }),
+                zip_code: schema.string.optional({ trim: true }),
                 latitude: schema.number.optional(),
                 longitude: schema.number.optional(),
                 location: schema.string.optional(),
@@ -1999,14 +1999,14 @@ export default class PropertyController {
       * @apiParam {Number} id Property ID (pass as params)
       * 
       * @apiParam {Number} base_price price of your Property per night
-      * @apiParam {Boolean} [is_discount_20] 20% discount on your property (default = true)
+      * @apiParam {Boolean} [discount_percent] 20% discount on your property (default = true)
       * 
       * 
       * 
       * @apiParamExample {json} Request-Example:
       *   {
       *       "base_price": 20,
-      *       "is_discount_20": false,
+      *       "discount_percent": 10,
       *    }
       *
       * @apiSuccessExample {json} Success-Response:
@@ -2058,7 +2058,7 @@ export default class PropertyController {
       *            "min_stay": 2,
       *            "max_stay": 2,
       *            "base_price": 20,
-      *            "is_discount_20": false
+      *            "discount_percent": 20
       *        }
       *    ]
       * }
@@ -2072,7 +2072,7 @@ export default class PropertyController {
         try {
             let validateSchema = schema.create({
                 base_price: schema.number(),
-                is_discount_20: schema.boolean.optional()
+                discount_percent: schema.number.optional()
             });
             await request.validate({ schema: validateSchema });
         } catch (error) {
@@ -2084,14 +2084,14 @@ export default class PropertyController {
         }
 
         const body = request.body();
-        const { base_price, is_discount_20 } = body;
+        const { base_price, discount_percent } = body;
 
         try {
             await PropertyListing.query()
                 .where('id', property_id)
                 .update({
                     base_price,
-                    is_discount_20
+                    discount_percent
                 });
 
             let property = await PropertyListing.query()
@@ -2139,7 +2139,7 @@ export default class PropertyController {
                     'min_stay',
                     'max_stay',
                     'base_price',
-                    'is_discount_20'
+                    'discount_percent'
                 )
                 .finally();
 
@@ -2230,7 +2230,7 @@ export default class PropertyController {
       *            "min_stay": 2,
       *            "max_stay": 2,
       *            "base_price": 20,
-      *            "is_discount_20": false,
+      *            "discount_percent": 20,
       *            "is_local_laws": true,
       *            "is_updated_calender": true,
       *        }
@@ -2315,7 +2315,7 @@ export default class PropertyController {
                     'min_stay',
                     'max_stay',
                     'base_price',
-                    'is_discount_20',
+                    'discount_percent',
                     'is_local_laws',
                     'is_updated_calender',
                     'cancellation_policy'
@@ -2419,7 +2419,7 @@ export default class PropertyController {
           *            "min_stay": 2,
           *            "max_stay": 2,
           *            "base_price": 20,
-          *            "is_discount_20": false,
+          *            "discount_percent": 20,
           *            "is_local_laws": true,
           *            "is_updated_calender": true,
           *            "have_guests": 2,
@@ -2519,7 +2519,7 @@ export default class PropertyController {
                     'min_stay',
                     'max_stay',
                     'base_price',
-                    'is_discount_20',
+                    'discount_percent',
                     'is_local_laws',
                     'is_updated_calender',
                     'cancellation_policy',
@@ -2618,7 +2618,7 @@ export default class PropertyController {
           *            "min_stay": 2,
           *            "max_stay": 2,
           *            "base_price": 20,
-          *            "is_discount_20": false,
+          *            "discount_percent": 10,
           *            "is_local_laws": true,
           *            "is_updated_calender": true,
           *            "have_guests": 2,
@@ -2709,7 +2709,7 @@ export default class PropertyController {
                     'min_stay',
                     'max_stay',
                     'base_price',
-                    'is_discount_20',
+                    'discount_percent',
                     'is_local_laws',
                     'is_updated_calender',
                     'cancellation_policy',
@@ -2751,6 +2751,7 @@ export default class PropertyController {
           * @apiGroup List Property
           *
           * @apiParam {Number} id Property ID (pass as params)
+          * @apiParam {Number} status 1,2,3,4,5,6,
           * @apiSuccessExample {json} Success-Response:
           *     HTTP/1.1 200 Success
           * {
@@ -3229,7 +3230,7 @@ export default class PropertyController {
                         "min_stay": 1,
                         "max_stay": 1,
                         "base_price": 1,
-                        "is_discount_20": 1,
+                        "discount_percent": 20,
                         "is_local_laws": 1,
                         "is_updated_calender": 1,
                         "rented_before": 1,
