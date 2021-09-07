@@ -408,7 +408,8 @@ export default class HostingController {
       console.log(files);
       const response_arr: { image_url: string }[] = [];
       for (const file of files) {
-        const file_name = file.clientName;
+        let file_name = file.clientName;
+        file_name = file_name.replace('/','');
         const file_name_dir = file_name.split('.')[0];
         const directory = `property-files/${file_name_dir}`;
         const name = await FileUploadOnS3.uploadFile(file, directory, file_name, null);
