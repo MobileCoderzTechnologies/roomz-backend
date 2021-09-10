@@ -116,5 +116,8 @@
 	"Property pending for admin approval": "Property pending for admin approval",
 	"Invalid phone number or country code": "Invalid phone number or country code",
 	"Property not found": "Property not found",
-	"user with this phone number already exists": "user with this phone number already exists"
+	"user with this phone number already exists": "user with this phone number already exists",
+	"Property blocked dates added": "Property blocked dates added",
+	"Describe if the property is susceptible to noise?": "Describe if the property is susceptible to noise?",
+	"Describe what kinds of pets live on the property?": "Describe what kinds of pets live on the property?"
 }

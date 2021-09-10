@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import Env from '@ioc:Adonis/Core/Env';
-import { afterFetch, afterFind, BaseModel, beforeSave, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { afterFetch, afterFind, afterUpdate, BaseModel, beforeSave, beforeUpdate, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import PropertyBed from './PropertyBed';
 import PropertyType from './PropertyType';
 import PropertyAmenity from './PropertyAmenity';
@@ -9,6 +9,7 @@ import PropertyImage from './PropertyImage';
 import PropertyDetail from './PropertyDetail';
 import { S3_DIRECTORIES } from 'App/Constants/s3DirectoryConstants';
 import User from './User';
+import PropertyBlockedDate from './PropertyBlockedDate';
 
 export default class PropertyListing extends BaseModel {
   @column({ isPrimary: true })
@@ -217,6 +218,12 @@ export default class PropertyListing extends BaseModel {
     })
   }
 
+  // @beforeUpdate()
+  // public static async onUpdate(property: PropertyListing){
+  //   property.updatedAt = new DateTime;
+  //   console.log('update');
+  // }
+
   @hasMany(() => PropertyBed, {
     localKey: 'id',
     foreignKey: 'property_id'
@@ -258,5 +265,11 @@ export default class PropertyListing extends BaseModel {
     foreignKey: 'property_id'
   })
   public details: HasMany<typeof PropertyDetail>
+
+  @hasMany(() => PropertyBlockedDate, {
+    localKey: 'id',
+    foreignKey: 'property_id'
+  })
+  public blocked_dates: HasMany<typeof PropertyBlockedDate>
 }
 

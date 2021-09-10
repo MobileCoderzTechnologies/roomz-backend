@@ -3,6 +3,7 @@ import Response from "App/Helpers/Response";
 import PropertyListing from 'App/Models/PropertyListing';
 import PropertyBed from 'App/Models/PropertyBed';
 import PropertyAmenity from 'App/Models/PropertyAmenity';
+import PropertyBlockedDate from 'App/Models/PropertyBlockedDate';
 import PropertyImage from 'App/Models/PropertyImage';
 import PropertyRule from 'App/Models/PropertyRule';
 import PropertyDetail from 'App/Models/PropertyDetail';
@@ -3363,6 +3364,16 @@ export default class PropertyController {
                                 "property_id": 2
                             }
                         ],
+                        "blocked_dates": [
+                            {
+                                "property_id": 1,
+                                "blocked_date": "2021-09-20T18:30:00.000Z"
+                            },
+                            {
+                                "property_id": 1,
+                                "blocked_date": "2021-10-09T18:30:00.000Z"
+                            }
+                        ],
                         "images": [
                             {
                                 "image_url": "https://s3.me-south-1.amazonaws.com/roomz-files/property-files/Screenshot from 2021-06-21 13-40-14/Screenshot from 2021-06-21 13-40-14.png",
@@ -3406,6 +3417,10 @@ export default class PropertyController {
                     'description'
                 ))
                 .preload('images', builder => builder.select('image_url'))
+                .preload('blocked_dates', builder => builder.select(
+                    'property_id',
+                    'blocked_date'
+                ))
                 .finally();
 
             if (!property) property = [];
@@ -3420,6 +3435,112 @@ export default class PropertyController {
         }
     }
 
+
+    /**
+        * @api {put} /user/hosting/list-property/blocked-dates/:id Add Blocked Dates
+        * @apiHeader {String} Device-Type Device Type ios/android.
+        * @apiHeader {String} App-Version Version Code 1.0.0.
+        * @apiHeader {String} Accept-Language Language Code en OR ar.
+        * @apiHeader {String} Authorization Bearer eyJhbGciOiJIUzI1NiI...............
+        * @apiVersion 1.0.0
+        * @apiName blocked-dates
+        * @apiGroup List Property
+        *
+        * @apiParam {Number} id Property ID (pass as params)
+        * 
+        * @apiParam {Number[]} dates Array of dates
+        * 
+        * 
+        * @apiParamExample {json} Request-Example:
+        *   {
+        *        "blocked_dates": [
+        *            "2021-09-21",
+        *            "2021-10-10"
+        *        ]
+        *    }
+        *
+        * @apiSuccessExample {json} Success-Response:
+        *     HTTP/1.1 201 Created
+        *     
+        * {
+        *        "message": "Property blocked dates added",
+        *        "data": [
+        *            {
+        *                "property_id": 1,
+        *                "blocked_date": "2021-09-20T18:30:00.000Z"
+        *            },
+        *            {
+        *                "property_id": 1,
+        *                "blocked_date": "2021-10-09T18:30:00.000Z"
+        *            }
+        *        ]
+        *    }
+        *
+        * @apiErrorExample {json} Error-Response:
+        *
+        *     HTTP/1.1 400 Bad Request
+        *     {
+        *    "message": "validation Failed",
+        *    "error": {
+        *        "amenities": [
+        *            "number validation failed"
+        *        ]
+        *    }
+        *   }
+        *
+        */
+
+
+    async addBlockedDates({ request, response, params }: HttpContextContract) {
+        const property_id = params.id;
+        try {
+            const validateSchema = schema.create({
+                blocked_dates: schema.array.optional().members(schema.date.optional())
+            });
+
+            await request.validate({ schema: validateSchema });
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_BAD_REQUEST).json({
+                message: t('validation Failed'),
+                error: error.messages
+            });
+        }
+
+        const body = request.body();
+        const blocked_dates = body.blocked_dates;
+        const date_data = blocked_dates.map(e => {
+            const item = {
+                property_id,
+                blocked_date: e,
+            }
+            return item;
+        });
+
+        try {
+            await PropertyBlockedDate.query()
+                .where({ property_id })
+                .delete();
+
+            await PropertyBlockedDate.createMany(date_data);
+
+            let data = await PropertyBlockedDate.query()
+                .where({ property_id })
+                .select('property_id', 'blocked_date')
+                .finally();
+
+            return response.status(Response.HTTP_CREATED).json({
+                message: t('Property blocked dates added'),
+                data
+            });
+
+        } catch (error) {
+            console.log(error)
+            return response.status(Response.HTTP_INTERNAL_SERVER_ERROR).json({
+                message: t('Something went wrong')
+            });
+        }
+    }
 
 
 

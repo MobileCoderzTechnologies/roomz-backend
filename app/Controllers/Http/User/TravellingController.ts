@@ -286,6 +286,7 @@ export default class TravellingController {
               'description'
             ))
         })
+        .preload('blocked_dates', builder => builder.select('property_id', 'blocked_date'))
         .preload('images', builder => builder.select('image_url'))
         .first();
 

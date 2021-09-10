@@ -115,6 +115,8 @@ Route.group(() => {
 
     Route.put('publish/:id', 'User/PropertyController.publishProperty');
 
+    Route.put('blocked-dates/:id', 'User/PropertyController.addBlockedDates');
+
     Route.get('get-property/:id', 'User/PropertyController.getPropertyForUpdate');
 
   }).prefix('list-property').middleware('propertyStatus');
